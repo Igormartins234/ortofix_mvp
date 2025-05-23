@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Painel do Aluno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-logo {
+            width: 40px;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen">
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <!-- Ícone de Menu -->
+<button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-[#e3ebf2]">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+</button>
+<!-- Menu Dropdown -->
+<div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-lg py-2 w-48 hidden z-50">
+     <a href="inicio.html" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Inicio</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Som</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Notificações</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Fontes</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Definir Metas</a>
+</div>
+
+
+<script>
+    // filepath: c:\Users\SESI SENAI 2\Desktop\tc teste\inicio.html
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('dropdown-menu');
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
+    // Fecha o menu ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+</script>
+
+            <!-- Logo -->
+            <a href="../index.html">
+                <!-- Use a logo clara/branca se ortofix.png for escura -->
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícone de Perfil -->
+            <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-[#e3ebf2]">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <div class="mb-6 volt">
+            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Voltar
+            </a>
+        </div>
+        <style>
+            .volt{
+                margin-left: 40px;
+                margin-top: 40px;
+            }
+        </style>
+
+        <div class="text-center">
+            <!-- Nome do Aluno -->
+            <h1 class="text-3xl sm:text-4xl font-bold text-[#3c6a99] mb-6">
+                ALINE SILVA
+            </h1>
+
+            <!-- Foto do Perfil -->
+            <div class="mb-8 foto">
+                <img src="./static/img/aluna.jpg" alt="Foto de Aline Silva"
+                     class="profile-pic rounded-full mx-auto border-4 border-white shadow-lg">
+                <style>
+                    .foto{
+                        width: 450px;
+                        height: 400px;
+                        margin: 0 auto;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 50%;
+                    }
+                </style>
+                <!-- Substitua o src acima pelo caminho real da foto do aluno -->
+                <!-- Ex: src="../static/img/alunos/aline_silva.jpg" -->
+            </div>
+
+            <!-- Detalhes do Aluno -->
+            <div class="bg-white/70 backdrop-blur-sm shadow-md rounded-lg p-6 max-w-md mx-auto mb-8 text-left text-base sm:text-lg">
+                <p class="mb-2"><strong class="font-semibold">Nível:</strong> 3</p>
+                <p class="mb-2"><strong class="font-semibold">Série:</strong> 1° A EM</p>
+                <p class="mb-2"><strong class="font-semibold">Professor:</strong> Marieli</p>
+                <p><strong class="font-semibold">Escola:</strong> SESI de Itapeva</p>
+            </div>
+
+            <!-- Seção Lições Realizadas -->
+            <h2 class="text-2xl font-semibold text-[#3c6a99] mb-4">
+                Lições Realizadas
+            </h2>
+            <div class="bg-white shadow-md rounded-lg p-4 max-w-xl mx-auto">
+                <!-- Placeholder para o Gráfico -->
+                <img src="./static/img/foto3.png" class="w-full h-auto rounded">
+                <!-- Em um app real, aqui entraria um componente de gráfico (ex: Chart.js) -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
+        <p>© 2025 OrtoFix</p>
+    </footer>
+
+</body>
+</html>

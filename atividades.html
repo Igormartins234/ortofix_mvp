@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Painel do Aluno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar-logo {
+            width: 40px;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen">
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <!-- Ícone de Menu -->
+<button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-[#e3ebf2]">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+</button>
+<!-- Menu Dropdown -->
+<div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-lg py-2 w-48 hidden z-50">
+     <a href="inicio.html" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Inicio</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Som</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Notificações</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Fontes</a>
+    <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Definir Metas</a>
+</div>
+
+
+<script>
+    // filepath: c:\Users\SESI SENAI 2\Desktop\tc teste\inicio.html
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('dropdown-menu');
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
+    // Fecha o menu ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+</script>
+
+            <!-- Logo -->
+            <a href="../index.html">
+                <!-- Use a logo clara/branca se ortofix.png for escura -->
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícone de Perfil -->
+            <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-[#e3ebf2]">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
+            O que deseja acessar?
+        </h1>
+
+        <div class="flex flex-col items-center space-y-4 max-w-sm mx-auto">
+            <!-- Botão OrtoFix (Exemplo de Jogo Principal) -->
+            <a href="game.html"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                OrtoFix Game
+            </a>
+
+            <!-- Botão TypeRun -->
+            <a href="#"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                TypeRun
+            </a>
+
+            <!-- Botão Texto -->
+            <a href="#"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                Exercícios de Texto
+            </a>
+
+            <!-- Botão Painel de notas -->
+            <a href="notas.html"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                Painel de Notas
+            </a>
+
+            <!-- Botão Dúvida personalizada -->
+            <a href="#"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                Dúvida Personalizada
+            </a>
+
+            <!-- Botão Recompensas -->
+            <a href="#"
+               class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                Recompensas
+            </a>
+
+             <!-- Botão Voltar ao Painel (opcional, se diferente da home) -->
+            <a href="inicio.html"
+               class="w-full mt-6 bg-[#9aaec1] hover:bg-[#5689b9] text-[#3c6a99] hover:text-white font-semibold py-3 px-6 rounded-lg text-center shadow-md transition-colors duration-150">
+                Voltar ao Painel Principal
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
+        <p>© 2025 OrtoFix.</p>
+    </footer>
+
+</body>
+</html>

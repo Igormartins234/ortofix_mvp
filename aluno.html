@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Login do Aluno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .ortofix-logo { /* Renomeei para clareza, pode manter .ortofix se preferir */
+            width: 200px; /* Aumente este valor conforme desejar */
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="mb-8 text-center">
+        <!-- Caminho ajustado para ../ assumindo que index.html está um nível acima -->
+        <a href="../index.html">
+            <!-- Caminho ajustado para ../static/img/ortofix.png -->
+            <!-- Removida a classe h-16 do Tailwind -->
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto ortofix-logo">
+        </a>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Login do Aluno</h2>
+        <!-- Caminho ajustado para ../aluno/inicio.html -->
+        <form action="inicio.html" method="GET"> <!-- Mude action para o backend real -->
+            <div class="mb-4">
+                <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email:</label>
+                <input type="email" id="email" name="email" required
+                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
+                       placeholder="seuemail@exemplo.com">
+            </div>
+            <div class="mb-6">
+                <label for="senha" class="block text-[#5689b9] text-sm font-semibold mb-2">Senha:</label>
+                <input type="password" id="senha" name="senha" required
+                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
+                       placeholder="********">
+            </div>
+            <button type="submit"
+                    class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Entrar
+            </button>
+        </form>
+        <p class="text-center text-[#5689b9] mt-6 text-sm">
+            Não tem uma conta?
+            <a href="cadastro.html" class="text-[#3c6a99] hover:text-[#5689b9] font-semibold hover:underline">
+                Cadastre-se aqui
+            </a>
+        </p>
+    </div>
+</body>
+</html>
