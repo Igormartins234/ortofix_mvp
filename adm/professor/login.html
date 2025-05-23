@@ -3,37 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Login do Aluno</title>
+    <title>OrtoFix - Login Professor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         body {
             font-family: 'Poppins', sans-serif;
+            background-color: #e3ebf2;
         }
-        .ortofix-logo { /* Renomeei para clareza, pode manter .ortofix se preferir */
-            width: 200px; /* Aumente este valor conforme desejar */
+        .mascot-login {
+            width: 180px; /* Ajuste conforme necessário */
             height: auto;
         }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
     <div class="mb-8 text-center">
-     
         <a href="../index.html">
-            
-            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto ortofix-logo">
+            <img src="../../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20">
         </a>
     </div>
 
     <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Cadastro do Aluno</h2>
-        <!-- Caminho ajustado para ../aluno/inicio.html -->
-        <form action="inicio.html" method="GET"> <!-- Mude action para o backend real -->
+        <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Login do Professor</h2>
+        <form action="painel.html" method="GET"> <!-- Em app real, POST para backend -->
             <div class="mb-4">
-                <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email:</label>
+                <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email Institucional:</label>
                 <input type="email" id="email" name="email" required
                        class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
-                       placeholder="seuemail@exemplo.com">
+                       placeholder="professor@escola.com">
             </div>
             <div class="mb-6">
                 <label for="senha" class="block text-[#5689b9] text-sm font-semibold mb-2">Senha:</label>
@@ -42,10 +40,16 @@
                        placeholder="********">
             </div>
             <button type="submit"
-                    class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out transform hover:scale-105">
                 Entrar
             </button>
         </form>
+        <p class="text-center text-[#5689b9] mt-6 text-sm">
+            Não é professor?
+            <a href="../login/aluno.html" class="text-[#3c6a99] hover:text-[#5689b9] font-semibold hover:underline">
+                Login Aluno
+            </a>
+        </p>
     </div>
 </body>
 </html>
