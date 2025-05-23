@@ -66,7 +66,7 @@
                 Criar Nova Atividade
             </h1>
 
-            <form action="#" method="POST"> <!-- Em app real, POST para script de criação -->
+            <form action="#" method="POST"> 
                 <div class="mb-5">
                     <label for="titulo_atividade" class="block text-[#5689b9] text-sm font-semibold mb-1">Título da Atividade:</label>
                     <input type="text" id="titulo_atividade" name="titulo_atividade"
@@ -94,7 +94,7 @@
                               placeholder="Descreva brevemente a atividade e as instruções para o aluno."></textarea>
                 </div>
 
-                <!-- Campos adicionais podem aparecer dinamicamente baseados no tipo_atividade -->
+                <
                 <div id="campos-especificos-atividade" class="mb-5 p-4 border border-dashed border-[#9aaec1] rounded-lg min-h-[100px]">
                     <p class="text-sm text-gray-500">Conteúdo específico da atividade aparecerá aqui (ex: lista de palavras, frases, alternativas).</p>
                 </div>
@@ -106,7 +106,7 @@
                         <option value="turma_a">1º Ano A - EM</option>
                         <option value="turma_b">1º Ano B - EM</option>
                         <option value="turma_c">2º Ano A - EM</option>
-                        <!-- Popular com turmas reais -->
+                
                     </select>
                 </div>
 
@@ -150,8 +150,6 @@
 
         tipoAtividadeSelect.addEventListener('change', function() {
             camposEspecificosDiv.innerHTML = `<p class="text-sm text-gray-500">Carregando campos para: <strong>${this.options[this.selectedIndex].text}</strong>...</p>`;
-            // Aqui, em um app real, você faria uma requisição ou mostraria/ocultaria
-            // formulários pré-definidos baseados no tipo de atividade selecionado.
         });
     </script>
 </body>

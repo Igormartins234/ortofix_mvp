@@ -50,7 +50,7 @@
                 </svg>
             </button>
             <!-- Menu Dropdown -->
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-48 hidden z-[60]"> <!-- Aumentei o z-index -->
+            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-48 hidden z-[60]">
                 <a href="inicio.html" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Início</a>
                 <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Som</a>
                 <a href="#" class="block px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">Notificações</a>
@@ -107,7 +107,6 @@
 
             <!-- Feedback e Mascote -->
             <div id="feedback-area" class="mb-8 min-h-[80px] flex items-center justify-center">
-                <!-- O conteúdo do feedback será inserido aqui pelo JavaScript -->
             </div>
 
             <!-- Botão Próximo -->
@@ -122,7 +121,7 @@
     </footer>
 
     <script>
-        // Script do Menu Dropdown (copiado da sua página anterior)
+        // Script do Menu Dropdown
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('dropdown-menu');
         btn.addEventListener('click', () => {
@@ -136,11 +135,10 @@
 
         // Script do Jogo (Simples)
         const feedbackArea = document.getElementById('feedback-area');
-        const mascotCorrectSrc = "../static/img/ortofix_feliz.png"; // Crie esta imagem
-        const mascotIncorrectSrc = "../static/img/ortofix_triste.png"; // Crie esta imagem
-        const mascotNeutralSrc = "../static/img/ortofix.png"; // Sua logo atual
+        const mascotCorrectSrc = "../static/img/ortofix_feliz.png";
+        const mascotIncorrectSrc = "../static/img/ortofix_triste.png";
+        const mascotNeutralSrc = "../static/img/ortofix.png";
 
-        // Função para preload das imagens do mascote (opcional, mas bom para performance)
         function preloadImages() {
             const images = [mascotCorrectSrc, mascotIncorrectSrc, mascotNeutralSrc];
             images.forEach((src) => {
