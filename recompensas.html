@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Minhas Recompensas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #3c6a99;
+        }
+        .navbar-logo {
+            height: 40px;
+            width: auto;
+        }
+        .coin-icon { 
+            color: #facc15;
+        }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <!-- Ícone de Menu -->
+            <button id="menu-btn-aluno" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
+            </button>
+            <!-- Menu Dropdown Aluno -->
+            <div id="dropdown-menu-aluno" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
+                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="home" class="w-5 h-5"></i> Início (Atividades)
+                </a>
+                <a href="notas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Minhas Notas
+                </a>
+                <a href="recompensas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> <!-- Item Atual -->
+                    <i data-lucide="award" class="w-5 h-5"></i> Recompensas
+                </a>
+                <hr class="my-1 border-gray-200">
+                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50"> <!-- Link para sair/index geral -->
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                </a>
+            </div>
+
+            <!-- Logo -->
+            <a href="../index.html">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícone de Perfil -->
+            <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 sm:px-6 py-6 flex-grow">
+        <!-- Botão Voltar -->
+        <div class="mb-6">
+            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
+                <i data-lucide="arrow-left" class="mr-2"></i>
+                Voltar para Atividades
+            </a>
+        </div>
+
+        <div class="text-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] mb-4">
+                Minhas Recompensas
+            </h1>
+            <i data-lucide="gift" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-6"></i>
+
+            <!-- Informações sobre Moedas -->
+            <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-xl mx-auto mb-10">
+                <p class="text-lg text-[#5689b9] mb-4">
+                    Ao completar uma atividade ou desafio, você recebe <strong class="text-[#3c6a99]">Moedas OrtoFix</strong>!
+                </p>
+                <div class="flex items-center justify-center bg-[#e3ebf2]/60 p-4 rounded-lg">
+                    <p class="text-xl font-semibold mr-3">Seu total de moedas:</p>
+                    <div class="flex items-center text-3xl font-bold text-[#3c6a99]">
+                        <i data-lucide="coins" class="w-8 h-8 mr-2 coin-icon"></i>
+                        <span id="total-moedas">1250</span>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">
+                    Use suas moedas para desbloquear itens divertidos na loja abaixo!
+                </p>
+            </div>
+
+            <!-- Loja de Recompensas (Exemplo) -->
+            <h2 class="text-xl sm:text-2xl font-semibold text-[#3c6a99] mb-6">
+                Loja de Recompensas
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <!-- Item de Recompensa 1 -->
+                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
+                    <i data-lucide="smile-plus" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
+                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Novo Avatar: Sorridente</h3>
+                    <p class="text-sm text-gray-600 mb-3">Um avatar super feliz para seu perfil!</p>
+                    <div class="flex items-center justify-center mb-3">
+                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
+                        <span class="font-semibold text-[#3c6a99]">500 Moedas</span>
+                    </div>
+                    <button class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                        Desbloquear
+                    </button>
+                </div>
+
+                <!-- Item de Recompensa 2 -->
+                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
+                    <i data-lucide="palette" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
+                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Tema: Espaço Sideral</h3>
+                    <p class="text-sm text-gray-600 mb-3">Deixe o OrtoFix com a cara do universo!</p>
+                    <div class="flex items-center justify-center mb-3">
+                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
+                        <span class="font-semibold text-[#3c6a99]">750 Moedas</span>
+                    </div>
+                    <button class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                        Desbloquear
+                    </button>
+                </div>
+
+                <!-- Item de Recompensa 3 -->
+                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
+                    <i data-lucide="sticker" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
+                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Adesivo: Mascote Mestre</h3>
+                    <p class="text-sm text-gray-600 mb-3">Um adesivo digital do nosso mascote!</p>
+                    <div class="flex items-center justify-center mb-3">
+                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
+                        <span class="font-semibold text-[#3c6a99]">300 Moedas</span>
+                    </div>
+                    <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg text-sm cursor-not-allowed" disabled>
+                        Já Possui
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
+        <p>© 2025 OrtoFix.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Script do Menu Dropdown Aluno para esta página
+        const btnAluno = document.getElementById('menu-btn-aluno');
+        const menuAluno = document.getElementById('dropdown-menu-aluno');
+        btnAluno.addEventListener('click', () => {
+            menuAluno.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+            if (btnAluno && menuAluno && !btnAluno.contains(e.target) && !menuAluno.contains(e.target)) {
+                menuAluno.classList.add('hidden');
+            }
+        });
+
+        // Simulação de lógica de desbloqueio
+        const unlockButtons = document.querySelectorAll('.bg-\\[\\#5689b9\\].hover\\:bg-\\[\\#3c6a99\\]'); 
+        unlockButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const totalMoedasElement = document.getElementById('total-moedas');
+                let totalMoedas = parseInt(totalMoedasElement.textContent);
+                const itemCostText = this.previousElementSibling.querySelector('span').textContent;
+                const itemCost = parseInt(itemCostText.match(/\d+/)[0]); // Extrai o número do texto "XXX Moedas"
+
+                if (totalMoedas >= itemCost) {
+                    totalMoedas -= itemCost;
+                    totalMoedasElement.textContent = totalMoedas;
+                    this.textContent = 'Desbloqueado!';
+                    this.classList.remove('bg-[#5689b9]', 'hover:bg-[#3c6a99]');
+                    this.classList.add('bg-green-500', 'cursor-not-allowed');
+                    this.disabled = true;
+                    alert('Recompensa desbloqueada com sucesso!');
+                } else {
+                    alert('Moedas insuficientes para desbloquear este item.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -160,14 +160,12 @@
                 element.classList.add('selected-incorrect');
                 feedbackArea.innerHTML = `
                     <div class="flex flex-col items-center text-center">
-                        <img src="${mascotCorrectSrc}" alt="Mascote Feliz" class="mascot-img mb-2" onerror="this.src='${mascotNeutralSrc}'">
                         <p class="text-xl font-semibold text-green-600">Correto! "Idéia" perdeu o acento.</p>
                     </div>`;
             } else {
                 element.classList.add('selected-correct');
                 feedbackArea.innerHTML = `
                     <div class="flex flex-col items-center text-center">
-                         <img src="${mascotIncorrectSrc}" alt="Mascote Triste" class="mascot-img mb-2" onerror="this.src='${mascotNeutralSrc}'">
                         <p class="text-xl font-semibold text-red-500">Ops! Essa palavra está correta. Procure a palavra com erro.</p>
                     </div>`;
             }
@@ -181,7 +179,7 @@
                 card.classList.remove('selected-correct', 'selected-incorrect');
             });
             feedbackArea.innerHTML = '';
-            // Aqui você carregaria novas palavras em um sistema real.
+
         }
 
     </script>
