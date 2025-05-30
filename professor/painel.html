@@ -34,7 +34,6 @@
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
-    <!-- Cole o conteúdo de NAVBAR_PROFESSOR.txt aqui -->
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <button id="menu-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
@@ -83,7 +82,6 @@
         </div>
     </nav>
 
-    <!-- Conteúdo Específico do painel.html -->
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
         <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
             Painel do Professor
@@ -101,7 +99,7 @@
                 <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Feedback dos Alunos</h2>
                 <p class="text-[#5689b9] text-sm">Visualize e responda aos feedbacks.</p>
             </a>
-            <a href="#" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+            <a href="turma.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
                 <i data-lucide="bar-chart-3" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
                 <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Médias da Turma</h2>
                 <p class="text-[#5689b9] text-sm">Acompanhe o desempenho dos alunos.</p>
@@ -111,7 +109,7 @@
                 <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Dúvidas dos Alunos</h2>
                 <p class="text-[#5689b9] text-sm">Responda às perguntas e dúvidas.</p>
             </a>
-            <a href="#" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+            <a href="busca_aluno.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
                 <i data-lucide="search-users" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
                 <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Pesquisar Aluno</h2>
                 <p class="text-[#5689b9] text-sm">Busque informações de um aluno específico.</p>
@@ -128,7 +126,7 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-    <!-- Cole o conteúdo de JS_NAVBAR_PROFESSOR.txt aqui -->
+
     <script>
         lucide.createIcons();
         const menuBtnProf = document.getElementById('menu-btn-prof');
