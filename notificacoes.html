@@ -46,8 +46,8 @@
                 <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
                 </a>
-                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações da Conta
                 </a>
                  <a href="" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
@@ -82,43 +82,39 @@
         </div>
     </nav>
 
+    <!-- Conteúdo Principal - Todas as Notificações -->
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
-            Painel do Professor
-        </h1>
-        <p class="text-center text-[#5689b9] mb-10 text-lg">Olá, Professor(a)! O que deseja fazer hoje?</p>
+        <div class="mb-6">
+            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
+                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel Principal
+            </a>
+        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <a href="criar_atividade.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="file-plus-2" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Criar Atividade</h2>
-                <p class="text-[#5689b9] text-sm">Elabore novos exercícios e jogos.</p>
-            </a>
-            <a href="#" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="message-square-heart" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Feedback dos Alunos</h2>
-                <p class="text-[#5689b9] text-sm">Visualize e responda aos feedbacks.</p>
-            </a>
-            <a href="turma.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="bar-chart-3" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Médias da Turma</h2>
-                <p class="text-[#5689b9] text-sm">Acompanhe o desempenho dos alunos.</p>
-            </a>
-            <a href="#" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="help-circle" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Dúvidas dos Alunos</h2>
-                <p class="text-[#5689b9] text-sm">Responda às perguntas e dúvidas.</p>
-            </a>
-            <a href="busca_aluno.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="search-users" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Pesquisar Aluno</h2>
-                <p class="text-[#5689b9] text-sm">Busque informações de um aluno específico.</p>
-            </a>
-            <a href="#" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <i data-lucide="users" class="w-12 h-12 text-[#8bb3d5] mb-3"></i>
-                <h2 class="text-xl font-semibold text-[#3c6a99] mb-1">Gerenciar Turmas</h2>
-                <p class="text-[#5689b9] text-sm">Adicione ou remova alunos das turmas.</p>
-            </a>
+        <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-3xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99]">
+                    Minhas Notificações
+                </h1>
+                <button id="marcar-todas-lidas-btn" class="bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                    <i data-lucide="check-check" class="w-4 h-4"></i> Marcar todas como lidas
+                </button>
+            </div>
+
+            <!-- Lista de Notificações -->
+            <div id="lista-todas-notificacoes" class="space-y-3">
+                <!-- Notificações serão inseridas aqui pelo JavaScript -->
+                <p id="aviso-sem-notificacoes" class="text-center text-gray-500 py-10 hidden">
+                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3 text-gray-400"></i>
+                    Você não tem nenhuma notificação no momento.
+                </p>
+            </div>
+            
+            <!-- (Opcional) Paginação -->
+            <div id="paginacao-notificacoes" class="mt-8 text-center hidden">
+                <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">« Anterior</button>
+                <span class="px-3 py-1 text-sm">Página 1 de 3</span>
+                <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">Próxima »</button>
+            </div>
         </div>
     </main>
 
@@ -126,47 +122,51 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-
+    <!-- JavaScript -->
     <script>
         lucide.createIcons();
-        
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', () => {
-                dropdownMenuProf.classList.toggle('hidden');
-                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
-                    notificationsDropdownProf.classList.add('hidden');
+
+        // Script Navbar Aluno (copiado e IDs verificados)
+        const menuBtn = document.getElementById('menu-btn');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        // ... (resto do script da navbar, incluindo o de notificações e tema)
+        if (menuBtn && dropdownMenu) {
+            menuBtn.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('hidden');
+                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                    notificationsDropdown.classList.add('hidden');
                 }
             });
             document.addEventListener('click', (e) => {
-                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
-                    dropdownMenuProf.classList.add('hidden');
+                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
                 }
             });
         }
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
-        let hasUnreadNotificationsProf = true; 
-        if (notificationIndicatorProf) {
-            if (!hasUnreadNotificationsProf) {
-                notificationIndicatorProf.classList.add('hidden');
+        const notificationsBtn = document.getElementById('notifications-btn');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        const notificationIndicator = document.getElementById('notification-indicator');
+        let hasUnreadNotifications = true; 
+        if (notificationIndicator) {
+            if (!hasUnreadNotifications) {
+                notificationIndicator.classList.add('hidden');
             }
         }
-        if (notificationsBtnProf && notificationsDropdownProf) {
-            notificationsBtnProf.addEventListener('click', () => {
-                notificationsDropdownProf.classList.toggle('hidden');
-                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
-                    dropdownMenuProf.classList.add('hidden');
+        if (notificationsBtn && notificationsDropdown) {
+            notificationsBtn.addEventListener('click', () => {
+                notificationsDropdown.classList.toggle('hidden');
+                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
                 }
             });
             document.addEventListener('click', (e) => {
-                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
-                    notificationsDropdownProf.classList.add('hidden');
+                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+                    notificationsDropdown.classList.add('hidden');
                 }
             });
         }
+
+
     </script>
 </body>
 </html>

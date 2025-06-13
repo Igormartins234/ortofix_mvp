@@ -1,0 +1,291 @@
+ <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Médias da Turma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Estilos CSS Comuns para Professor -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #3c6a99; 
+        }
+        .navbar-logo {
+            width: 40px; 
+            height: auto;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+        #dropdown-menu-prof, #notifications-dropdown-prof {
+            position: fixed;
+        }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <button id="menu-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
+            </button>
+            <div id="dropdown-menu-prof" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-60 hidden z-[60]">
+                <a href="painel.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                </a>
+                <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
+                </a>
+                <a href="configuracoes_conta.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações da Conta
+                </a>
+                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                </a>
+                <hr class="my-1 border-gray-200">
+                <a href="login.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                </a>
+            </div>
+            <a href="../index.html" class="mx-auto md:mx-0">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+            <div class="flex items-center gap-2">
+                <div class="relative">
+                    <button id="notifications-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                        <span class="notification-badge" id="notification-indicator-prof"></span>
+                    </button>
+                    <div id="notifications-dropdown-prof" class="absolute right-0 top-16 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden w-72 sm:w-80">
+                        <div class="p-3 border-b border-gray-200"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3></div>
+                        <div class="max-h-80 overflow-y-auto">
+                            <a href="duvidas_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Nova dúvida: Acentuação</p><p class="text-xs text-gray-500">Aluno João Silva enviou uma dúvida.</p><p class="text-xs text-gray-400 mt-1">Há 5 minutos</p></a>
+                            <a href="feedback_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Feedback recebido</p><p class="text-xs text-gray-500">Aluno(a) Maria Souza na atividade "Verbos".</p><p class="text-xs text-gray-400 mt-1">Há 30 minutos</p></a>
+                        </div>
+                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">Ver todas as notificações</a>
+                    </div>
+                </div>
+                <a href="perfil_professor.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+        <div class="mb-6">
+            <a href="painel.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
+                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel
+            </a>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-4xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center sm:text-left">
+                    Médias da Turma
+                </h1>
+                <div>
+                    <label for="selecionar-turma" class="sr-only">Selecionar Turma</label>
+                    <select id="selecionar-turma" name="turma" class="w-full sm:w-64 px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none">
+                        <option value="" disabled selected>Selecione uma Turma</option>
+                        <option value="1AEM">1º Ano A - Ensino Médio</option>
+                        <option value="1BEM">1º Ano B - Ensino Médio</option>
+                        <option value="2AEM">2º Ano A - Ensino Médio</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Container para exibir dados da turma selecionada -->
+            <div id="dados-turma-container" class="hidden">
+                <h2 class="text-xl font-semibold text-[#5689b9] mb-2">Turma: <span id="nome-turma" class="text-[#3c6a99]"></span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-[#e3ebf2]/60 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">Nº de Alunos</p>
+                        <p class="text-3xl font-bold text-[#3c6a99]" id="num-alunos">--</p>
+                    </div>
+                    <div class="bg-[#e3ebf2]/60 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 mb-1">Média Geral da Turma</p>
+                        <p class="text-3xl font-bold text-green-600" id="media-geral-turma">--%</p>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-[#5689b9] mb-4">Desempenho por Tópico/Atividade </h3>
+                <div class="bg-gray-50 shadow-inner rounded-lg p-4 mb-8">
+                    <img src="https://via.placeholder.com/700x350/FFFFFF/3C6A99?text=Gráfico+Desempenho+da+Turma" 
+                         alt="Gráfico de desempenho da turma" 
+                         class="w-full h-auto rounded-md border border-gray-200">
+                    <!-- Em um app real, aqui entraria um componente de gráfico dinâmico -->
+                </div>
+
+                <!-- (Opcional) Lista de Alunos em Destaque/Atenção -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-600 mb-3 flex items-center gap-2"><i data-lucide="trending-up"></i> Alunos em Destaque</h3>
+                        <ul class="space-y-2 text-sm" id="alunos-destaque">
+                            <li class="bg-green-50 p-2 rounded">João Silva - 95%</li>
+                            <li class="bg-green-50 p-2 rounded">Ana Beatriz - 92%</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-500 mb-3 flex items-center gap-2"><i data-lucide="alert-triangle"></i> Alunos que Precisam de Atenção</h3>
+                        <ul class="space-y-2 text-sm" id="alunos-atencao">
+                            <li class="bg-red-50 p-2 rounded">Carlos Eduardo - 58%</li>
+                            <li class="bg-red-50 p-2 rounded">Mariana Costa - 62%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="selecione-turma-aviso" class="text-center py-10">
+                <i data-lucide="info" class="w-12 h-12 text-gray-400 mx-auto mb-3"></i>
+                <p class="text-gray-500">Por favor, selecione uma turma para visualizar as médias.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
+        <p>© 2025 OrtoFix.</p>
+    </footer>
+
+    <!-- JavaScript para a Navbar e Lógica da Página -->
+    <script>
+        lucide.createIcons();
+
+        // Script Navbar Professor (copiado)
+        const menuBtnProf = document.getElementById('menu-btn-prof');
+        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
+        if (menuBtnProf && dropdownMenuProf) {
+            menuBtnProf.addEventListener('click', () => {
+                dropdownMenuProf.classList.toggle('hidden');
+                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
+                    notificationsDropdownProf.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
+                    dropdownMenuProf.classList.add('hidden');
+                }
+            });
+        }
+        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
+        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
+        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
+        let hasUnreadNotificationsProf = true; 
+        if (notificationIndicatorProf) {
+            if (!hasUnreadNotificationsProf) {
+                notificationIndicatorProf.classList.add('hidden');
+            }
+        }
+        if (notificationsBtnProf && notificationsDropdownProf) {
+            notificationsBtnProf.addEventListener('click', () => {
+                notificationsDropdownProf.classList.toggle('hidden');
+                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
+                    dropdownMenuProf.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
+                    notificationsDropdownProf.classList.add('hidden');
+                }
+            });
+        }
+
+    
+        const selectTurma = document.getElementById('selecionar-turma');
+        const dadosTurmaContainer = document.getElementById('dados-turma-container');
+        const nomeTurmaEl = document.getElementById('nome-turma');
+        const numAlunosEl = document.getElementById('num-alunos');
+        const mediaGeralTurmaEl = document.getElementById('media-geral-turma');
+        const alunosDestaqueEl = document.getElementById('alunos-destaque');
+        const alunosAtencaoEl = document.getElementById('alunos-atencao');
+        const selecioneTurmaAvisoEl = document.getElementById('selecione-turma-aviso');
+
+        // Dados que viriam do backend
+        const dadosDasTurmas = {
+            "1AEM": {
+                nome: "1º Ano A - Ensino Médio",
+                numAlunos: 28,
+                mediaGeral: 78,
+                destaques: [
+                    { nome: "João Silva", media: 95 },
+                    { nome: "Ana Beatriz", media: 92 },
+                    { nome: "Laura Mendes", media: 90 },
+                ],
+                atencao: [
+                    { nome: "Carlos Eduardo", media: 58 },
+                    { nome: "Mariana Costa", media: 62 },
+                ]
+            },
+            "1BEM": {
+                nome: "1º Ano B - Ensino Médio",
+                numAlunos: 32,
+                mediaGeral: 82,
+                destaques: [
+                    { nome: "Sofia Oliveira", media: 98 },
+                    { nome: "Lucas Pereira", media: 94 },
+                ],
+                atencao: [
+                    { nome: "Ricardo Lima", media: 60 },
+                ]
+            },
+            "2AEM": {
+                nome: "2º Ano A - Ensino Médio",
+                numAlunos: 25,
+                mediaGeral: 75,
+                 destaques: [
+                    { nome: "Isabela Martins", media: 91 },
+                ],
+                atencao: [
+                    { nome: "Sergio Gomes", media: 55 },
+                    { nome: "Juliana Lima", media: 59 },
+                    { nome: "Tiago Barros", media: 61 },
+                ]
+            }
+        };
+
+        selectTurma.addEventListener('change', function() {
+            const turmaId = this.value;
+            if (turmaId && dadosDasTurmas[turmaId]) {
+                const dados = dadosDasTurmas[turmaId];
+                nomeTurmaEl.textContent = dados.nome;
+                numAlunosEl.textContent = dados.numAlunos;
+                mediaGeralTurmaEl.textContent = dados.mediaGeral + "%";
+                
+                alunosDestaqueEl.innerHTML = dados.destaques.map(aluno => 
+                    `<li class="bg-green-50 p-2 rounded flex justify-between"><span>${aluno.nome}</span> <span class="font-semibold">${aluno.media}%</span></li>`
+                ).join('');
+                
+                alunosAtencaoEl.innerHTML = dados.atencao.map(aluno => 
+                    `<li class="bg-red-50 p-2 rounded flex justify-between"><span>${aluno.nome}</span> <span class="font-semibold">${aluno.media}%</span></li>`
+                ).join('');
+
+                lucide.createIcons(); // Re-renderizar ícones se houver algum adicionado dinamicamente
+                dadosTurmaContainer.classList.remove('hidden');
+                selecioneTurmaAvisoEl.classList.add('hidden');
+            } else {
+                dadosTurmaContainer.classList.add('hidden');
+                selecioneTurmaAvisoEl.classList.remove('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>
