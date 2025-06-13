@@ -1,0 +1,86 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white shadow-xl rounded-xl p-8">
+        <div class="text-center mb-8">
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20">
+            <h1 class="text-3xl font-bold text-[#3c6a99] mt-4">Acessar Painel</h1>
+        </div>
+
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-sm font-medium text-[#5689b9]">E-mail</label>
+                <input type="email" id="email" name="email" required value="admin@adm"
+                       class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5689b9]">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-[#5689b9]">Senha</label>
+                <input type="password" id="password" name="password" required value="adm"
+                       class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5689b9]">
+            </div>
+            <div>
+                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-[#3c6a99] hover:bg-[#5689b9] transition-colors">
+                    Entrar
+                </button>
+            </div>
+        </form>
+        <p id="error-message" class="mt-4 text-center font-medium text-red-600"></p>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = '';
+
+            try {
+                const apiUrl = 'http://vinicius08777.pythonanywhere.com/api/login';
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, senha: password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.msg || 'Erro ao tentar fazer login.');
+                }
+
+                // SUCESSO! A MÁGICA ACONTECE AQUI:
+                localStorage.setItem('authToken', data.access_token);
+                localStorage.setItem('userRole', data.user_role);
+                localStorage.setItem('userName', data.user_name);
+
+                alert('Login bem-sucedido! Redirecionando...');
+
+                // Redireciona para a página de cadastro de professor para o teste
+                if (data.user_role === 'adm') {
+                    window.location.href = 'cadastrar_professor.html';
+                } else {
+                    // Lógica para redirecionar aluno/professor para outros painéis
+                    window.location.href = 'inicio.html';
+                }
+
+            } catch (error) {
+                errorMessage.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>
