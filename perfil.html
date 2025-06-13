@@ -52,14 +52,14 @@
                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="image" class="w-5 h-5"></i> Tema
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
+                <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
                     <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
                 </a>
                  <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="type" class="w-5 h-5"></i> Fontes
                 </a>
                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="target" class="w-5 h-5"></i> Definir Metas
+                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
                 </a>
                 <hr class="my-1 border-gray-200">
                 <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
@@ -68,7 +68,7 @@
             </div>
 
             <!-- Logo -->
-            <a href="../index.html" class="mx-auto md:mx-0"> <!-- Centraliza em telas pequenas se não houver sino -->
+            <a href="../index.html" class="mx-auto md:mx-0"> 
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
 
@@ -120,6 +120,7 @@
             </div>
         </div>
     </nav>
+
 
     <div class="mb-6 volt">
             <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
@@ -179,6 +180,25 @@
     <script>
         lucide.createIcons();
 
+        // Script para o Menu Principal
+        const menuBtn = document.getElementById('menu-btn');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        if (menuBtn && dropdownMenu) {
+            menuBtn.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('hidden');
+                // Esconde o menu de notificações se estiver aberto
+                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Script para as notificações
         const notificationsBtn = document.getElementById('notifications-btn');
         const notificationsDropdown = document.getElementById('notifications-dropdown');
         const notificationIndicator = document.getElementById('notification-indicator');

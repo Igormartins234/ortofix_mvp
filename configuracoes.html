@@ -45,7 +45,7 @@
                 <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
                 </a>
-                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
+                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> <!-- Página Ativa -->
                     <i data-lucide="settings" class="w-5 h-5"></i> Configurações
                 </a>
                  <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
@@ -94,7 +94,6 @@
             </h1>
 
             <form id="configuracoes-professor-form" action="#" method="POST">
-                <!-- Seção de Preferências da Interface (Tema e Fonte) -->
                 <section class="mb-10">
                     <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
                         <i data-lucide="sliders-horizontal" class="w-6 h-6"></i> Aparência e Interface
@@ -145,18 +144,18 @@
                     </div>
                 </section>
                 
-                
+                <!-- Seção de Notificações -->
                 <section class="mb-8">
                     <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
                         <i data-lucide="mail-check" class="w-6 h-6"></i> Preferências de Notificação
                     </h2>
                     <div class="space-y-5">
                         <div class="flex items-center justify-between">
-                            <label for="notif-duvidas" class="text-base text-gray-700">Receber email sobre novas dúvidas</label>
+                            <label for="notif-duvidas" class="text-base text-gray-700">Receber notificações sobre novas atividades</label>
                             <div><input type="checkbox" id="notif-duvidas" class="toggle-checkbox sr-only" checked><label for="notif-duvidas" class="toggle-label"><span class="toggle-ball"></span></label></div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <label for="notif-feedback" class="text-base text-gray-700">Receber email sobre novos feedbacks</label>
+                            <label for="notif-feedback" class="text-base text-gray-700">Receber notificações de feedbacks</label>
                             <div><input type="checkbox" id="notif-feedback" class="toggle-checkbox sr-only"><label for="notif-feedback" class="toggle-label"><span class="toggle-ball"></span></label></div>
                         </div>
                     </div>
@@ -195,7 +194,7 @@
         
         
 
-        // Lógica para salvar configurações e alterar senha
+        // Lógica para salvar configurações e alterar senha 
         const configuracoesForm = document.getElementById('configuracoes-professor-form');
         const btnAlterarSenha = document.getElementById('btn-alterar-senha');
 
