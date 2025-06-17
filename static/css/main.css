@@ -1,0 +1,173 @@
+/* css/main.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--cor-fundo-principal);
+    color: var(--cor-texto-principal);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0; /* Remove margem padrão do body */
+}
+
+/* Navbar */
+nav {
+    background-color: var(--cor-fundo-navbar);
+    color: var(--cor-texto-navbar);
+    /* Se a navbar for sticky, adicione os estilos aqui se não usar Tailwind para isso */
+    /* position: sticky; top: 0; z-index: 50; */
+}
+nav .navbar-logo { /* Exemplo */
+    width: 40px;
+    height: auto;
+}
+/* Dropdowns (posicionamento e estilo base) */
+.dropdown-menu-base { /* Classe base para ambos os dropdowns */
+    background-color: var(--cor-fundo-dropdown);
+    color: var(--cor-texto-dropdown);
+    position: fixed; /* Para ficarem fixos */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); /* shadow-xl */
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem; /* py-2 */
+    z-index: 60;
+    /* As classes 'top-16', 'left-4', 'right-0', 'hidden', 'w-XX' virão do Tailwind no HTML */
+}
+.dropdown-menu-base a {
+    color: var(--cor-texto-dropdown);
+    display: flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    gap: 0.75rem; /* gap-3 */
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+}
+.dropdown-menu-base a:hover {
+    background-color: var(--cor-hover-dropdown);
+}
+.dropdown-menu-base a.ativo { /* Classe para item ativo no menu */
+    background-color: var(--cor-hover-dropdown);
+}
+.dropdown-menu-base hr {
+    border-color: var(--cor-divisor);
+    margin-top: 0.25rem; /* my-1 */
+    margin-bottom: 0.25rem; /* my-1 */
+}
+.dropdown-menu-base a.link-sair { /* Link de Sair */
+    color: #ef4444; /* Tailwind red-500 (claro) */
+}
+html.dark .dropdown-menu-base a.link-sair {
+    color: #f87171; /* Tailwind red-400 (escuro) */
+}
+.dropdown-menu-base a.link-sair:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Cards */
+.card-estilizado {
+    background-color: var(--cor-fundo-card);
+    color: var(--cor-texto-principal);
+    border-radius: 0.75rem; /* rounded-xl */
+    padding: 1.5rem; /* p-6 */
+    box-shadow: 0 10px 15px -3px var(--cor-sombra-card), 0 4px 6px -2px var(--cor-sombra-card); /* shadow-xl */
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+.card-estilizado:hover {
+    transform: translateY(-5px);
+}
+.card-estilizado h1, .card-estilizado h2, .card-estilizado h3 {
+    color: var(--cor-texto-principal);
+}
+.card-estilizado p {
+    color: var(--cor-texto-secundario);
+}
+
+/* Formulários */
+.form-input-base {
+    width: 100%;
+    padding: 0.75rem 1rem; /* px-4 py-3 */
+    background-color: var(--cor-fundo-card); /* Ou um --cor-fundo-input dedicado */
+    border: 1px solid var(--cor-borda-input);
+    border-radius: 0.5rem; /* rounded-lg */
+    color: var(--cor-texto-principal);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-input-base:focus {
+    border-color: var(--cor-foco-input);
+    box-shadow: 0 0 0 2px var(--cor-foco-input);
+}
+.form-input-base::placeholder {
+    color: var(--cor-placeholder);
+    opacity: 1;
+}
+select.form-input-base {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+html.dark select.form-input-base { /* Ajuste da seta do select no dark mode */
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+/* Botões */
+.btn { /* Estilo base para botões */
+    font-weight: 600; /* semibold */
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* gap-2 */
+    cursor: pointer;
+}
+.btn-primario {
+    background-color: var(--cor-fundo-botao-primario);
+    color: var(--cor-texto-botao-primario);
+}
+.btn-primario:hover {
+    background-color: var(--cor-hover-botao-primario);
+}
+.btn-secundario {
+    background-color: var(--cor-fundo-botao-secundario);
+    color: var(--cor-texto-botao-primario); /* Pode precisar de uma var própria */
+}
+.btn-secundario:hover {
+    background-color: var(--cor-hover-botao-secundario);
+}
+
+
+/* Footer */
+footer {
+    background-color: var(--cor-fundo-navbar);
+    color: var(--cor-texto-navbar);
+    text-align: center;
+    padding: 1rem; /* p-4 */
+    margin-top: auto; /* Para empurrar para baixo em layouts flex-col */
+}
+
+/* Outros estilos gerais usando variáveis */
+.link-estilizado {
+    color: var(--cor-link);
+    text-decoration: none;
+}
+.link-estilizado:hover {
+    color: var(--cor-link-hover);
+    text-decoration: underline;
+}
+
+.notification-badge { /* Já definido, mas pode ser ajustado aqui se necessário */
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 10px;
+    height: 10px;
+    background-color: red; /* Pode virar uma variável --cor-badge-notificacao */
+    border-radius: 50%;
+    border: 1px solid white; /* Pode virar uma variável --cor-borda-badge */
+}
+
+
+
+.activity-card-icon { width: 64px; height: 64px; margin-bottom: 0.75rem; color: var(--cor-texto-secundario); }

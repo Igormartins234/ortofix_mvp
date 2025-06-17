@@ -30,9 +30,9 @@
             position: fixed;
         }
         .activity-card-icon {
-            width: 64px; /* w-16 */
-            height: 64px; /* h-16 */
-            margin-bottom: 0.75rem; /* mb-3 */
+            width: 64px;
+            height: 64px;
+            margin-bottom: 0.75rem; 
         }
         .activity-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -44,7 +44,7 @@
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
-    <!-- Navbar do Aluno (Colar a Navbar Padrão do Aluno aqui) -->
+    
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
@@ -54,7 +54,7 @@
                 <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
                 </a>
-                <a href="atividades.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> <!-- Marcando como ativo -->
+                <a href="atividades.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> 
                     <i data-lucide="gamepad-2" class="w-5 h-5"></i> Atividades
                 </a>
                 <a href="notas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
@@ -190,7 +190,6 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-    <!-- JavaScript (Incluir o script da navbar e lucide.createIcons()) -->
     <script>
         lucide.createIcons();
 
@@ -233,7 +232,7 @@
             });
         }
 
-        // Simulação de dados do aluno (em um app real, viria do backend após login)
+        // Simulação de dados do aluno
         const dadosAluno = {
             nome: "Aline", // Exemplo
             moedas: 1320,

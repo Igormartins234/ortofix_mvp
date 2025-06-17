@@ -1,0 +1,28 @@
+html.dark {
+    --cor-fundo-principal: #1f2937;  /* Tailwind gray-800 */
+    --cor-texto-principal: #e3ebf2;  /* cinza claro/branco */
+    --cor-texto-secundario: #9ca3af; /* Tailwind gray-400 */
+    --cor-fundo-navbar: #111827;    /* Tailwind gray-900 */
+    --cor-texto-navbar: #e3ebf2;
+    --cor-fundo-card: #374151;      /* Tailwind gray-700 */
+    --cor-borda-input: #4b5563;    /* Tailwind gray-600 */
+    --cor-foco-input: #60a5fa;      /* Tailwind blue-400 */
+    --cor-fundo-dropdown: #374151;  /* Tailwind gray-700 */
+    --cor-texto-dropdown: #e3ebf2;
+    --cor-hover-dropdown: #4b5563;  /* Tailwind gray-600 */
+    --cor-fundo-botao-primario: #60a5fa; /* Tailwind blue-400 */
+    --cor-texto-botao-primario: #111827; /* texto escuro para botão claro */
+    --cor-hover-botao-primario: #3b82f6; /* Tailwind blue-500 */
+    --cor-fundo-botao-secundario: #4b5563; /* Tailwind gray-600 */
+    --cor-hover-botao-secundario: #6b7280; /* Tailwind gray-500 */
+    --cor-sombra-card: rgba(255,255,255,0.05);
+    --cor-divisor: #4b5563; /* Tailwind gray-600 */
+
+    --cor-link: #60a5fa; /* Tailwind blue-400 */
+    --cor-link-hover: #93c5fd; /* Tailwind blue-300 */
+    --cor-placeholder: #6b7280; /* Tailwind gray-500 */
+    --cor-texto-sucesso: #34d399; /* Tailwind emerald-400 */
+    --cor-texto-erro: #f87171; /* Tailwind red-400 */
+    --cor-fundo-sucesso-leve: rgba(16, 185, 129, 0.1); /* Tailwind emerald-500 com opacidade */
+    --cor-fundo-erro-leve: rgba(239, 68, 68, 0.1); /* Tailwind red-500 com opacidade */
+}

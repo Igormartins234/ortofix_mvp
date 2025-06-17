@@ -1,0 +1,33 @@
+/* css/variables.css */
+:root {
+    /* Tema Claro (Padrão) */
+    --cor-fundo-principal: #e3ebf2;
+    --cor-texto-principal: #3c6a99;
+    --cor-texto-secundario: #5689b9;
+    --cor-fundo-navbar: #3c6a99;
+    --cor-texto-navbar: #e3ebf2;
+    --cor-fundo-card: #ffffff;
+    --cor-borda-input: #9aaec1;
+    --cor-foco-input: #5689b9;
+    --cor-fundo-dropdown: #ffffff;
+    --cor-texto-dropdown: #3c6a99;
+    --cor-hover-dropdown: #e3ebf2;
+    --cor-fundo-botao-primario: #3c6a99;
+    --cor-texto-botao-primario: #ffffff;
+    --cor-hover-botao-primario: #5689b9;
+    --cor-fundo-botao-secundario: #8bb3d5;
+    --cor-hover-botao-secundario: #5689b9;
+    --cor-sombra-card: rgba(0,0,0,0.1);
+    --cor-divisor: #d1d5db; /* Tailwind gray-300 */
+
+    --cor-link: #5689b9;
+    --cor-link-hover: #3c6a99;
+    --cor-placeholder: #9ca3af; /* Tailwind gray-400 */
+    --cor-texto-sucesso: #16a34a; /* Tailwind green-600 */
+    --cor-texto-erro: #dc2626; /* Tailwind red-600 */
+    --cor-fundo-sucesso-leve: #dcfce7; /* Tailwind green-100 */
+    --cor-fundo-erro-leve: #fee2e2; /* Tailwind red-100 */
+
+    
+    --navbar-height: 64px; 
+}
