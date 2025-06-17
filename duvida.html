@@ -234,8 +234,13 @@
                 const textoDuvidaEl = document.getElementById('texto-duvida');
                 const textoDuvida = textoDuvidaEl.value.trim();
 
-                if (!textoDuvida) {
-                    alert("Por favor, escreva sua mensagem antes de enviar.");
+                if (textoDuvida.length < 10) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Mensagem muito curta',
+                        text: 'Sua mensagem deve ter pelo menos 10 caracteres.',
+                        confirmButtonColor: '#3c6a99'
+                    });
                     textoDuvidaEl.focus();
                     return;
                 }
