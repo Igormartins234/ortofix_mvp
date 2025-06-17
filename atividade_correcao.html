@@ -32,6 +32,13 @@
             border-radius: 50%;
             border: 1px solid white;
         }
+        #textoComErros {
+    user-select: none; /* Bloqueia seleção de texto */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    pointer-events: none; /* Bloqueia clique, arrastar e seleção */
+}
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
@@ -142,7 +149,7 @@
             <div id="areaExercicio" class="hidden">
                 <h2 class="text-xl font-semibold mb-2">Texto com Erros:</h2>
                 <div id="textoComErros"
-                    class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4">
+                    class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4" spellcheck="false">
                 </div>
 
                 <textarea id="textoUsuario" rows="5" placeholder="Digite aqui sua correção..."
