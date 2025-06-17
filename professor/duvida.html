@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrtoFix - Dúvidas dos Alunos</title>
+    <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos CSS Comuns para Professor (sem tema escuro) -->
@@ -219,7 +221,7 @@
 
         // Dados Mockados de Dúvidas (em um app real, viria do backend)
         let todasAsDuvidas = [
-            { id: 'd101', alunoNome: "Aline Silva", alunoTurma: "1AEM", pergunta: "Professor, não entendi a diferença entre 'mas' e 'mais'. Pode me explicar de novo?", status: "pendente", dataEnvio: "23/10/2023", resposta: null, dataResposta: null },
+            { id: 'd101', alunoNome: "Aline Silva", alunoTurma: "1AEM", pergunta: "Professora, não entendi a diferença entre 'mas' e 'mais'. Pode me explicar de novo?", status: "pendente", dataEnvio: "23/10/2023", resposta: null, dataResposta: null },
             { id: 'd102', alunoNome: "Bruno Costa", alunoTurma: "1BEM", pergunta: "Qual a regra para acentuar proparoxítonas?", status: "respondida", dataEnvio: "22/10/2023", resposta: "Olá Bruno! Todas as proparoxítonas são acentuadas. Lembre-se de identificar corretamente a sílaba tônica.", dataResposta: "22/10/2023" },
             { id: 'd103', alunoNome: "Carla Dias", alunoTurma: "1AEM", pergunta: "Poderia dar mais exemplos de uso da crase antes de pronomes possessivos femininos?", status: "pendente", dataEnvio: "24/10/2023", resposta: null, dataResposta: null },
             { id: 'd104', alunoNome: "Daniel Faria", alunoTurma: "2AEM", pergunta: "Tenho dificuldade em saber quando usar 'por que', 'porque', 'por quê' e 'porquê'.", status: "pendente", dataEnvio: "24/10/2023", resposta: null, dataResposta: null }
@@ -255,7 +257,12 @@
             const respostaTexto = textoRespostaEl.value.trim();
 
             if (!respostaTexto) {
-                alert("Por favor, digite uma resposta.");
+                Swal.fire({
+                        icon: 'warning',
+                        title: 'Atenção',
+                        text: 'Por favor, digite uma resposta válida',
+                        confirmButtonColor: '#3c6a99'
+                    });
                 return;
             }
 
@@ -265,9 +272,15 @@
                 todasAsDuvidas[duvidaIndex].status = "respondida";
                 todasAsDuvidas[duvidaIndex].dataResposta = new Date().toLocaleDateString('pt-BR');
                 
-                alert("Resposta enviada com sucesso! (Simulação)");
-                fecharModal();
-                renderizarListaDuvidas();
+                Swal.fire({
+                icon: 'success',
+                title: 'Mensagem enviada!',
+                text: 'Sua mensagem foi enviada ao aluno com sucesso.',
+                confirmButtonColor: '#3c6a99'
+                }).then(() => {
+                    fecharModal();
+                    renderizarListaDuvidas();
+                });
             }
         });
 

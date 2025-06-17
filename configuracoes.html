@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrtoFix - Configurações (Professor)</title>
+    <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -201,7 +203,12 @@
         if(configuracoesForm) {
             configuracoesForm.addEventListener('submit', function(event) {
                 event.preventDefault();
-                alert('Todas as configurações foram salvas com sucesso! (Simulação)');
+                Swal.fire({
+                icon: 'success',
+                title: 'Configurações salvas!',
+                text: 'Todas as configurações foram salvas com sucesso.',
+                confirmButtonColor: '#3c6a99'
+                });
             });
         }
         
@@ -212,21 +219,41 @@
                 const confirmarNovaSenha = document.getElementById('confirmar_nova_senha_config').value;
 
                 if (!senhaAtual) {
-                    alert('Por favor, digite sua senha atual.');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Senha atual vazia',
+                        text: 'Por favor, digite sua senha atual.',
+                        confirmButtonColor: '#3c6a99'
+                    });
                     return;
                 }
                 if (!novaSenha || novaSenha.length < 6) {
-                    alert('A nova senha deve ter pelo menos 6 caracteres.');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Nova senha inválida',
+                        text: 'A nova senha deve ter pelo menos 6 caracteres.',
+                        confirmButtonColor: '#3c6a99'
+                    });
                     return;
                 }
                 if (novaSenha !== confirmarNovaSenha) {
-                    alert('As novas senhas não coincidem!');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Senhas diferentes',
+                        text: 'As novas senhas não coincidem.',
+                        confirmButtonColor: '#3c6a99'
+                    });
                     return;
                 }
                 
                 // enviar para o backend
                 console.log("Tentando alterar senha:", { senhaAtual, novaSenha });
-                alert('Solicitação de alteração de senha enviada! (Simulação)');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Senha alterada',
+                    text: 'Solicitação de alteração de senha enviada.',
+                    confirmButtonColor: '#3c6a99'
+                    });
                 document.getElementById('senha-atual').value = '';
                 document.getElementById('nova_senha_config').value = '';
                 document.getElementById('confirmar_nova_senha_config').value = '';
