@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>OrtoFix - Tipos de Acento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
+    </style>
+</head>
+<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="inicio.html">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="w-10">
+            </a>
+            <div class="flex gap-4">
+                <a href="inicio.html" class="hover:underline">Início</a>
+                <a href="atividades.html" class="hover:underline">Atividades</a>
+                <a href="../index.html" class="hover:text-red-400">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <h1 class="text-3xl font-bold text-center mb-4">Ortofix Game</h1>
+        <p class="text-lg text-center text-[#5689b9] mb-6">Escolha o tipo de acento correto para cada palavra.</p>
+
+        <div id="formArea" class="bg-white rounded-xl shadow-lg p-6 max-w-3xl mx-auto hidden">
+            <form id="form">
+                <div id="inputsArea" class="grid grid-cols-1 gap-6"></div>
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                    <button type="submit"
+                        class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-2 rounded-md w-full">
+                        Enviar Respostas
+                    </button>
+                    <button type="button" id="btnNovas"
+                        class="bg-white border border-[#3c6a99] hover:bg-[#e3ebf2] text-[#3c6a99] px-6 py-2 rounded-md w-full">
+                        Gerar Novas Palavras
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="feedbackArea" class="bg-white rounded-xl shadow-lg p-6 mt-8 max-w-3xl mx-auto hidden">
+            <h2 class="text-2xl font-bold text-[#3c6a99] mb-4">Feedback</h2>
+            <div id="feedbackCards" class="space-y-4"></div>
+        </div>
+
+        <div class="flex justify-center mt-6">
+            <button id="btnIniciar"
+                class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-3 rounded-md">
+                Iniciar Jogo
+            </button>
+        </div>
+    </main>
+
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4">
+        <p>© 2025 OrtoFix</p>
+    </footer>
+
+    <script>
+        const API_URL = "https://api-tcc-alpha.vercel.app";
+
+        const btnIniciar = document.getElementById('btnIniciar');
+        const btnNovas = document.getElementById('btnNovas');
+        const formArea = document.getElementById('formArea');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const feedbackCards = document.getElementById('feedbackCards');
+        const inputsArea = document.getElementById('inputsArea');
+        const form = document.getElementById('form');
+
+        let palavrasAtuais = [];
+
+        async function gerarPalavras() {
+            const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras`, { method: 'POST' });
+            const data = await res.json();
+            palavrasAtuais = data.palavras;
+            renderInputs(palavrasAtuais);
+            formArea.classList.remove('hidden');
+            feedbackArea.classList.add('hidden');
+        }
+
+        function renderInputs(palavras) {
+            inputsArea.innerHTML = '';
+            palavras.forEach((palavra, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label class="block text-[#3c6a99] font-semibold mb-1">
+                        Palavra: <span class="font-bold">${palavra}</span>
+                    </label>
+                    <input type="hidden" name="palavra_${index}" value="${palavra}">
+                    <select name="acento_${index}" class="w-full border border-[#3c6a99] rounded-md px-4 py-2">
+                        <option value="agudo">Agudo (´)</option>
+                        <option value="circunflexo">Circunflexo (^)</option>
+                        <option value="til">Til (~)</option>
+                        <option value="sem acento">Sem acento</option>
+                    </select>
+                `;
+                inputsArea.appendChild(div);
+            });
+        }
+
+        function renderFeedback(feedbackRaw) {
+            const linhas = feedbackRaw.trim().split('\n').filter(l => l.trim() !== '');
+            const cards = [];
+            let card = {};
+
+            linhas.forEach(linha => {
+                if (linha.startsWith('- Palavra:')) {
+                    if (Object.keys(card).length > 0) {
+                        cards.push(card);
+                        card = {};
+                    }
+                    card.palavra = linha.replace('- Palavra:', '').trim();
+                } else if (linha.startsWith('- Sua resposta:')) {
+                    card.resposta = linha.replace('- Sua resposta:', '').trim();
+                } else if (linha.startsWith('- Resposta correta:')) {
+                    card.correta = linha.replace('- Resposta correta:', '').trim();
+                } else if (linha.startsWith('- Tipo correto de acento:')) {
+                    card.tipo = linha.replace('- Tipo correto de acento:', '').trim();
+                } else if (linha.startsWith('- Resultado:')) {
+                    card.resultado = linha.replace('- Resultado:', '').trim();
+                } else if (linha.startsWith('- Explicação:')) {
+                    card.explicacao = linha.replace('- Explicação:', '').trim();
+                }
+            });
+
+            if (Object.keys(card).length > 0) {
+                cards.push(card);
+            }
+
+            feedbackCards.innerHTML = '';
+
+            cards.forEach(c => {
+                const cor = c.resultado.includes('Correto') ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800';
+                const html = `
+                    <div class="border ${cor} rounded-xl p-4">
+                        <p><strong>Palavra:</strong> ${c.palavra}</p>
+                        <p><strong>Sua resposta:</strong> ${c.resposta}</p>
+                        <p><strong>Resposta correta:</strong> ${c.correta}</p>
+                        <p><strong>Tipo de acento correto:</strong> ${c.tipo}</p>
+                        <p><strong>Resultado:</strong> <span class="font-semibold">${c.resultado}</span></p>
+                        <p class="mt-2"><strong>Explicação:</strong> ${c.explicacao}</p>
+                    </div>
+                `;
+                feedbackCards.innerHTML += html;
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const respostas = [];
+            palavrasAtuais.forEach((palavra, index) => {
+                const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
+                respostas.push({ palavra, resposta_usuario: resposta });
+            });
+
+            const res = await fetch(`${API_URL}/api/ortofix/verificar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ respostas })
+            });
+
+            const data = await res.json();
+            renderFeedback(data.feedback);
+            feedbackArea.classList.remove('hidden');
+        });
+
+        btnIniciar.addEventListener('click', gerarPalavras);
+        btnNovas.addEventListener('click', gerarPalavras);
+    </script>
+</body>
+</html>
