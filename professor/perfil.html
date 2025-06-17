@@ -212,11 +212,21 @@
             const confirmarNovaSenha = document.getElementById('confirmar_nova_senha').value;
 
             if (novaSenha && novaSenha !== confirmarNovaSenha) {
-                alert('As novas senhas não coincidem!');
+                Swal.fire({
+                icon: 'error',
+                title: 'Senhas diferentes',
+                text: 'As novas senhas não coincidem.',
+                confirmButtonColor: '#3c6a99'
+            });
                 return;
             }
 
-            alert('Perfil atualizado com sucesso! (Simulação)');
+            Swal.fire({
+                icon: 'success',
+                title: 'Perfil atualizado!',
+                text: 'Seu perfil foi atualizado com sucesso.',
+                confirmButtonColor: '#3c6a99'
+            });
         });
     }
 </script>

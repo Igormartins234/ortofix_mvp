@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrtoFix - Dúvidas dos Alunos</title>
+    <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Estilos CSS Comuns para Professor (sem tema escuro) -->
@@ -255,7 +257,12 @@
             const respostaTexto = textoRespostaEl.value.trim();
 
             if (!respostaTexto) {
-                alert("Por favor, digite uma resposta.");
+                Swal.fire({
+                        icon: 'warning',
+                        title: 'Atenção',
+                        text: 'Por favor, digite uma resposta válida',
+                        confirmButtonColor: '#3c6a99'
+                    });
                 return;
             }
 
@@ -265,9 +272,15 @@
                 todasAsDuvidas[duvidaIndex].status = "respondida";
                 todasAsDuvidas[duvidaIndex].dataResposta = new Date().toLocaleDateString('pt-BR');
                 
-                alert("Resposta enviada com sucesso! (Simulação)");
-                fecharModal();
-                renderizarListaDuvidas();
+                Swal.fire({
+                icon: 'success',
+                title: 'Mensagem enviada!',
+                text: 'Sua mensagem foi enviada ao aluno com sucesso.',
+                confirmButtonColor: '#3c6a99'
+                }).then(() => {
+                    fecharModal();
+                    renderizarListaDuvidas();
+                });
             }
         });
 

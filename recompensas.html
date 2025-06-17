@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrtoFix - Minhas Recompensas</title>
+    <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -187,7 +189,7 @@
                     <button class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
                         Desbloquear
                     </button>
-                </div>
+                </div>  
 
                 <!-- Item de Recompensa 3 -->
                 <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
@@ -281,9 +283,19 @@
                     this.classList.remove('bg-[#5689b9]', 'hover:bg-[#3c6a99]');
                     this.classList.add('bg-green-500', 'cursor-not-allowed');
                     this.disabled = true;
-                    alert('Recompensa desbloqueada com sucesso!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: 'Item desbloqueado com sucesso!',
+                        confirmButtonColor: '#3c6a99'
+                        });
                 } else {
-                    alert('Moedas insuficientes para desbloquear este item.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Moedas Insuficientes',
+                        text: 'Você não possui moedas suficientes para desbloquear este item.',
+                        confirmButtonColor: '#3c6a99'
+                    });
                 }
             });
         });
