@@ -3,248 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Exercício de Correção</title>
+    <title>OrtoFix - Correção de Texto</title>
     <script src="https://cdn.tailwindcss.com"></script>
-     <script src="https://unpkg.com/lucide@latest"></script> 
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99;
-        }
-        .navbar-logo {
-            width: 40px; 
-            height: auto;
-        }
-        
-        .texto-original-estilizado {
-            background-color: #fffbeb;
-            border-left-width: 4px;
-            border-color: #f59e0b; 
-            color: #b45309; 
-            padding: 1rem; 
-            border-radius: 0.375rem; 
-            margin-bottom: 1rem; 
-        }
-        .correcao-ideal-estilizada {
-            color: #16a34a;
-            font-weight: 600;
-        }
-        .tentativa-usuario-estilizada {
-            color: #ea580c;
-        }
-        .feedback-gemini-estilizado {
-            white-space: pre-wrap; 
-            background-color: #f9fafb; 
-            border: 1px solid #e5e7eb;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-top: 0.5rem; 
-        }
-        .user-select-none {
-            user-select: none;
-        }
-
-         .card-custom-icon {
-            width: 48px; 
-            height: 48px; 
-            margin-bottom: 0.75rem; 
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
+        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
-     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <!-- Ícone de Menu Principal -->
-            <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <!-- Menu Dropdown Principal -->
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="image" class="w-5 h-5"></i> Tema
-                </a>
-                <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="type" class="w-5 h-5"></i> Fontes
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
-            </div>
 
-            <!-- Logo -->
-            <a href="../index.html" class="mx-auto md:mx-0"> <!-- Centraliza em telas pequenas se não houver sino -->
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+    <!-- Navbar -->
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="inicio.html">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="w-10">
             </a>
-
-            <!-- Ícones da Direita: Notificações e Perfil -->
-            <div class="flex items-center gap-2">
-                <!-- Ícone de Notificações -->
-                <div class="relative">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                       
-                        <span class="notification-badge" id="notification-indicator"></span>
-                    </button>
-                    <!-- Dropdown de Notificações -->
-                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
-                        <div class="p-3 border-b border-gray-200">
-                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
-                        </div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <!-- Notificação Exemplo 1 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p>
-                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 15 minutos</p>
-                            </a>
-                            <!-- Notificação Exemplo 2 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p>
-                                <p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
-                            </a>
-                            <!-- Notificação Exemplo 3 (Lida) -->
-                             <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
-                                <p class="text-sm text-gray-500">Feedback do Professor</p>
-                                <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
-                                <p class="text-xs text-gray-400 mt-1">Ontem</p>
-                            </a>
-                             <!-- Mais notificações aqui -->
-                        </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
-                            Ver todas as notificações
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
-                </a>
+            <div class="flex gap-4">
+                <a href="inicio.html" class="hover:underline">Início</a>
+                <a href="atividades.html" class="hover:underline">Atividades</a>
+                <a href="../index.html" class="hover:text-red-400">Sair</a>
             </div>
         </div>
     </nav>
-    
-    <div class="container mx-auto px-4 sm:px-6 py-8">
-        <h1 class="text-3xl font-bold text-[#3c6a99] mb-6 text-center sm:text-left">📝 Exercício de Correção Ortográfica</h1>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-8">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <button id="btnGerarExercicio" class="w-full sm:w-auto bg-[#3c6a99] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#5689b9] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#5689b9] focus:ring-opacity-50 mb-4 sm:mb-0">
-                    Gerar Novo Exercício
+    <!-- Conteúdo -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <h1 class="text-3xl font-bold text-center mb-4">📝 Correção de Texto</h1>
+        <p class="text-lg text-center text-[#5689b9] mb-6">Corrija os erros ortográficos do texto gerado pela IA.</p>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 max-w-4xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+                <button id="btnGerarExercicio"
+                    class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-2 rounded-md w-full sm:w-auto">
+                    Gerar Novo Texto
                 </button>
-                <div id="loading" class="text-sm text-gray-600 hidden text-center sm:text-right">Carregando...</div>
+                <p id="loading" class="text-sm text-gray-600 hidden sm:text-right mt-2 sm:mt-0">Carregando...</p>
             </div>
+
             <p id="error" class="text-sm text-red-600 bg-red-100 border border-red-400 p-3 rounded-md hidden mb-4"></p>
 
             <div id="areaExercicio" class="hidden">
-                <h2 class="text-2xl font-semibold text-[#3c6a99] mb-3">Exercício:</h2>
-                <p class="text-gray-700 mb-2">Corrija o texto abaixo:</p>
-                <div spellcheck="false" id="textoComErros" class="texto-original-estilizado user-select-none"></div>
-                <textarea spellcheck="false" id="textoUsuario" rows="5" placeholder="Digite sua correção aqui..." class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#5689b9] focus:border-[#5689b9] mb-4 resize-none"></textarea>
-                <button id="btnVerificar" class="w-full sm:w-auto bg-[#28a745] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#218838] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#28a745] focus:ring-opacity-50">
+                <h2 class="text-xl font-semibold mb-2">Texto com Erros:</h2>
+                <div id="textoComErros"
+                    class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4">
+                </div>
+
+                <textarea id="textoUsuario" rows="5" placeholder="Digite aqui sua correção..."
+                    class="w-full p-4 border border-[#3c6a99] rounded-md focus:outline-none focus:ring-2 focus:ring-[#5689b9] resize-none mb-4"></textarea>
+
+                <button id="btnVerificar"
+                    class="bg-[#28a745] hover:bg-[#218838] text-white px-6 py-2 rounded-md w-full sm:w-auto">
                     Verificar Correção
                 </button>
             </div>
 
-            <div id="areaResultado" class="hidden mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                <h2 class="text-2xl font-semibold text-[#3c6a99] mb-4">Resultado da Avaliação:</h2>
-                <div class="space-y-3">
-                    <p><strong>Sua tentativa:</strong> <span id="tentativaUsuario" class="tentativa-usuario-estilizada"></span></p>
-                    <p><strong>Correção Ideal (Gemini):</strong> <span id="correcaoIdeal" class="correcao-ideal-estilizada"></span></p>
-                    <div>
-                        <p><strong>Feedback do Gemini:</strong></p>
-                        <div id="feedbackGemini" class="feedback-gemini-estilizado"></div>
+            <div id="areaResultado" class="hidden mt-8">
+                <h2 class="text-2xl font-bold text-[#3c6a99] mb-4">Resultado da Avaliação</h2>
+                <div class="space-y-4">
+                    <div class="bg-[#e6f4ea] border border-[#28a745] rounded-xl p-4">
+                        <p><strong>✔️ Correção Ideal:</strong></p>
+                        <p id="correcaoIdeal" class="text-[#14532d] font-semibold"></p>
+                    </div>
+
+                    <div class="bg-[#fff7ed] border border-[#f97316] rounded-xl p-4">
+                        <p><strong>✍️ Sua Tentativa:</strong></p>
+                        <p id="tentativaUsuario" class="text-[#7c2d12] font-semibold"></p>
+                    </div>
+
+                    <div class="bg-gray-50 border border-gray-300 rounded-xl p-4">
+                        <p><strong>💡 Feedback do Gemini:</strong></p>
+                        <div id="feedbackGemini" class="text-[#374151] whitespace-pre-wrap"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
     <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <p>© 2025 OrtoFix.</p>
+        <p>© 2025 OrtoFix</p>
     </footer>
 
     <script>
-        lucide.createIcons();
-
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                // Esconde o menu de notificações se estiver aberto
-                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-        }
-
-
-        // Script para as notificações
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
-
-        // Notificações não lidas
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
-            }
-        }
-
-         if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                // Esconde o menu principal se estiver aberto
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-                
-                if (notificationIndicator && hasUnreadNotifications) {
-
-                }
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-        }
-
-
-        
         const btnGerarExercicio = document.getElementById('btnGerarExercicio');
         const btnVerificar = document.getElementById('btnVerificar');
         const textoComErrosDiv = document.getElementById('textoComErros');
@@ -264,10 +104,10 @@
         function showLoading(isLoading, message = "Carregando...") {
             loadingP.textContent = message;
             loadingP.style.display = isLoading ? 'block' : 'none';
-            btnGerarExercicio.disabled = isLoading; // Desabilita botão durante o carregamento
-            btnVerificar.disabled = isLoading; // Desabilita botão durante o carregamento
+            btnGerarExercicio.disabled = isLoading;
+            btnVerificar.disabled = isLoading;
             if (isLoading) {
-                errorP.classList.add('hidden'); // Esconde erros ao carregar
+                errorP.classList.add('hidden');
                 errorP.textContent = '';
             }
         }
@@ -344,8 +184,6 @@
                 showLoading(false);
             }
         });
-
-        
     </script>
 </body>
 </html>
