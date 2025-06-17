@@ -16,6 +16,19 @@
             height: 40px;
             width: auto;
         }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+        #dropdown-menu-prof, #notifications-dropdown-prof {
+            position: fixed;
+        }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
@@ -149,26 +162,45 @@
 
     <script>
         lucide.createIcons();
-
-        // Script do Menu Dropdown Professor para esta página
-        const btnProfCA = document.getElementById('menu-btn-prof-ca');
-        const menuProfCA = document.getElementById('dropdown-menu-prof-ca');
-        btnProfCA.addEventListener('click', () => {
-            menuProfCA.classList.toggle('hidden');
-        });
-        document.addEventListener('click', (e) => {
-            if (!btnProfCA.contains(e.target) && !menuProfCA.contains(e.target)) {
-                menuProfCA.classList.add('hidden');
+        const menuBtnProf = document.getElementById('menu-btn-prof');
+        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
+        if (menuBtnProf && dropdownMenuProf) {
+            menuBtnProf.addEventListener('click', () => {
+                dropdownMenuProf.classList.toggle('hidden');
+                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
+                    notificationsDropdownProf.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
+                    dropdownMenuProf.classList.add('hidden');
+                }
+            });
+        }
+        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
+        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
+        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
+        let hasUnreadNotificationsProf = true; 
+        if (notificationIndicatorProf) {
+            if (!hasUnreadNotificationsProf) {
+                notificationIndicatorProf.classList.add('hidden');
             }
-        });
-
-        // Lógica para mostrar campos específicos (placeholder)
-        const tipoAtividadeSelect = document.getElementById('tipo_atividade');
-        const camposEspecificosDiv = document.getElementById('campos-especificos-atividade');
-
-        tipoAtividadeSelect.addEventListener('change', function() {
-            camposEspecificosDiv.innerHTML = `<p class="text-sm text-gray-500">Carregando campos para: <strong>${this.options[this.selectedIndex].text}</strong>...</p>`;
-        });
+        }
+        if (notificationsBtnProf && notificationsDropdownProf) {
+            notificationsBtnProf.addEventListener('click', () => {
+                notificationsDropdownProf.classList.toggle('hidden');
+                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
+                    dropdownMenuProf.classList.add('hidden');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
+                    notificationsDropdownProf.classList.add('hidden');
+                }
+            });
+        }
+        
+        
     </script>
 </body>
 </html>
