@@ -2,416 +2,176 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - TypeRun</title>
+    <title>OrtoFix - Tipos de Acento</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99; /* Cor padrão do texto */
-        }
-        .navbar-logo {
-            height: 40px;
-            width: auto;
-        }
-        .word-card, .all-correct-btn { /* Aplicando estilos base para ambos */
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-            min-height: 80px; /* Altura mínima para consistência */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center; /* Para o botão "Todas corretas" */
-        }
-        .word-card:hover:not(:disabled), .all-correct-btn:hover:not(:disabled) {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .selected-correct-answer { /* Usuário CLICOU na palavra que ESTAVA ERRADA OU no botão "Todas corretas" quando era o caso */
-            background-color: #34d399; /* Tailwind green-400 */
-            color: white;
-            border-color: #10b981; /* Tailwind green-500 */
-        }
-        .selected-wrong-answer { /* Usuário CLICOU numa palavra que ESTAVA CORRETA ou no botão errado */
-            background-color: #f87171; /* Tailwind red-400 */
-            color: white;
-            border-color: #ef4444; /* Tailwind red-500 */
-        }
-        .word-card:disabled, .all-correct-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        .loading-spinner {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #3c6a99; /* Blue */
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-         
-        .card-custom-icon {
-            width: 48px; 
-            height: 48px; 
-            margin-bottom: 0.75rem; 
-        }
-        /* Estilo para o indicador de notificação (ponto vermelho) */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
+        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
     <!-- Navbar -->
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <!-- Ícone de Menu Principal -->
-            <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <!-- Menu Dropdown Principal -->
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="image" class="w-5 h-5"></i> Tema
-                </a>
-                <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="type" class="w-5 h-5"></i> Fontes
-                </a>
-                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
-            </div>
-
-            <!-- Logo -->
-            <a href="../index.html" class="mx-auto md:mx-0"> 
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="inicio.html">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="w-10">
             </a>
-
-            <!-- Ícones da Direita: Notificações e Perfil -->
-            <div class="flex items-center gap-2">
-                <!-- Ícone de Notificações -->
-                <div class="relative">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                    
-                        <span class="notification-badge" id="notification-indicator"></span>
-                    </button>
-                    <!-- Dropdown de Notificações -->
-                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
-                        <div class="p-3 border-b border-gray-200">
-                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
-                        </div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <!-- Notificação Exemplo 1 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p>
-                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 15 minutos</p>
-                            </a>
-                            <!-- Notificação Exemplo 2 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p>
-                                <p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
-                            </a>
-                            <!-- Notificação Exemplo 3 (Lida) -->
-                             <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
-                                <p class="text-sm text-gray-500">Feedback do Professor</p>
-                                <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
-                                <p class="text-xs text-gray-400 mt-1">Ontem</p>
-                            </a>
-                             <!-- Mais notificações aqui -->
-                        </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
-                            Ver todas as notificações
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
-                </a>
+            <div class="flex gap-4">
+                <a href="inicio.html" class="hover:underline">Início</a>
+                <a href="atividades.html" class="hover:underline">Atividades</a>
+                <a href="../index.html" class="hover:text-red-400">Sair</a>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 sm:px-6 py-6 flex-grow">
-        <div class="mb-6">
-            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-            <a href="atividades.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                </svg>
-                Voltar
-            </a>
+    <!-- Conteúdo -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <h1 class="text-3xl font-bold text-center mb-4">Ortofix Game</h1>
+        <p class="text-lg text-center text-[#5689b9] mb-6">Escolha o tipo de acento correto para cada palavra.</p>
+
+        <div id="formArea" class="bg-white rounded-xl shadow-lg p-6 max-w-3xl mx-auto hidden">
+            <form id="form">
+                <div id="inputsArea" class="grid grid-cols-1 gap-6"></div>
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                    <button type="submit"
+                        class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-2 rounded-md w-full">
+                        Enviar Respostas
+                    </button>
+                    <button type="button" id="btnNovas"
+                        class="bg-white border border-[#3c6a99] hover:bg-[#e3ebf2] text-[#3c6a99] px-6 py-2 rounded-md w-full">
+                        Gerar Novas Palavras
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <div class="text-center bg-white shadow-xl rounded-xl p-6 md:p-8">
-            <h1 id="game-instruction" class="text-xl sm:text-2xl font-semibold text-[#3c6a99] mb-8">
-                Escolha a palavra com erro ortográfico.
-            </h1>
+        <div id="feedbackArea" class="bg-white rounded-xl shadow-lg p-6 mt-8 max-w-3xl mx-auto hidden">
+            <h2 class="text-2xl font-bold text-[#3c6a99] mb-4">Feedback</h2>
+            <div id="feedbackCards" class="space-y-4"></div>
+        </div>
 
-            <div id="loading-words" class="loading-spinner my-8 hidden"></div>
-            <p id="api-error" class="text-sm text-red-600 bg-red-100 border border-red-400 p-3 rounded-md hidden mb-4"></p>
-
-            <div id="words-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto mb-6">
-                <!-- Os botões de palavra serão inseridos aqui -->
-            </div>
-            <div id="all-correct-container" class="max-w-2xl mx-auto mb-10">
-                <!-- Botão "Todas estão corretas" será inserido aqui -->
-            </div>
-
-
-            <div id="feedback-area" class="mb-8 min-h-[60px] flex items-center justify-center text-lg font-medium">
-                <!-- Feedback será inserido aqui -->
-            </div>
-
-            <button id="next-question-btn" class="bg-[#8bb3d5] hover:bg-[#5689b9] text-white font-bold py-3 px-8 rounded-lg text-lg shadow-md transition-colors">
-                Próximo
+        <div class="flex justify-center mt-6">
+            <button id="btnIniciar"
+                class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-3 rounded-md">
+                Iniciar Jogo
             </button>
         </div>
     </main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <p>© 2025 OrtoFix.</p>
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4">
+        <p>© 2025 OrtoFix</p>
     </footer>
 
     <script>
-        
-        lucide.createIcons();
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-            });
-            document.addEventListener('click', (e) => {
-                if (menuBtn && dropdownMenu && !menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
+        const API_URL = "https://api-tcc-alpha.vercel.app";
+
+        const btnIniciar = document.getElementById('btnIniciar');
+        const btnNovas = document.getElementById('btnNovas');
+        const formArea = document.getElementById('formArea');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const feedbackCards = document.getElementById('feedbackCards');
+        const inputsArea = document.getElementById('inputsArea');
+        const form = document.getElementById('form');
+
+        let palavrasAtuais = [];
+
+        async function gerarPalavras() {
+            const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras`, { method: 'POST' });
+            const data = await res.json();
+            palavrasAtuais = data.palavras;
+            renderInputs(palavrasAtuais);
+            formArea.classList.remove('hidden');
+            feedbackArea.classList.add('hidden');
+        }
+
+        function renderInputs(palavras) {
+            inputsArea.innerHTML = '';
+            palavras.forEach((palavra, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label class="block text-[#3c6a99] font-semibold mb-1">
+                        Palavra: <span class="font-bold">${palavra}</span>
+                    </label>
+                    <input type="hidden" name="palavra_${index}" value="${palavra}" />
+                    <select name="acento_${index}" class="w-full border border-[#3c6a99] rounded-md px-4 py-2">
+                        <option value="agudo">Agudo (´)</option>
+                        <option value="circunflexo">Circunflexo (^)</option>
+                        <option value="til">Til (~)</option>
+                        <option value="sem acento">Sem acento</option>
+                    </select>
+                `;
+                inputsArea.appendChild(div);
             });
         }
-        // Script para as notificações
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
 
-        // Notificações não lidas
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
+        function renderFeedback(feedbackRaw) {
+            const linhas = feedbackRaw.trim().split('\n').filter(l => l.trim() !== '');
+            const cards = [];
+            let card = {};
+
+            linhas.forEach(linha => {
+                if (linha.startsWith('- Palavra:')) {
+                    if (Object.keys(card).length > 0) {
+                        cards.push(card);
+                        card = {};
+                    }
+                    card.palavra = linha.replace('- Palavra:', '').trim();
+                } else if (linha.startsWith('- Sua resposta:')) {
+                    card.resposta = linha.replace('- Sua resposta:', '').trim();
+                } else if (linha.startsWith('- Resposta correta:')) {
+                    card.correta = linha.replace('- Resposta correta:', '').trim();
+                } else if (linha.startsWith('- Resultado:')) {
+                    card.resultado = linha.replace('- Resultado:', '').trim();
+                } else if (linha.startsWith('- Explicação:')) {
+                    card.explicacao = linha.replace('- Explicação:', '').trim();
+                }
+            });
+
+            if (Object.keys(card).length > 0) {
+                cards.push(card);
             }
-        }
 
+            feedbackCards.innerHTML = '';
 
-        if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                // Esconde o menu principal se estiver aberto
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-                // Opcional: marcar notificações como lidas (remover badge) ao abrir
-                if (notificationIndicator && hasUnreadNotifications) {
-
-                }
-            });
-            // Fecha o dropdown de notificações ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
+            cards.forEach(c => {
+                const cor = c.resultado && c.resultado.includes('Correto') ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800';
+                const html = `
+                    <div class="border ${cor} rounded-xl p-4">
+                        <p><strong>Palavra:</strong> ${c.palavra}</p>
+                        <p><strong>Sua resposta:</strong> ${c.resposta}</p>
+                        <p><strong>Resposta correta:</strong> ${c.correta}</p>
+                        <p><strong>Resultado:</strong> <span class="font-semibold">${c.resultado}</span></p>
+                        <p class="mt-2"><strong>Explicação:</strong> ${c.explicacao}</p>
+                    </div>
+                `;
+                feedbackCards.innerHTML += html;
             });
         }
 
-        const wordsContainer = document.getElementById('words-container');
-        const allCorrectContainer = document.getElementById('all-correct-container');
-        const feedbackArea = document.getElementById('feedback-area');
-        const nextQuestionBtn = document.getElementById('next-question-btn');
-        const loadingWordsSpinner = document.getElementById('loading-words');
-        const apiErrorP = document.getElementById('api-error');
-        const gameInstructionH1 = document.getElementById('game-instruction');
-
-        const API_BASE_URL = "https://api-tcc-alpha.vercel.app";
-
-        let currentWordsData = [];
-        let todasAsPalavrasEstaoCorretasOpcaoGlobal = false; // Para saber se a opção "todas corretas" é a certa
-        let roundOver = false; // Para controlar se a rodada terminou
-
-        function displayLoading(isLoading) {
-            loadingWordsSpinner.style.display = isLoading ? 'block' : 'none';
-            wordsContainer.style.display = isLoading ? 'none' : 'grid'; // 'grid' para manter o layout
-            allCorrectContainer.style.display = isLoading ? 'none' : 'block';
-            apiErrorP.classList.add('hidden');
-            nextQuestionBtn.disabled = isLoading;
-            feedbackArea.innerHTML = '';
-            gameInstructionH1.textContent = isLoading ? "Carregando palavras..." : "Escolha a palavra com erro ortográfico.";
-             if (isLoading) {
-                wordsContainer.innerHTML = ''; // Limpa palavras anteriores
-                allCorrectContainer.innerHTML = ''; // Limpa botão "todas corretas"
-            }
-        }
-
-        function displayApiError(message) {
-            apiErrorP.textContent = message;
-            apiErrorP.classList.remove('hidden');
-            wordsContainer.innerHTML = '';
-            allCorrectContainer.innerHTML = '';
-            feedbackArea.innerHTML = '';
-            loadingWordsSpinner.style.display = 'none';
-            nextQuestionBtn.disabled = false; // Permite tentar de novo se a API falhar no load
-        }
-
-        async function loadNewTypeRunQuestion() {
-            displayLoading(true);
-            roundOver = false; // Nova rodada, resetar
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/typerun/gerar_palavras`, { method: 'POST' });
-                if (!response.ok) {
-                    const errText = await response.text(); // Pegar texto do erro
-                    let errMessage = `HTTP error! status: ${response.status}`;
-                    try {
-                        const errData = JSON.parse(errText);
-                        errMessage = errData.error || errMessage;
-                    } catch (e) { /* Ignora se não for JSON */ }
-                    throw new Error(errMessage);
-                }
-                const data = await response.json();
-                currentWordsData = data.palavras;
-                todasAsPalavrasEstaoCorretasOpcaoGlobal = data.todas_as_palavras_estao_corretas_opcao === true;
-                populateWordCards();
-                feedbackArea.innerHTML = '';
-                enableAllOptions(); // Habilita botões para a nova rodada
-            } catch (err) {
-                console.error('Erro ao carregar palavras TypeRun:', err);
-                displayApiError(`Falha ao carregar palavras: ${err.message}. Verifique o console e tente novamente.`);
-            } finally {
-                displayLoading(false);
-                // O botão "Próximo" só deve ser habilitado após uma resposta na rodada.
-                // E desabilitado ao carregar uma nova pergunta.
-                nextQuestionBtn.disabled = true;
-            }
-        }
-
-        function enableAllOptions() {
-            document.querySelectorAll('#words-container .word-card, #all-correct-container .all-correct-btn').forEach(btn => {
-                btn.disabled = false;
-                btn.classList.remove('selected-correct-answer', 'selected-wrong-answer');
-            });
-        }
-
-        function disableAllOptions() {
-            document.querySelectorAll('#words-container .word-card, #all-correct-container .all-correct-btn').forEach(btn => {
-                btn.disabled = true;
-            });
-        }
-
-
-        function populateWordCards() {
-            wordsContainer.innerHTML = '';
-            allCorrectContainer.innerHTML = ''; // Limpa o botão anterior
-
-            currentWordsData.forEach(wordObj => {
-                const button = document.createElement('button');
-                button.classList.add('word-card', 'bg-white', 'text-[#3c6a99]', 'border-2', 'border-[#9aaec1]', 'hover:border-[#5689b9]', 'rounded-lg', 'p-4', 'text-xl', 'font-medium', 'shadow-sm');
-                button.textContent = wordObj.palavra;
-                button.onclick = () => handleWordSelection(button, wordObj);
-                wordsContainer.appendChild(button);
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const respostas = [];
+            palavrasAtuais.forEach((palavra, index) => {
+                const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
+                respostas.push({ palavra, resposta_usuario: resposta });
             });
 
-            // Adicionar o botão "Todas as palavras estão corretas"
-            const allCorrectButton = document.createElement('button');
-            allCorrectButton.textContent = "Todas as palavras estão corretas";
-            allCorrectButton.classList.add('all-correct-btn', 'w-full', 'sm:col-span-2', 'bg-gray-200', 'text-[#3c6a99]', 'border-2', 'border-[#9aaec1]', 'hover:border-[#5689b9]', 'rounded-lg', 'p-4', 'text-lg', 'font-medium', 'shadow-sm', 'mt-2');
-            // O sm:col-span-2 faz com que ele ocupe as duas colunas em telas sm ou maiores se o wordsContainer for grid de 2 colunas.
-            // Se wordsContainer for flex, ajuste o layout do allCorrectContainer conforme necessário.
-            allCorrectButton.onclick = () => handleAllCorrectSelection(allCorrectButton);
-            allCorrectContainer.appendChild(allCorrectButton);
-        }
+            const res = await fetch(`${API_URL}/api/ortofix/verificar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ respostas })
+            });
 
-        function handleWordSelection(selectedButton, wordObject) {
-            if (roundOver) return;
-            roundOver = true;
-            disableAllOptions(); // Desabilita todos os botões, incluindo "todas corretas"
-            selectedButton.disabled = false; // Mantém o clicado "ativo" para estilo
-
-            if (wordObject.esta_errada) { // Usuário clicou na palavra que o Gemini marcou como errada
-                selectedButton.classList.add('selected-correct-answer');
-                feedbackArea.innerHTML = `<span class="text-green-600">Correto!</span> ${wordObject.explicacao || `A palavra "${wordObject.palavra}" estava escrita incorretamente.`}`;
-            } else { // Usuário clicou numa palavra correta
-                selectedButton.classList.add('selected-wrong-answer');
-                const correctAnswerObj = currentWordsData.find(p => p.esta_errada);
-                let explanation = `Ops! "${wordObject.palavra}" está correta.`;
-                if (correctAnswerObj) { // Se houver uma palavra errada definida pelo Gemini
-                    explanation += ` A palavra com erro era "${correctAnswerObj.palavra}". ${correctAnswerObj.explicacao || ''}`;
-                } else { // Se o Gemini disse que todas estavam corretas (e o usuário não clicou em "todas corretas")
-                    explanation += ` Todas as palavras estavam corretas desta vez.`;
-                }
-                feedbackArea.innerHTML = `<span class="text-red-500">Errado!</span> ${explanation}`;
-            }
-            nextQuestionBtn.disabled = false; // Habilita o botão Próximo
-        }
-
-        function handleAllCorrectSelection(selectedButton) {
-            if (roundOver) return;
-            roundOver = true;
-            disableAllOptions();
-            selectedButton.disabled = false;
-
-            if (todasAsPalavrasEstaoCorretasOpcaoGlobal) { // O backend indicou que todas estão corretas
-                selectedButton.classList.add('selected-correct-answer');
-                feedbackArea.innerHTML = `<span class="text-green-600">Correto!</span> Todas as palavras estavam escritas corretamente desta vez.`;
-            } else { // O backend indicou que HAVIA uma palavra errada
-                selectedButton.classList.add('selected-wrong-answer');
-                const correctAnswerObj = currentWordsData.find(p => p.esta_errada);
-                let explanation = `Ops! Havia uma palavra escrita incorretamente.`;
-                if (correctAnswerObj) {
-                    explanation += ` Era "${correctAnswerObj.palavra}". ${correctAnswerObj.explicacao || ''}`;
-                }
-                feedbackArea.innerHTML = `<span class="text-red-500">Errado!</span> ${explanation}`;
-            }
-            nextQuestionBtn.disabled = false;
-        }
-
-        nextQuestionBtn.addEventListener('click', () => {
-            if (!nextQuestionBtn.disabled) { // Adiciona verificação para segurança
-                 loadNewTypeRunQuestion();
-            }
+            const data = await res.json();
+            renderFeedback(data.feedback);
+            feedbackArea.classList.remove('hidden');
         });
- 
-        document.addEventListener('DOMContentLoaded', loadNewTypeRunQuestion);
 
-        
-        
+        btnIniciar.addEventListener('click', gerarPalavras);
+        btnNovas.addEventListener('click', gerarPalavras);
     </script>
 </body>
+</html>
