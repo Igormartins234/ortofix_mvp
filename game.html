@@ -123,8 +123,6 @@
                     card.resposta = linha.replace('- Sua resposta:', '').trim();
                 } else if (linha.startsWith('- Resposta correta:')) {
                     card.correta = linha.replace('- Resposta correta:', '').trim();
-                } else if (linha.startsWith('- Tipo correto de acento:')) {
-                    card.tipo = linha.replace('- Tipo correto de acento:', '').trim();
                 } else if (linha.startsWith('- Resultado:')) {
                     card.resultado = linha.replace('- Resultado:', '').trim();
                 } else if (linha.startsWith('- Explicação:')) {
@@ -145,7 +143,6 @@
                         <p><strong>Palavra:</strong> ${c.palavra}</p>
                         <p><strong>Sua resposta:</strong> ${c.resposta}</p>
                         <p><strong>Resposta correta:</strong> ${c.correta}</p>
-                        <p><strong>Tipo de acento correto:</strong> ${c.tipo}</p>
                         <p><strong>Resultado:</strong> <span class="font-semibold">${c.resultado}</span></p>
                         <p class="mt-2"><strong>Explicação:</strong> ${c.explicacao}</p>
                     </div>
