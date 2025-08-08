@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Área ADM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Removido Bootstrap CSS, pois estamos focando no Tailwind -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e3ebf2; /* Fundo da página */
+            color: #3c6a99; /* Cor de texto padrão */
+        }
+        .header-logo {
+            width: 40px; /* Mesmo tamanho usado anteriormente */
+            height: auto;
+        }
+        /* Estilo customizado para select, se necessário, para melhor aparência */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Cabeçalho -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="header-logo">
+                <h1 class="text-2xl font-bold text-[#3c6a99]">Área ADM</h1>
+            </div>
+            <a href="../aluno.html" class="bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+                Sair
+            </a>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal ADM -->
+    <main class="container mx-auto px-4 sm:px-6 py-8">
+        <!-- Barra de busca e filtro -->
+        <div class="mb-8 p-6 bg-white rounded-xl shadow-lg flex flex-col sm:flex-row gap-4 items-center">
+            <div class="relative flex-grow w-full sm:w-auto">
+                <input id="busca" type="search" placeholder="Pesquisar nome..."
+                       class="w-full pl-10 pr-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-[#9aaec1]"></i>
+                </div>
+            </div>
+
+            <select id="filtroStatus"
+                    class="w-full sm:w-auto px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none">
+                <option value="Todos">Todos</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Bloqueado">Bloqueado</option>
+                <!-- Adicionar mais status se necessário -->
+            </select>
+            <!-- O botão filtrar pode ser removido se a filtragem for automática ao mudar o select/input -->
+        </div>
+
+        <!-- Lista de usuários -->
+        <div id="lista-usuarios" class="space-y-4">
+            <!-- Cards serão adicionados dinamicamente aqui -->
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Exemplo de dados mockados
+        // Adicionando IDs para facilitar a referência ao editar/alterar status
+        const usuarios = [
+            { id: 1, nome: "João Silva Pereira", status: "Ativo", tipo: "Aluno" },
+            { id: 2, nome: "Maria Souza Santos", status: "Bloqueado", tipo: "Aluno" },
+            { id: 3, nome: "Pedro Alves Costa", status: "Ativo", tipo: "Professor" },
+            { id: 4, nome: "Ana Beatriz Lima", status: "Ativo", tipo: "Aluno" },
+            { id: 5, nome: "Carlos Eduardo Rocha", status: "Bloqueado", tipo: "Professor" },
+        ];
+
+        function renderizarUsuarios() {
+            const container = document.getElementById("lista-usuarios");
+            const busca = document.getElementById("busca").value.toLowerCase().trim();
+            const filtroStatus = document.getElementById("filtroStatus").value;
+
+            container.innerHTML = ""; // Limpa a lista antes de renderizar
+
+            const usuariosFiltrados = usuarios.filter(usuario => {
+                const correspondeBusca = usuario.nome.toLowerCase().includes(busca);
+                const correspondeFiltroStatus = filtroStatus === "Todos" || usuario.status === filtroStatus;
+                return correspondeBusca && correspondeFiltroStatus;
+            });
+
+            if (usuariosFiltrados.length === 0) {
+                container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Nenhum usuário encontrado.</p>`;
+                return;
+            }
+
+            usuariosFiltrados.forEach(usuario => {
+                const card = document.createElement("div");
+                card.className = "bg-white rounded-xl shadow-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:shadow-xl transition-shadow";
+
+                // Define a cor do status
+                let statusColorClass = "text-[#5689b9]"; // Cor padrão para "Ativo" ou outros
+                if (usuario.status === "Bloqueado") {
+                    statusColorClass = "text-red-500";
+                }
+
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-[#3c6a99]">${usuario.nome}</h3>
+                        <p class="text-sm ${statusColorClass}"><span class="font-medium">Status:</span> ${usuario.status}</p>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Tipo:</span> ${usuario.tipo || 'N/A'}</p>
+                    </div>
+                    <div class="flex items-center space-x-3 mt-3 sm:mt-0">
+                        <a href="editar_usuario.html?id=${usuario.id}" title="Editar" class="text-[#5689b9] hover:text-[#3c6a99] p-2 rounded-full hover:bg-[#e3ebf2]/70">
+                            <i data-lucide="edit" class="w-5 h-5"></i>
+                        </a>
+                        <button onclick="alterarStatusUsuario(${usuario.id})" title="Alterar status" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100">
+                            <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
+                        </button>
+                         <button onclick="excluirUsuario(${usuario.id})" title="Excluir" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons(); // Re-renderizar ícones Lucide após adicionar novos elementos
+        }
+
+        // Funções de Ação (placeholders)
+        function alterarStatusUsuario(id) {
+            // Encontra o usuário no array (em uma app real, faria uma requisição ao backend)
+            const usuario = usuarios.find(u => u.id === id);
+            if (usuario) {
+                // Alterna o status (exemplo simples)
+                usuario.status = usuario.status === "Ativo" ? "Bloqueado" : "Ativo";
+                console.log(`Status do usuário ${id} (${usuario.nome}) alterado para: ${usuario.status}`);
+                renderizarUsuarios(); // Re-renderiza a lista para refletir a mudança
+            }
+        }
+
+        function excluirUsuario(id) {
+            if (confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.")) {
+                // Remove o usuário do array (em uma app real, faria uma requisição ao backend)
+                const index = usuarios.findIndex(u => u.id === id);
+                if (index > -1) {
+                    usuarios.splice(index, 1);
+                }
+                console.log(`Usuário ${id} excluído.`);
+                renderizarUsuarios(); // Re-renderiza a lista
+            }
+        }
+
+
+        // Event Listeners
+        document.getElementById("busca").addEventListener("input", renderizarUsuarios);
+        document.getElementById("filtroStatus").addEventListener("change", renderizarUsuarios);
+
+        // Renderização Inicial
+        renderizarUsuarios();
+    </script>
+</body>
+</html>
