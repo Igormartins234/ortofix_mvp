@@ -73,101 +73,133 @@
     </main>
 
     <script>
-        lucide.createIcons();
+    lucide.createIcons();
 
-        // Exemplo de dados mockados
-        // Adicionando IDs para facilitar a referência ao editar/alterar status
-        const usuarios = [
-            { id: 1, nome: "João Silva Pereira", status: "Ativo", tipo: "Aluno" },
-            { id: 2, nome: "Maria Souza Santos", status: "Bloqueado", tipo: "Aluno" },
-            { id: 3, nome: "Pedro Alves Costa", status: "Ativo", tipo: "Professor" },
-            { id: 4, nome: "Ana Beatriz Lima", status: "Ativo", tipo: "Aluno" },
-            { id: 5, nome: "Carlos Eduardo Rocha", status: "Bloqueado", tipo: "Professor" },
-        ];
+    // 1. A lista de usuários mockados foi removida.
+    // Agora teremos uma variável para armazenar os dados vindos do banco.
+    let listaDeUsuarios = [];
 
-        function renderizarUsuarios() {
-            const container = document.getElementById("lista-usuarios");
-            const busca = document.getElementById("busca").value.toLowerCase().trim();
-            const filtroStatus = document.getElementById("filtroStatus").value;
+    // Elementos do DOM que usaremos várias vezes
+    const container = document.getElementById("lista-usuarios");
+    const buscaInput = document.getElementById("busca");
+    const filtroStatusSelect = document.getElementById("filtroStatus");
 
-            container.innerHTML = ""; // Limpa a lista antes de renderizar
+    /**
+     * Função principal para buscar os professores do backend.
+     */
+    async function carregarUsuarios() {
+        // Pega o token de autenticação do localStorage
+        const token = localStorage.getItem('authToken'); // Verifique se o nome da chave é 'authToken' ou 'accessToken'
+        
+        if (!token) {
+            container.innerHTML = `<p class="text-center text-red-500 py-4">Erro: Você não está autenticado. Faça o login novamente.</p>`;
+            return;
+        }
 
-            const usuariosFiltrados = usuarios.filter(usuario => {
-                const correspondeBusca = usuario.nome.toLowerCase().includes(busca);
-                const correspondeFiltroStatus = filtroStatus === "Todos" || usuario.status === filtroStatus;
-                return correspondeBusca && correspondeFiltroStatus;
+        try {
+            container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Carregando usuários...</p>`;
+
+            const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professores', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
-            if (usuariosFiltrados.length === 0) {
-                container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Nenhum usuário encontrado.</p>`;
-                return;
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'Falha ao carregar os usuários.');
             }
 
-            usuariosFiltrados.forEach(usuario => {
-                const card = document.createElement("div");
-                card.className = "bg-white rounded-xl shadow-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:shadow-xl transition-shadow";
+            const data = await response.json();
+            
+            // 2. Transforma os dados do backend para o formato que nosso renderizador espera
+            listaDeUsuarios = data.map(professor => ({
+                id: professor.idprofessor,
+                nome: professor.nomeprofessor,
+                email: professor.emailprofessor,
+                status: professor.status,
+                tipo: 'Professor' // Definimos o tipo, já que esta lista é só de professores
+            }));
+            
+            // Após carregar os dados, renderiza a lista na tela
+            renderizarUsuarios();
 
-                // Define a cor do status
-                let statusColorClass = "text-[#5689b9]"; // Cor padrão para "Ativo" ou outros
-                if (usuario.status === "Bloqueado") {
-                    statusColorClass = "text-red-500";
-                }
+        } catch (error) {
+            console.error('Erro ao carregar usuários:', error);
+            container.innerHTML = `<p class="text-center text-red-500 py-4">Erro: ${error.message}</p>`;
+        }
+    }
 
-                card.innerHTML = `
-                    <div class="flex-grow">
-                        <h3 class="text-lg font-semibold text-[#3c6a99]">${usuario.nome}</h3>
-                        <p class="text-sm ${statusColorClass}"><span class="font-medium">Status:</span> ${usuario.status}</p>
-                        <p class="text-sm text-gray-600"><span class="font-medium">Tipo:</span> ${usuario.tipo || 'N/A'}</p>
-                    </div>
-                    <div class="flex items-center space-x-3 mt-3 sm:mt-0">
-                        <a href="editar_usuario.html?id=${usuario.id}" title="Editar" class="text-[#5689b9] hover:text-[#3c6a99] p-2 rounded-full hover:bg-[#e3ebf2]/70">
-                            <i data-lucide="edit" class="w-5 h-5"></i>
-                        </a>
-                        <button onclick="alterarStatusUsuario(${usuario.id})" title="Alterar status" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100">
-                            <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
-                        </button>
-                         <button onclick="excluirUsuario(${usuario.id})" title="Excluir" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+    /**
+     * Função que renderiza os cards de usuário na tela com base nos filtros.
+     */
+    function renderizarUsuarios() {
+        const busca = buscaInput.value.toLowerCase().trim();
+        const filtroStatus = filtroStatusSelect.value;
 
-            lucide.createIcons(); // Re-renderizar ícones Lucide após adicionar novos elementos
+        container.innerHTML = ""; // Limpa a lista antes de renderizar
+
+        const usuariosFiltrados = listaDeUsuarios.filter(usuario => {
+            const correspondeBusca = usuario.nome.toLowerCase().includes(busca);
+            const correspondeFiltroStatus = filtroStatus === "Todos" || usuario.status === filtroStatus;
+            return correspondeBusca && correspondeFiltroStatus;
+        });
+
+        if (usuariosFiltrados.length === 0) {
+            container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Nenhum usuário encontrado com os filtros atuais.</p>`;
+            return;
         }
 
-        // Funções de Ação (placeholders)
-        function alterarStatusUsuario(id) {
-            // Encontra o usuário no array (em uma app real, faria uma requisição ao backend)
-            const usuario = usuarios.find(u => u.id === id);
-            if (usuario) {
-                // Alterna o status (exemplo simples)
-                usuario.status = usuario.status === "Ativo" ? "Bloqueado" : "Ativo";
-                console.log(`Status do usuário ${id} (${usuario.nome}) alterado para: ${usuario.status}`);
-                renderizarUsuarios(); // Re-renderiza a lista para refletir a mudança
-            }
-        }
+        usuariosFiltrados.forEach(usuario => {
+            const card = document.createElement("div");
+            card.className = "bg-white rounded-xl shadow-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:shadow-xl transition-shadow";
 
-        function excluirUsuario(id) {
-            if (confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.")) {
-                // Remove o usuário do array (em uma app real, faria uma requisição ao backend)
-                const index = usuarios.findIndex(u => u.id === id);
-                if (index > -1) {
-                    usuarios.splice(index, 1);
-                }
-                console.log(`Usuário ${id} excluído.`);
-                renderizarUsuarios(); // Re-renderiza a lista
-            }
-        }
+            let statusColorClass = usuario.status.toLowerCase() === "bloqueado" ? "text-red-500" : "text-green-600";
+            let statusDisplay = usuario.status.charAt(0).toUpperCase() + usuario.status.slice(1);
 
+            card.innerHTML = `
+                <div class="flex-grow">
+                    <h3 class="text-lg font-semibold text-[#3c6a99]">${usuario.nome}</h3>
+                    <p class="text-sm text-gray-500">${usuario.email || ''}</p>
+                    <p class="text-sm"><span class="font-medium">Status:</span> <span class="${statusColorClass}">${statusDisplay}</span></p>
+                    <p class="text-sm text-gray-600"><span class="font-medium">Tipo:</span> ${usuario.tipo}</p>
+                </div>
+                <div class="flex items-center space-x-3 mt-3 sm:mt-0">
+                    <a href="editar_usuario.html?id=${usuario.id}" title="Editar" class="text-[#5689b9] hover:text-[#3c6a99] p-2 rounded-full hover:bg-[#e3ebf2]/70">
+                        <i data-lucide="edit" class="w-5 h-5"></i>
+                    </a>
+                    <button onclick="alterarStatusUsuario(${usuario.id})" title="Alterar status" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100">
+                        <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
+                    </button>
+                     <button onclick="excluirUsuario(${usuario.id})" title="Excluir" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
 
-        // Event Listeners
-        document.getElementById("busca").addEventListener("input", renderizarUsuarios);
-        document.getElementById("filtroStatus").addEventListener("change", renderizarUsuarios);
+        lucide.createIcons(); // Re-renderizar ícones Lucide
+    }
 
-        // Renderização Inicial
-        renderizarUsuarios();
-    </script>
+    // Funções de Ação (por enquanto, placeholders que manipulam a lista em memória)
+    function alterarStatusUsuario(id) {
+        alert(`Funcionalidade "Alterar Status" para o usuário ${id} ainda não implementada com o backend.`);
+        // Futuramente, aqui você fará um fetch para uma rota PUT /api/professores/${id}/status
+    }
+
+    function excluirUsuario(id) {
+        alert(`Funcionalidade "Excluir" para o usuário ${id} ainda não implementada com o backend.`);
+        // Futuramente, aqui você fará um fetch para uma rota DELETE /api/professores/${id}
+    }
+
+    // Event Listeners para busca e filtro
+    buscaInput.addEventListener("input", renderizarUsuarios);
+    filtroStatusSelect.addEventListener("change", renderizarUsuarios);
+
+    // Renderização Inicial: chama a função para carregar os dados do backend quando a página carrega
+    document.addEventListener('DOMContentLoaded', carregarUsuarios);
+</script>
 </body>
 </html>
