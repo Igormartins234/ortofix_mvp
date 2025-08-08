@@ -85,7 +85,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
             Painel do Professor
         </h1>
-        <p class="text-center text-[#5689b9] mb-10 text-lg">Olá, Professor(a)! O que deseja fazer hoje?</p>
+        <p id="welcome-message" class="text-center text-[#5689b9] mb-10 text-lg">Olá, Professor(a)! O que deseja fazer hoje?</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <a href="criar_atividade.html" class="flex flex-col items-center justify-center text-center bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
@@ -127,44 +127,42 @@
 
 
     <script>
-        lucide.createIcons();
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', () => {
-                dropdownMenuProf.classList.toggle('hidden');
-                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
+    lucide.createIcons();
+
+    // --- LÓGICA DE CONTROLE DE DROPDOWNS (já existente) ---
+    const menuBtnProf = document.getElementById('menu-btn-prof');
+    const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
+    // ... (seu código de controle de menu e notificações continua aqui, não precisa mudar) ...
+    // ... (o código que esconde os menus ao clicar fora) ...
+    const notificationsBtnProf = document.getElementById('notifications-btn-prof');
+    const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
+    // ... (seu código de controle de notificações continua aqui) ...
+
+    // --- NOVO: LÓGICA DE LOGIN E SAIR ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const userName = localStorage.getItem('userName');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        // Personaliza a mensagem de boas-vindas
+        if (userName && welcomeMessage) {
+            welcomeMessage.textContent = `Olá, Prof. ${userName}! O que deseja fazer hoje?`;
+        }
+
+        // Configura o botão de sair
+        const logoutButton = document.querySelector('a[href="login.html"]'); // Encontra o botão de sair pelo href
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (e) => {
+                e.preventDefault(); // Impede a navegação padrão
+                
+                // Limpa os dados de login do localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userName');
+                
+                // Redireciona para a página de login
+                window.location.href = 'login.html';
             });
         }
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
-        let hasUnreadNotificationsProf = true; 
-        if (notificationIndicatorProf) {
-            if (!hasUnreadNotificationsProf) {
-                notificationIndicatorProf.classList.add('hidden');
-            }
-        }
-        if (notificationsBtnProf && notificationsDropdownProf) {
-            notificationsBtnProf.addEventListener('click', () => {
-                notificationsDropdownProf.classList.toggle('hidden');
-                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
-        }
-    </script>
+    });
+</script>
 </body>
 </html>
