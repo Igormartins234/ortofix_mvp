@@ -208,7 +208,7 @@
         const notificationsDropdown = document.getElementById('notifications-dropdown');
         const notificationIndicator = document.getElementById('notification-indicator');
 
-        // Notificações não lidas
+    
         let hasUnreadNotifications = true; 
         if (notificationIndicator) {
             if (!hasUnreadNotifications) {
@@ -220,16 +220,16 @@
         if (notificationsBtn && notificationsDropdown) {
             notificationsBtn.addEventListener('click', () => {
                 notificationsDropdown.classList.toggle('hidden');
-                // Esconde o menu principal se estiver aberto
+    
                 if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
                     dropdownMenu.classList.add('hidden');
                 }
-                // Opcional: marcar notificações como lidas (remover badge) ao abrir
+   
                 if (notificationIndicator && hasUnreadNotifications) {
 
                 }
             });
-            // Fecha o dropdown de notificações ao clicar fora
+    
             document.addEventListener('click', (e) => {
                 if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
                     notificationsDropdown.classList.add('hidden');
