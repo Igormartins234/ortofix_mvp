@@ -133,33 +133,30 @@
 
     const menuBtnProf = document.getElementById('menu-btn-prof');
     const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-    // ... (seu código de controle de menu e notificações continua aqui, não precisa mudar) ...
-    // ... (o código que esconde os menus ao clicar fora) ...
+   
     const notificationsBtnProf = document.getElementById('notifications-btn-prof');
     const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-    // ... (seu código de controle de notificações continua aqui) ...
+  
 
-    // --- NOVO: LÓGICA DE LOGIN E SAIR ---
+   
     document.addEventListener('DOMContentLoaded', () => {
         const userName = localStorage.getItem('userName');
         const welcomeMessage = document.getElementById('welcome-message');
 
-        // Personaliza a mensagem de boas-vindas
+        
         if (userName && welcomeMessage) {
             welcomeMessage.textContent = `Olá, Prof. ${userName}! O que deseja fazer hoje?`;
         }
 
-        // Configura o botão de sair
-        const logoutButton = document.querySelector('a[href="login.html"]'); // Encontra o botão de sair pelo href
+       
+        const logoutButton = document.querySelector('a[href="login.html"]'); 
         if (logoutButton) {
             logoutButton.addEventListener('click', (e) => {
-                e.preventDefault(); // Impede a navegação padrão
-                
-                // Limpa os dados de login do localStorage
+                e.preventDefault(); 
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('userName');
                 
-                // Redireciona para a página de login
+               
                 window.location.href = 'login.html';
             });
         }
