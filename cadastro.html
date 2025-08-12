@@ -3,48 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Login do Aluno</title>
+    <title>OrtoFix - Crie sua Conta de Aluno</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style> 
         body {
             font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
         }
-        .ortofix-logo {
-            width: 200px; 
-            height: auto;
+        .form-input:focus {
+            border-color: #3c6a99;
+            box-shadow: 0 0 0 2px rgba(60, 106, 153, 0.2);
+            outline: none;
+        }
+      
+        .form-checkbox:checked {
+            background-color: #3c6a99;
+            border-color: #3c6a99;
         }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="mb-8 text-center">
-     
-        <a href="../index.html">
-            
-            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto ortofix-logo">
-        </a>
-    </div>
+<body class="text-slate-700">
 
-    <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Cadastro do Aluno</h2>
-        <form action="inicio.html" method="GET"> 
-            <div class="mb-4">
-                <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email:</label>
-                <input type="email" id="email" name="email" required
-                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
-                       placeholder="seuemail@exemplo.com">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <a href="../index.html">
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-12">
+                </a>
             </div>
-            <div class="mb-6">
-                <label for="senha" class="block text-[#5689b9] text-sm font-semibold mb-2">Senha:</label>
-                <input type="password" id="senha" name="senha" required
-                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
-                       placeholder="********">
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="../index.html#features" class="hover:text-[#3c6a99] transition-colors">Funcionalidades</a>
+                <a href="aluno.html" class="bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                    Login       
+                </a>
             </div>
-            <button type="submit"
-                    class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                Entrar
-            </button>
-        </form>
-    </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow">
+        <section class="py-20 md:py-24 px-6">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl">
+                
+               
+                <div class="hidden md:flex flex-col items-center text-center" data-aos="fade-right">
+                    
+                    <svg class="w-2/3 max-w-sm h-auto text-[#5689b9]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M64.4,-33.3C74.3,-15.8,67.1,12.7,52.8,32.7C38.5,52.7,17,64.2,-6.3,66C-29.6,67.8,-54.6,59.8,-66,42.5C-77.4,25.2,-75.1,-1.5,-64.8,-21.8C-54.6,-42.2,-36.4,-56.3,-17.8,-59.5C0.9,-62.7,20,-55,38.1,-45.3C56.2,-35.5,74.4,-24.6,64.4,-33.3Z" transform="translate(100 100)" /></svg>
+                    <h2 class="text-3xl font-bold text-[#3c6a99] mt-8">Comece sua jornada de aprendizado!</h2>
+                    <p class="text-slate-500 mt-4">Cadastre-se para ter acesso a exercícios interativos, acompanhar seu progresso e dominar a ortografia de vez.</p>
+                </div>
+
+               
+                <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full" data-aos="fade-left">
+                    <div class="text-center mb-6">
+                         <a href="../index.html" class="md:hidden mb-4 inline-block">
+                            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-16">
+                        </a>
+                        <h2 class="text-3xl font-bold text-[#3c6a99]">Crie sua Conta</h2>
+                        <p class="text-slate-500 mt-2">É rápido e fácil. Vamos começar?</p>
+                    </div>
+                    
+                    <form action="login.html" method="POST"> 
+                        <div class="mb-4">
+                            <label for="nome" class="block text-slate-600 text-sm font-semibold mb-2">Nome Completo:</label>
+                            <input type="text" id="nome" name="nome" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="Seu nome completo">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-slate-600 text-sm font-semibold mb-2">Email:</label>
+                            <input type="email" id="email" name="email" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="seu.email@exemplo.com">
+                        </div>
+                        <div class="mb-4">
+                            <label for="senha" class="block text-slate-600 text-sm font-semibold mb-2">Crie uma Senha:</label>
+                            <input type="password" id="senha" name="senha" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="Mínimo 5 caracteres">
+                        </div>
+                         <div class="mb-6">
+                            <label for="confirmar-senha" class="block text-slate-600 text-sm font-semibold mb-2">Confirme sua Senha:</label>
+                            <input type="password" id="confirmar-senha" name="confirmar-senha" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="Repita a senha">
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-start">
+                                <input id="terms" name="terms" type="checkbox" required class="form-checkbox h-5 w-5 mt-0.5 text-[#3c6a99] focus:ring-[#5689b9] border-slate-300 rounded">
+                                <label for="terms" class="ml-3 block text-sm text-slate-600">
+                                    Eu li e concordo com os 
+                                    <a href="termos.html" target="_blank" class="font-semibold text-[#3c6a99] hover:underline">Termos de Uso</a> e a 
+                                    <a href="privacidade.html" target="_blank" class="font-semibold text-[#3c6a99] hover:underline">Política de Privacidade</a>.
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit"
+                                class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg">
+                            Criar Conta
+                        </button>
+                    </form>
+                    <p class="text-center text-slate-500 mt-8 text-sm">
+                        Já tem uma conta?
+                        <a href="aluno.html" class="font-semibold text-[#3c6a99] hover:text-[#5689b9] hover:underline">
+                            Faça login aqui
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    
+    <footer class="bg-[#3c6a99] text-white">
+        <div class="container mx-auto py-10 px-6 text-center">
+             <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-12 mx-auto mb-4" style="filter: brightness(0) invert(1);">
+            <p class="mb-4">Transformando o aprendizado da ortografia, uma palavra de cada vez.</p>
+            <div class="flex justify-center space-x-6 text-sm">
+                <a href="../termo.html" class="hover:underline">Termos de Uso</a>
+                <a href="../privacidade.html" class="hover:underline">Política de Privacidade</a>
+                <a href="../contato.html" class="hover:underline">Contato</a>
+            </div>
+            <p class="text-sm mt-8 text-blue-200">© 2025 OrtoFix.   </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+      });
+    </script>
 </body>
 </html>
