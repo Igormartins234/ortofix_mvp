@@ -132,6 +132,69 @@
         let textoOriginalGlobal = "";
         let textoCorrigidoIdealGlobal = "";
 
+        // NOVA FUNÇÃO para registrar a atividade no seu backend
+    async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) return; // Não faz nada se o aluno não estiver logado
+
+        try {
+            // Usamos um ID fixo para cada tipo de atividade. Você pode criar mais na sua tabela Atividade.
+            // ID 1 = Correção de Texto
+            const idAtividade = 1; 
+
+            const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    idAtividade: idAtividade,
+                    pontuacao: pontuacao, // Precisamos calcular isso
+                    feedbackGemini: feedback
+                })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                // Exibe uma mensagem de sucesso para o aluno!
+                alert(result.msg);
+            }
+        } catch (error) {
+            console.error("Erro ao registrar atividade:", error);
+        }
+    }
+
+
+    btnVerificar.addEventListener('click', async () => {
+        // ... (código existente do btnVerificar) ...
+
+        try {
+            // ... (código existente do fetch para a API do Gemini) ...
+            
+            const data = await response.json();
+
+            tentativaUsuarioSpan.textContent = data.sua_tentativa;
+            correcaoIdealSpan.textContent = data.correcao_ideal;
+            feedbackGeminiDiv.textContent = data.feedback_do_gemini;
+            areaResultadoDiv.classList.remove('hidden');
+
+            // --- INÍCIO DA INTEGRAÇÃO ---
+            // Simples cálculo de pontuação (ex: 100 se for perfeito, 75 se não)
+            const pontuacao = (data.sua_tentativa.toLowerCase() === data.correcao_ideal.toLowerCase()) ? 100 : 75;
+            
+            // Chama a nova função para registrar no nosso backend
+            await registrarAtividadeConcluida(pontuacao, data.feedback_do_gemini);
+            // --- FIM DA INTEGRAÇÃO ---
+
+        } catch (err) {
+            // ... (código de erro existente) ...
+        } finally {
+            showLoading(false);
+        }
+    });
+
+
         function showLoading(isLoading, message = "Carregando...") {
             loadingP.textContent = message;
             loadingP.style.display = isLoading ? 'block' : 'none';

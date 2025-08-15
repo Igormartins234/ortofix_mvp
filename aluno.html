@@ -1,3 +1,4 @@
+<!-- login_aluno.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,49 +8,77 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #e3ebf2;
-        }
-        .mascot-login {
-            width: 180px; 
-            height: auto;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #e3ebf2; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="mb-8 text-center">
-        <a href="../index.html">
-            <img src="../../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20">
-        </a>
-    </div>
-
+    <div class="mb-8 text-center"><a href="../index.html"><img src="../../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20"></a></div>
     <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full max-w-md">
         <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Login do Aluno</h2>
-        <form action="inicio.html" method="GET">
+        <form id="login-form">
             <div class="mb-4">
                 <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email:</label>
-                <input type="email" id="email" name="email" required
-                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
-                       placeholder="aluno@email.com">
+                <input type="email" id="email" required class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] outline-none text-[#3c6a99]" placeholder="aluno@email.com">
             </div>
             <div class="mb-6">
                 <label for="senha" class="block text-[#5689b9] text-sm font-semibold mb-2">Senha:</label>
-                <input type="password" id="senha" name="senha" required
-                       class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] focus:border-transparent outline-none text-[#3c6a99]"
-                       placeholder="********">
+                <input type="password" id="senha" required class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] outline-none text-[#3c6a99]" placeholder="********">
             </div>
-            <button type="submit"
-                    class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition duration-150 ease-in-out transform hover:scale-105">
-                Entrar
-            </button>
+            <p id="message-area" class="text-red-500 text-center text-sm mb-4 h-5"></p>
+            <button type="submit" id="submit-btn" class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition">Entrar</button>
         </form>
         <p class="text-center text-[#5689b9] mt-6 text-sm">
             Não tem cadastro?
-            <a href="./cadastro.html" class="text-[#3c6a99] hover:text-[#5689b9] font-semibold hover:underline">
-                Cadastre-se
-            </a>
+            <a href="./cadastro.html" class="text-[#3c6a99] hover:text-[#5689b9] font-semibold hover:underline">Cadastre-se</a>
         </p>
     </div>
+    <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const messageArea = document.getElementById('message-area');
+        const submitBtn = document.getElementById('submit-btn');
+        messageArea.textContent = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Entrando...';
+
+        try {
+            const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: document.getElementById('email').value,
+                    senha: document.getElementById('senha').value
+                })
+            });
+            const data = await response.json();
+
+            if (!response.ok || data.user_role !== 'aluno') {
+                throw new Error(data.msg || 'Acesso negado.');
+            }
+
+            // --- INÍCIO DA CORREÇÃO ---
+            // Salva o token de autenticação
+            localStorage.setItem('authToken', data.access_token);
+            
+            // Salva os dados do usuário em um objeto JSON para fácil acesso
+            const userData = {
+                name: data.user_name,
+                // O backend não retorna moedas/nível no login, então buscamos depois.
+                // Mas o nome já podemos salvar!
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Redireciona para o painel principal após o login
+            window.location.href = 'inicio.html';
+            // --- FIM DA CORREÇÃO ---
+
+        } catch (error) {
+            messageArea.textContent = error.message;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Entrar';
+        }
+    });
+</script>
 </body>
 </html>
