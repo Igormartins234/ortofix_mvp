@@ -1,50 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>OrtoFix - Minhas Atividades</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
-        }
-        .navbar-logo {
-            width: 40px; 
-            height: auto;
-        }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
-        #dropdown-menu, #notifications-dropdown {
-            position: fixed;
-        }
-        .activity-card-icon {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 0.75rem; 
-        }
-        .activity-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-        .activity-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
+        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
+        .navbar-logo { width: 40px; height: auto; }
+        .notification-badge { position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background-color: red; border-radius: 50%; border: 1px solid white; }
+        #dropdown-menu, #notifications-dropdown { position: fixed; }
+        .activity-card-icon { width: 64px; height: 64px; margin-bottom: 0.75rem; }
+        .activity-card { transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out; }
+        .activity-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
-    
+
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
@@ -54,7 +28,7 @@
                 <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
                 </a>
-                <a href="atividades.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> 
+                <a href="atividades.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
                     <i data-lucide="gamepad-2" class="w-5 h-5"></i> Atividades
                 </a>
                 <a href="notas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
@@ -69,20 +43,22 @@
                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="image" class="w-5 h-5"></i> Tema
                 </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="type" class="w-5 h-5"></i> Fontes
                 </a>
                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
                     <i data-lucide="target" class="w-5 h-5"></i> Definir Metas
                 </a>
                 <hr class="my-1 border-gray-200">
-                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
+                <a id="dropdown-logout" href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
                     <i data-lucide="log-out" class="w-5 h-5"></i> Sair
                 </a>
             </div>
+
             <a href="../index.html" class="mx-auto md:mx-0">
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
+
             <div class="flex items-center gap-2">
                 <div class="relative">
                     <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
@@ -108,7 +84,7 @@
     <!-- Conteúdo Principal das Atividades -->
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-[#3c6a99] mb-2">Olá, <span id="aluno-nome">Aluno(a)</span>!</h1> <!-- Nome do aluno (simulado) -->
+            <h1 class="text-3xl font-bold text-[#3c6a99] mb-2">Olá, <span id="aluno-nome">Aluno(a)</span>!</h1>
             <p class="text-xl text-[#5689b9]">Pronto para treinar sua ortografia?</p>
         </div>
 
@@ -132,58 +108,13 @@
             </div>
         </div>
 
-        <!-- Lista de Cards de Atividades -->
+        <!-- Mensagem de status / erros -->
+        <p id="status" class="text-center text-sm text-gray-600 mb-4"></p>
+
+        <!-- Grid dinâmico de Atividades (será preenchido pelo JS) -->
         <h2 class="text-2xl font-semibold text-[#3c6a99] text-center mb-6">Escolha uma Atividade</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            
-            <!-- Card OrtoFix Game -->
-            <a href="game.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="puzzle" class="activity-card-icon text-[#8bb3d5]"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">OrtoFix Game</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Identifique as palavras com erros ortográficos.</p>
-                <span class="bg-[#5689b9] text-white text-xs font-semibold px-3 py-1 rounded-full">Principal</span>
-            </a>
-
-            <!-- Card TypeRun -->
-            <a href="typerun.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="keyboard" class="activity-card-icon text-[#8bb3d5]"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">TypeRun</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Teste sua velocidade e precisão na digitação.</p>
-                <span class="bg-gray-400 text-white text-xs font-semibold px-3 py-1 rounded-full">Em Breve</span>
-                
-            </a>
-
-            <!-- Card Exercícios de Texto -->
-            <a href="atividade_correcao.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="file-text" class="activity-card-icon text-[#8bb3d5]"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">Exercícios de Texto</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Complete, corrija e interprete textos.</p>
-                <span class="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Novo!</span>
-            </a>
-
-            <!-- Card Painel de Notas -->
-            <a href="notas.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="bar-chart-big" class="activity-card-icon text-[#5689b9]"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">Painel de Notas</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Acompanhe seu desempenho detalhado.</p>
-                <span class="bg-[#5689b9] text-white text-xs font-semibold px-3 py-1 rounded-full">Progresso</span>
-            </a>
-            
-            <!-- Card Dúvida Personalizada -->
-            <a href="duvida.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="help-circle" class="activity-card-icon text-[#8bb3d5]"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">Dúvida Personalizada</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Envie suas perguntas para o professor.</p>
-                 <span class="bg-gray-400 text-white text-xs font-semibold px-3 py-1 rounded-full">Ajuda</span>
-            </a>
-
-            <!-- Card Recompensas -->
-            <a href="recompensas.html" class="activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
-                <i data-lucide="gift" class="activity-card-icon text-yellow-500"></i>
-                <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">Recompensas</h3>
-                <p class="text-sm text-[#5689b9] mb-3">Troque suas moedas por itens incríveis!</p>
-                <span class="bg-[#5689b9] text-white text-xs font-semibold px-3 py-1 rounded-full">Loja</span>
-            </a>
+        <div id="activities-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <!-- fallback / placeholders serão substituídos quando o JS carregar -->
         </div>
     </main>
 
@@ -192,66 +123,195 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-    <script>
+<script>
+/* ---------- CONFIG ---------- */
+const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+
+/* ---------- HELPERS ---------- */
+function clearAndGoLogin() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userName');
+    window.location.href = 'aluno.html';
+}
+
+function createActivityElement(activity) {
+    // activity: { id, titulo, descricao, tag, icon, url, status }
+    // Provide safe fallbacks if some fields missing
+    const id = activity.id ?? activity.activity_id ?? '';
+    const title = activity.titulo ?? activity.title ?? 'Atividade';
+    const desc = activity.descricao ?? activity.description ?? '';
+    const tag = activity.tag ?? activity.category ?? '';
+    const icon = activity.icon ?? 'puzzle';
+    const url = activity.url ?? `atividade.html?id=${id}`; // destino padrão
+    const status = activity.status ?? activity.state ?? 'available'; // available, coming_soon, locked
+
+    // Build card element
+    const a = document.createElement('a');
+    a.href = url;
+    a.className = 'activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center';
+    a.dataset.activityId = id;
+    if (status === 'locked') {
+        a.classList.add('opacity-60', 'pointer-events-none');
+    }
+
+    a.innerHTML = `
+        <i data-lucide="${icon}" class="activity-card-icon text-[#8bb3d5]"></i>
+        <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">${title}</h3>
+        <p class="text-sm text-[#5689b9] mb-3">${desc}</p>
+        <span class="text-white text-xs font-semibold px-3 py-1 rounded-full ${status === 'available' ? 'bg-[#5689b9]' : status === 'coming_soon' ? 'bg-gray-400' : 'bg-red-400'}">
+            ${status === 'available' ? (tag || 'Iniciar') : (status === 'coming_soon' ? 'Em breve' : 'Bloqueado')}
+        </span>
+    `;
+    return a;
+}
+
+function renderActivitiesList(activities) {
+    const grid = document.getElementById('activities-grid');
+    grid.innerHTML = '';
+    if (!Array.isArray(activities) || activities.length === 0) {
+        document.getElementById('status').textContent = 'Nenhuma atividade disponível no momento.';
+        // fallback: podemos mostrar os cards estáticos padrões (opcionais)
+        const fallback = [
+            { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available', tag: 'Principal' },
+            { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'coming_soon' },
+            { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available', tag: 'Novo' },
+        ];
+        fallback.forEach(act => grid.appendChild(createActivityElement(act)));
         lucide.createIcons();
+        return;
+    }
+    activities.forEach(act => grid.appendChild(createActivityElement(act)));
+    lucide.createIcons();
+}
 
-        // Script Navbar Aluno (copiado)
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-        }
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
+/* ---------- BOOTSTRAP: verifica token, perfil e atividades ---------- */
+async function loadPageData() {
+    const token = localStorage.getItem('authToken');
+    const statusEl = document.getElementById('status');
+
+    if (!token) {
+        window.location.href = 'aluno.html';
+        return;
+    }
+
+    // Exibe nome imediato (UX)
+    const cachedName = localStorage.getItem('userName');
+    if (cachedName) {
+        const nomeEl = document.getElementById('aluno-nome');
+        if (nomeEl) nomeEl.textContent = cachedName;
+    }
+
+    try {
+        // 1) Buscar perfil
+        const profileResp = await fetch(`${API_BASE}/api/aluno/perfil`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!profileResp.ok) {
+            if (profileResp.status === 401 || profileResp.status === 403) {
+                // token inválido -> limpar e redirecionar
+                clearAndGoLogin();
+                return;
+            } else {
+                console.warn('Resposta inesperada ao buscar perfil:', profileResp.status);
+                statusEl.textContent = 'Erro ao carregar perfil — mantendo dados locais. Tente recarregar.';
+            }
+        } else {
+            const userData = await profileResp.json();
+            // Atualiza UI do aluno
+            const nomeEl = document.getElementById('aluno-nome');
+            const moedasEl = document.getElementById('aluno-moedas');
+            const nivelEl = document.getElementById('aluno-nivel');
+
+            if (nomeEl) nomeEl.textContent = userData.nomealuno ?? userData.nome ?? localStorage.getItem('userName') ?? 'Aluno(a)';
+            if (moedasEl && typeof userData.moedas !== 'undefined') moedasEl.textContent = userData.moedas;
+            if (nivelEl && typeof userData.nivel !== 'undefined') nivelEl.textContent = userData.nivel;
+
+            // Optional: sync name to localStorage
+            if (userData.nomealuno || userData.nome) {
+                localStorage.setItem('userName', userData.nomealuno ?? userData.nome);
             }
         }
-        if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
+
+        // 2) Buscar atividades personalizadas do aluno
+        // Endpoint sugerido: GET /api/aluno/atividades  (retorna array)
+        const actsResp = await fetch(`${API_BASE}/api/aluno/atividades`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!actsResp.ok) {
+            if (actsResp.status === 401 || actsResp.status === 403) {
+                // Sessão inválida -> logout
+                clearAndGoLogin();
+                return;
+            } else {
+                // erro no servidor -> mostrar mensagem e fallback
+                statusEl.textContent = `Não foi possível carregar atividades (status ${actsResp.status}). Mostrando opções padrão.`;
+                renderActivitiesList([]); // fallback
+                return;
+            }
         }
 
-        // Simulação de dados do aluno
-        const dadosAluno = {
-            nome: "Aline", // Exemplo
-            moedas: 1250, // Exemplo
-            nivel: "Iniciante 3"
-        };
+        const activities = await actsResp.json();
+        // activities esperado: array de objetos { id, titulo, descricao, icon, url, status, tag }
+        renderActivitiesList(activities);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (document.getElementById('aluno-nome')) {
-                document.getElementById('aluno-nome').textContent = dadosAluno.nome;
-            }
-            if (document.getElementById('aluno-moedas')) {
-                document.getElementById('aluno-moedas').textContent = dadosAluno.moedas;
-            }
-            if (document.getElementById('aluno-nivel')) {
-                document.getElementById('aluno-nivel').textContent = dadosAluno.nivel;
+    } catch (err) {
+        console.error('Erro de rede ao carregar atividades/perfil:', err);
+        document.getElementById('status').textContent = 'Problema de conexão. Mostrando opções offline.';
+        renderActivitiesList([]); // mostra fallback
+    }
+}
+
+/* ---------- UI: menu, notificações, logout ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    const menuBtn = document.getElementById('menu-btn');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const notificationsBtn = document.getElementById('notifications-btn');
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
+    const notificationIndicator = document.getElementById('notification-indicator');
+    const dropdownLogout = document.getElementById('dropdown-logout');
+
+    if (menuBtn && dropdownMenu) {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+            if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                notificationsDropdown.classList.add('hidden');
             }
         });
-// s
-    </script>
+    }
+
+    if (notificationsBtn && notificationsDropdown) {
+        notificationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationsDropdown.classList.toggle('hidden');
+            if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+                notificationsDropdown.classList.add('hidden');
+            }
+        });
+    }
+
+    if (dropdownLogout) {
+        dropdownLogout.addEventListener('click', (e) => {
+            e.preventDefault();
+            clearAndGoLogin();
+        });
+    }
+
+    // carrega dados do backend
+    loadPageData();
+});
+</script>
+
 </body>
+</html>
