@@ -240,154 +240,192 @@
     </footer>
 
 <script>
-    const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
 
-    function clearAndGoLogin() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
-        window.location.href = 'aluno.html';
+function clearAndGoLogin() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    window.location.href = 'aluno.html';
+}
+
+function createActivityElement(activity) {
+    const {
+        id = '',
+        titulo = 'Atividade',
+        descricao = 'Descrição da atividade.',
+        icon = 'puzzle',
+        url = `atividade.html?id=${id}`,
+        status = 'available'
+    } = activity;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.className = 'activity-card p-6 flex flex-col items-center text-center';
+    a.dataset.activityId = id;
+
+    if (status !== 'available') {
+        a.classList.add('opacity-60', 'cursor-not-allowed');
+        a.href = '#';
+        a.onclick = (e) => e.preventDefault();
+    }
+    
+    let statusBadgeHtml = '';
+    if (status === 'coming_soon') {
+        statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-gray-200 text-gray-600 rounded-full">Em Breve</div>`;
+    } else if (status === 'locked') {
+            statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Bloqueado</div>`;
     }
 
-    function createActivityElement(activity) {
-        const {
-            id = '',
-            titulo = 'Atividade',
-            descricao = 'Descrição da atividade.',
-            icon = 'puzzle',
-            url = `atividade.html?id=${id}`,
-            status = 'available'
-        } = activity;
+    a.innerHTML = `
+        ${statusBadgeHtml}
+        <div class="mb-4 p-4 bg-blue-100 rounded-full">
+            <i data-lucide="${icon}" class="w-10 h-10 text-blue-500"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-text-header mb-1">${titulo}</h3>
+        <p class="text-text-muted text-sm mb-4 flex-grow">${descricao}</p>
+        <span class="font-semibold text-sm ${status === 'available' ? 'text-primary' : 'text-text-muted'}">
+            ${status === 'available' ? 'Iniciar Atividade' : 'Indisponível'}
+        </span> 
+    `;
+    return a;
+}
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.className = 'activity-card p-6 flex flex-col items-center text-center';
-        a.dataset.activityId = id;
+function renderActivitiesList(activities) {
+    const grid = document.getElementById('activities-grid');
+    const statusEl = document.getElementById('status');
+    grid.innerHTML = '';
 
-        if (status !== 'available') {
-            a.classList.add('opacity-60', 'cursor-not-allowed');
-            a.href = '#';
-            a.onclick = (e) => e.preventDefault();
-        }
-        
-        let statusBadgeHtml = '';
-        if (status === 'coming_soon') {
-            statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-gray-200 text-gray-600 rounded-full">Em Breve</div>`;
-        } else if (status === 'locked') {
-             statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Bloqueado</div>`;
-        }
+    if (!Array.isArray(activities) || activities.length === 0) {
+        statusEl.textContent = 'Nenhuma atividade disponível no momento. Usando atividades padrão.';
+        const fallback = [
+            { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
+            // --- ALTERAÇÃO FEITA AQUI ---
+            { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'available' },
+            { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available' },
+        ];
+        fallback.forEach(act => grid.appendChild(createActivityElement(act)));
+    } else {
+        activities.forEach(act => grid.appendChild(createActivityElement(act)));
+    }
+    lucide.createIcons();
+}
 
-        a.innerHTML = `
-            ${statusBadgeHtml}
-            <div class="mb-4 p-4 bg-blue-100 rounded-full">
-                <i data-lucide="${icon}" class="w-10 h-10 text-blue-500"></i>
-            </div>
-            <h3 class="text-xl font-semibold text-text-header mb-1">${titulo}</h3>
-            <p class="text-text-muted text-sm mb-4 flex-grow">${descricao}</p>
-            <span class="font-semibold text-sm ${status === 'available' ? 'text-primary' : 'text-text-muted'}">
-                ${status === 'available' ? 'Iniciar Atividade' : 'Indisponível'}
-            </span>
-        `;
-        return a;
+async function loadPageData() {
+    const token = localStorage.getItem('authToken');
+    const statusEl = document.getElementById('status');
+
+    if (!token) {
+        clearAndGoLogin();
+        return;
     }
 
-    function renderActivitiesList(activities) {
-        const grid = document.getElementById('activities-grid');
-        const statusEl = document.getElementById('status');
-        grid.innerHTML = '';
-
-        if (!Array.isArray(activities) || activities.length === 0) {
-            statusEl.textContent = 'Nenhuma atividade disponível no momento. Usando atividades padrão.';
-            const fallback = [
-                { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
-                // --- ALTERAÇÃO FEITA AQUI ---
-                { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'available' },
-                { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available' },
-            ];
-            fallback.forEach(act => grid.appendChild(createActivityElement(act)));
-        } else {
-            activities.forEach(act => grid.appendChild(createActivityElement(act)));
-        }
-        lucide.createIcons();
+    const welcomeMessage = document.getElementById('welcome-message');
+    const userDataString = localStorage.getItem('userData');
+    if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        const firstName = userData.name.split(' ')[0];
+        welcomeMessage.textContent = `Olá, ${firstName}! Escolha um desafio para começar.`;
     }
 
-    async function loadPageData() {
-        const token = localStorage.getItem('authToken');
-        const statusEl = document.getElementById('status');
+    try {
+        statusEl.textContent = 'Carregando atividades...';
+        const actsResp = await fetch(`${API_BASE}/api/aluno/atividades`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-        if (!token) {
-            clearAndGoLogin();
-            return;
-        }
-
-        const welcomeMessage = document.getElementById('welcome-message');
-        const userDataString = localStorage.getItem('userData');
-        if (userDataString) {
-            const userData = JSON.parse(userDataString);
-            const firstName = userData.name.split(' ')[0];
-            welcomeMessage.textContent = `Olá, ${firstName}! Escolha um desafio para começar.`;
-        }
-
-        try {
-            statusEl.textContent = 'Carregando atividades...';
-            const actsResp = await fetch(`${API_BASE}/api/aluno/atividades`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (!actsResp.ok) {
-                if (actsResp.status === 401 || actsResp.status === 403) {
-                    clearAndGoLogin();
-                    return;
-                }
-                throw new Error(`Erro do servidor: ${actsResp.status}`);
+        if (!actsResp.ok) {
+            if (actsResp.status === 401 || actsResp.status === 403) {
+                clearAndGoLogin();
+                return;
             }
-
-            const activities = await actsResp.json();
-            renderActivitiesList(activities);
-            statusEl.textContent = '';
-
-        } catch (err) {
-            console.error('Erro de rede ao carregar atividades:', err);
-            statusEl.textContent = 'Problema de conexão. Mostrando opções padrão.';
-            renderActivitiesList([]);
+            throw new Error(`Erro do servidor: ${actsResp.status}`);
         }
+
+        const activities = await actsResp.json();
+        renderActivitiesList(activities);
+        statusEl.textContent = '';
+
+    } catch (err) {
+        console.error('Erro de rede ao carregar atividades:', err);
+        statusEl.textContent = 'Problema de conexão. Mostrando opções padrão.';
+        renderActivitiesList([]);
     }
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
 
-        const setupDropdown = (btnId, dropdownId) => {
-            const btn = document.getElementById(btnId);
-            const dropdown = document.getElementById(dropdownId);
-            if (!btn || !dropdown) return;
+    const setupDropdown = (btnId, dropdownId) => {
+        const btn = document.getElementById(btnId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!btn || !dropdown) return;
 
-            btn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                document.querySelectorAll('[id$="-dropdown"]').forEach(el => {
-                    if (el.id !== dropdownId) el.classList.add('hidden');
-                });
-                dropdown.classList.toggle('hidden');
+        btn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            document.querySelectorAll('[id$="-dropdown"]').forEach(el => {
+                if (el.id !== dropdownId) el.classList.add('hidden');
             });
-        };
-        
-        setupDropdown('profile-btn', 'profile-dropdown');
-        setupDropdown('notifications-btn', 'notifications-dropdown');
-
-        const closeAllDropdowns = () => {
-             document.querySelectorAll('[id$="-dropdown"]').forEach(el => el.classList.add('hidden'));
-        };
-        window.addEventListener('click', closeAllDropdowns);
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closeAllDropdowns();
+            dropdown.classList.toggle('hidden');
         });
-        
-        document.getElementById('logout-btn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            clearAndGoLogin();
-        });
+    };
+    
+    setupDropdown('profile-btn', 'profile-dropdown');
+    setupDropdown('notifications-btn', 'notifications-dropdown');
 
-        loadPageData();
+    const closeAllDropdowns = () => {
+            document.querySelectorAll('[id$="-dropdown"]').forEach(el => el.classList.add('hidden'));
+    };
+    window.addEventListener('click', closeAllDropdowns);
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeAllDropdowns();
     });
+    
+    document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearAndGoLogin();
+    });
+
+    loadPageData();
+});
+// 🔹 Script de notificações
+const notificationsBtn = document.getElementById("notifications-btn");
+const notificationsDropdown = document.getElementById("notifications-dropdown");
+const notificationIndicator = document.getElementById("notification-indicator");
+
+let hasUnreadNotifications = true;
+if (notificationIndicator && !hasUnreadNotifications) {
+    notificationIndicator.classList.add("hidden");
+}
+
+if (notificationsBtn && notificationsDropdown) {
+    notificationsBtn.addEventListener("click", () => {
+        notificationsDropdown.classList.toggle("hidden");
+        if (dropdownMenu && !dropdownMenu.classList.contains("hidden")) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
+    document.addEventListener("click", (e) => {
+        if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+            notificationsDropdown.classList.add("hidden");
+        }
+    });
+}// 🔹 Corrigindo bug do ID errado ("drop  down-menu")
+const menuBtn = document.getElementById("menu-btn");
+const dropdownMenu = document.getElementById("dropdown-menu");
+if (menuBtn && dropdownMenu) {
+    menuBtn.addEventListener("click", () => {
+        dropdownMenu.classList.toggle("hidden");
+        if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
+            notificationsDropdown.classList.add("hidden");
+        }
+    });
+    document.addEventListener("click", (e) => {
+        if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
+}
 </script>
 
 </body>
