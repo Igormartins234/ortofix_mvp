@@ -1,316 +1,393 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>OrtoFix - Minhas Atividades</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
-        .navbar-logo { width: 40px; height: auto; }
-        .notification-badge { position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background-color: red; border-radius: 50%; border: 1px solid white; }
-        #dropdown-menu, #notifications-dropdown { position: fixed; }
-        .activity-card-icon { width: 64px; height: 64px; margin-bottom: 0.75rem; }
-        .activity-card { transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out; }
-        .activity-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>OrtoFix - Painel do Aluno</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/lucide@latest"></script> <!-- Lucide Icons -->
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+                --color-primary-dark: #357ABD;
+                --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
+                --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
+                --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
+                --color-text-light: #8492a6;  /* Cinza para textos secundários */
+                --color-card-bg: #ffffff;
+            }
 
-    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="atividades.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="gamepad-2" class="w-5 h-5"></i> Atividades
-                </a>
-                <a href="notas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Desempenho
-                </a>
-                <a href="recompensas.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="award" class="w-5 h-5"></i> Recompensas
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="image" class="w-5 h-5"></i> Tema
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="type" class="w-5 h-5"></i> Fontes
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="target" class="w-5 h-5"></i> Definir Metas
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a id="dropdown-logout" href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
-            </div>
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: var(--color-background);
+                color: var(-    -color-text-dark);
+                /* Gradiente sutil no fundo para dar profundidade */
+                background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+            }
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+            body {
+                font-family: 'Poppins', sans-serif;
+                color: #3c6a99; 
+            }
+            .navbar-logo {
+                width: 40px; 
+                height: auto;
+            }       
+            .card-custom-icon {
+                width: 48px; 
+                height: 48px; 
+                margin-bottom: 0.75rem; 
+            }
+            /* Estilo para o indicador de notificação (ponto vermelho) */
+            .notification-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 12px;
+                height: 12px;
+                background-color: #EF4444;
+                border-radius: 50%;
+                border: 2px solid var(--color-primary-dark);
+                animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+                50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            }
+            
+            /* Animações de entrada para os elementos da página */
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            
+            .fade-in {
+                animation: fadeIn 0.6s ease-out forwards;
+            }
+            
+            /* Estilizando os cards de navegação com interações aprimoradas */
+            .nav-card {
+                background-color: var(--color-card-bg);
+                border-radius: 1rem; /* bordas mais arredondadas */
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
 
-            <a href="../index.html" class="mx-auto md:mx-0">
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
-            </a>
+            .nav-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04);
+            }
+            
+            /* Efeito de borda gradiente no hover */
+            .nav-card::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.4s ease-in-out;
+            }
 
-            <div class="flex items-center gap-2">
+            .nav-card:hover::after {
+                transform: scaleX(1);
+            }
+            @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        /* --- ESTILOS DE COMPONENTES CUSTOMIZADOS --- */
+        .header-nav {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .activity-card {
+            background-color: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; 
+            overflow: hidden;
+        }
+        .activity-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+        }
+        </style>
+    </head>
+    <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+    <header class="header-nav sticky top-0 z-50">
+        <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+            <!-- Menu Principal -->
                 <div class="relative">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <span class="notification-badge" id="notification-indicator"></span>
+                    <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                        <i data-lucide="menu"></i>
                     </button>
-                    <div id="notifications-dropdown" class="absolute right-0 top-16 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden w-72 sm:w-80">
-                        <div class="p-3 border-b border-gray-200"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3></div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p><p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p><p class="text-xs text-gray-400 mt-1">Há 15 minutos</p></a>
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p><p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p><p class="text-xs text-gray-400 mt-1">Há 1 hora</p></a>
-                        </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">Ver todas as notificações</a>
+                    <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                        <!-- Itens do menu -->
+                        <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                        </a>
+                        <a href="#" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                        </a>
+                        <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                        </a>
+                        <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                        </a>
+                        <hr class="my-1 border-gray-200">
+                        <a href="../index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                            <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                        </a>
                     </div>
                 </div>
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+
+                <!-- Logo -->
+                <a href="../index.html" class="mx-auto md:mx-0"> 
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
                 </a>
+
+                <!-- Ícones da Direita: Notificações e Perfil -->
+                <div class="flex items-center gap-2">
+                    <!-- Ícone de Notificações -->
+                    <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                        <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                            <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                        
+                            <span class="notification-badge" id="notification-indicator"></span>
+                        </button>
+                        <!-- Dropdown de Notificações -->
+                        <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                            <div class="p-3 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                <!-- Notificação Exemplo 1 -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                    <p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p>
+                                    <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
+                                    <p class="text-xs text-gray-400 mt-1">Há 15 minutos</p>
+                                </a>
+                                <!-- Notificação Exemplo 2 -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                    <p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p>
+                                    <p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p>
+                                    <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
+                                </a>
+                                <!-- Notificação Exemplo 3 (Lida) -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
+                                    <p class="text-sm text-gray-500">Feedback do Professor</p>
+                                    <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
+                                    <p class="text-xs text-gray-400 mt-1">Ontem</p>
+                                </a>
+                                <!-- Mais notificações aqui -->
+                            </div>
+                            <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                                Ver todas as notificações
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Ícone de Perfil -->
+                    <a href="perfil.html" class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
+                        <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+                    </a>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Conteúdo Principal das Atividades -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-[#3c6a99] mb-2">Olá, <span id="aluno-nome">Aluno(a)</span>!</h1>
-            <p class="text-xl text-[#5689b9]">Pronto para treinar sua ortografia?</p>
-        </div>
-
-        <!-- Resumo Rápido do Aluno -->
-        <div class="mb-10 p-6 bg-white/80 backdrop-blur-sm shadow-lg rounded-xl max-w-xl mx-auto flex flex-col sm:flex-row justify-around items-center gap-4 text-center">
-            <div>
-                <p class="text-sm text-[#5689b9] mb-1">Minhas Moedas</p>
-                <div class="flex items-center justify-center">
-                    <i data-lucide="coins" class="w-7 h-7 text-yellow-400 mr-2"></i>
-                    <p class="text-2xl font-bold text-[#3c6a99]" id="aluno-moedas">1250</p>
-                </div>
+    <main class="container mx-auto px-6 py-12 flex-grow">
+        <div class="max-w-5xl mx-auto">
+            <div class="mb-12 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold text-text-header mb-2">Atividades</h1>
+                <p id="welcome-message" class="text-lg text-text-body">Olá! Escolha um desafio para começar.</p>
             </div>
-            <div class="border-l border-gray-300 h-12 hidden sm:block"></div>
-            <hr class="w-3/4 border-gray-300 block sm:hidden my-2">
-            <div>
-                <p class="text-sm text-[#5689b9] mb-1">Nível Atual</p>
-                 <div class="flex items-center justify-center">
-                    <i data-lucide="star" class="w-7 h-7 text-amber-500 mr-2"></i>
-                    <p class="text-2xl font-bold text-[#3c6a99]" id="aluno-nivel">Iniciante 3</p>
-                </div>
+
+            <p id="status" class="text-center text-sm text-text-muted mb-6"></p>
+
+            <div id="activities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Atividades serão inseridas aqui pelo JavaScript -->
             </div>
-        </div>
-
-        <!-- Mensagem de status / erros -->
-        <p id="status" class="text-center text-sm text-gray-600 mb-4"></p>
-
-        <!-- Grid dinâmico de Atividades (será preenchido pelo JS) -->
-        <h2 class="text-2xl font-semibold text-[#3c6a99] text-center mb-6">Escolha uma Atividade</h2>
-        <div id="activities-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <!-- fallback / placeholders serão substituídos quando o JS carregar -->
         </div>
     </main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
+     <footer class="bg-[#3c6a99] text-[#e3ebf2] border-t border-gray-200 mt-auto">
+        <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
+            <div class="flex items-center justify-center gap-2">
+                <p>&copy; 2025 OrtoFix</p>
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                    class="h-6" style="filter: brightness(0) invert(1);">
+            </div>
+        </div>
     </footer>
 
 <script>
-/* ---------- CONFIG ---------- */
-const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+    const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
 
-/* ---------- HELPERS ---------- */
-function clearAndGoLogin() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userName');
-    window.location.href = 'aluno.html';
-}
-
-function createActivityElement(activity) {
-    // activity: { id, titulo, descricao, tag, icon, url, status }
-    // Provide safe fallbacks if some fields missing
-    const id = activity.id ?? activity.activity_id ?? '';
-    const title = activity.titulo ?? activity.title ?? 'Atividade';
-    const desc = activity.descricao ?? activity.description ?? '';
-    const tag = activity.tag ?? activity.category ?? '';
-    const icon = activity.icon ?? 'puzzle';
-    const url = activity.url ?? `atividade.html?id=${id}`; // destino padrão
-    const status = activity.status ?? activity.state ?? 'available'; // available, coming_soon, locked
-
-    // Build card element
-    const a = document.createElement('a');
-    a.href = url;
-    a.className = 'activity-card bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center';
-    a.dataset.activityId = id;
-    if (status === 'locked') {
-        a.classList.add('opacity-60', 'pointer-events-none');
-    }
-
-    a.innerHTML = `
-        <i data-lucide="${icon}" class="activity-card-icon text-[#8bb3d5]"></i>
-        <h3 class="text-xl font-semibold text-[#3c6a99] mb-1">${title}</h3>
-        <p class="text-sm text-[#5689b9] mb-3">${desc}</p>
-        <span class="text-white text-xs font-semibold px-3 py-1 rounded-full ${status === 'available' ? 'bg-[#5689b9]' : status === 'coming_soon' ? 'bg-gray-400' : 'bg-red-400'}">
-            ${status === 'available' ? (tag || 'Iniciar') : (status === 'coming_soon' ? 'Em breve' : 'Bloqueado')}
-        </span>
-    `;
-    return a;
-}
-
-function renderActivitiesList(activities) {
-    const grid = document.getElementById('activities-grid');
-    grid.innerHTML = '';
-    if (!Array.isArray(activities) || activities.length === 0) {
-        document.getElementById('status').textContent = 'Nenhuma atividade disponível no momento.';
-        // fallback: podemos mostrar os cards estáticos padrões (opcionais)
-        const fallback = [
-            { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available', tag: 'Principal' },
-            { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'coming_soon' },
-            { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available', tag: 'Novo' },
-        ];
-        fallback.forEach(act => grid.appendChild(createActivityElement(act)));
-        lucide.createIcons();
-        return;
-    }
-    activities.forEach(act => grid.appendChild(createActivityElement(act)));
-    lucide.createIcons();
-}
-
-/* ---------- BOOTSTRAP: verifica token, perfil e atividades ---------- */
-async function loadPageData() {
-    const token = localStorage.getItem('authToken');
-    const statusEl = document.getElementById('status');
-
-    if (!token) {
+    function clearAndGoLogin() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
         window.location.href = 'aluno.html';
-        return;
     }
 
-    // Exibe nome imediato (UX)
-    const cachedName = localStorage.getItem('userName');
-    if (cachedName) {
-        const nomeEl = document.getElementById('aluno-nome');
-        if (nomeEl) nomeEl.textContent = cachedName;
+    function createActivityElement(activity) {
+        const {
+            id = '',
+            titulo = 'Atividade',
+            descricao = 'Descrição da atividade.',
+            icon = 'puzzle',
+            url = `atividade.html?id=${id}`,
+            status = 'available'
+        } = activity;
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.className = 'activity-card p-6 flex flex-col items-center text-center';
+        a.dataset.activityId = id;
+
+        if (status !== 'available') {
+            a.classList.add('opacity-60', 'cursor-not-allowed');
+            a.href = '#';
+            a.onclick = (e) => e.preventDefault();
+        }
+        
+        let statusBadgeHtml = '';
+        if (status === 'coming_soon') {
+            statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-gray-200 text-gray-600 rounded-full">Em Breve</div>`;
+        } else if (status === 'locked') {
+             statusBadgeHtml = `<div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Bloqueado</div>`;
+        }
+
+        a.innerHTML = `
+            ${statusBadgeHtml}
+            <div class="mb-4 p-4 bg-blue-100 rounded-full">
+                <i data-lucide="${icon}" class="w-10 h-10 text-blue-500"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-text-header mb-1">${titulo}</h3>
+            <p class="text-text-muted text-sm mb-4 flex-grow">${descricao}</p>
+            <span class="font-semibold text-sm ${status === 'available' ? 'text-primary' : 'text-text-muted'}">
+                ${status === 'available' ? 'Iniciar Atividade' : 'Indisponível'}
+            </span>
+        `;
+        return a;
     }
 
-    try {
-        // 1) Buscar perfil
-        const profileResp = await fetch(`${API_BASE}/api/aluno/perfil`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    function renderActivitiesList(activities) {
+        const grid = document.getElementById('activities-grid');
+        const statusEl = document.getElementById('status');
+        grid.innerHTML = '';
 
-        if (!profileResp.ok) {
-            if (profileResp.status === 401 || profileResp.status === 403) {
-                // token inválido -> limpar e redirecionar
-                clearAndGoLogin();
-                return;
-            } else {
-                console.warn('Resposta inesperada ao buscar perfil:', profileResp.status);
-                statusEl.textContent = 'Erro ao carregar perfil — mantendo dados locais. Tente recarregar.';
-            }
+        if (!Array.isArray(activities) || activities.length === 0) {
+            statusEl.textContent = 'Nenhuma atividade disponível no momento. Usando atividades padrão.';
+            const fallback = [
+                { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
+                // --- ALTERAÇÃO FEITA AQUI ---
+                { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'available' },
+                { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available' },
+            ];
+            fallback.forEach(act => grid.appendChild(createActivityElement(act)));
         } else {
-            const userData = await profileResp.json();
-            // Atualiza UI do aluno
-            const nomeEl = document.getElementById('aluno-nome');
-            const moedasEl = document.getElementById('aluno-moedas');
-            const nivelEl = document.getElementById('aluno-nivel');
+            activities.forEach(act => grid.appendChild(createActivityElement(act)));
+        }
+        lucide.createIcons();
+    }
 
-            if (nomeEl) nomeEl.textContent = userData.nomealuno ?? userData.nome ?? localStorage.getItem('userName') ?? 'Aluno(a)';
-            if (moedasEl && typeof userData.moedas !== 'undefined') moedasEl.textContent = userData.moedas;
-            if (nivelEl && typeof userData.nivel !== 'undefined') nivelEl.textContent = userData.nivel;
+    async function loadPageData() {
+        const token = localStorage.getItem('authToken');
+        const statusEl = document.getElementById('status');
 
-            // Optional: sync name to localStorage
-            if (userData.nomealuno || userData.nome) {
-                localStorage.setItem('userName', userData.nomealuno ?? userData.nome);
-            }
+        if (!token) {
+            clearAndGoLogin();
+            return;
         }
 
-        // 2) Buscar atividades personalizadas do aluno
-        // Endpoint sugerido: GET /api/aluno/atividades  (retorna array)
-        const actsResp = await fetch(`${API_BASE}/api/aluno/atividades`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!actsResp.ok) {
-            if (actsResp.status === 401 || actsResp.status === 403) {
-                // Sessão inválida -> logout
-                clearAndGoLogin();
-                return;
-            } else {
-                // erro no servidor -> mostrar mensagem e fallback
-                statusEl.textContent = `Não foi possível carregar atividades (status ${actsResp.status}). Mostrando opções padrão.`;
-                renderActivitiesList([]); // fallback
-                return;
-            }
+        const welcomeMessage = document.getElementById('welcome-message');
+        const userDataString = localStorage.getItem('userData');
+        if (userDataString) {
+            const userData = JSON.parse(userDataString);
+            const firstName = userData.name.split(' ')[0];
+            welcomeMessage.textContent = `Olá, ${firstName}! Escolha um desafio para começar.`;
         }
 
-        const activities = await actsResp.json();
-        // activities esperado: array de objetos { id, titulo, descricao, icon, url, status, tag }
-        renderActivitiesList(activities);
+        try {
+            statusEl.textContent = 'Carregando atividades...';
+            const actsResp = await fetch(`${API_BASE}/api/aluno/atividades`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
 
-    } catch (err) {
-        console.error('Erro de rede ao carregar atividades/perfil:', err);
-        document.getElementById('status').textContent = 'Problema de conexão. Mostrando opções offline.';
-        renderActivitiesList([]); // mostra fallback
-    }
-}
-
-/* ---------- UI: menu, notificações, logout ---------- */
-document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
-
-    const menuBtn = document.getElementById('menu-btn');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const notificationsBtn = document.getElementById('notifications-btn');
-    const notificationsDropdown = document.getElementById('notifications-dropdown');
-    const notificationIndicator = document.getElementById('notification-indicator');
-    const dropdownLogout = document.getElementById('dropdown-logout');
-
-    if (menuBtn && dropdownMenu) {
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-            if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                notificationsDropdown.classList.add('hidden');
+            if (!actsResp.ok) {
+                if (actsResp.status === 401 || actsResp.status === 403) {
+                    clearAndGoLogin();
+                    return;
+                }
+                throw new Error(`Erro do servidor: ${actsResp.status}`);
             }
-        });
+
+            const activities = await actsResp.json();
+            renderActivitiesList(activities);
+            statusEl.textContent = '';
+
+        } catch (err) {
+            console.error('Erro de rede ao carregar atividades:', err);
+            statusEl.textContent = 'Problema de conexão. Mostrando opções padrão.';
+            renderActivitiesList([]);
+        }
     }
 
-    if (notificationsBtn && notificationsDropdown) {
-        notificationsBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notificationsDropdown.classList.toggle('hidden');
-            if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
-        document.addEventListener('click', (e) => {
-            if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                notificationsDropdown.classList.add('hidden');
-            }
-        });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
 
-    if (dropdownLogout) {
-        dropdownLogout.addEventListener('click', (e) => {
+        const setupDropdown = (btnId, dropdownId) => {
+            const btn = document.getElementById(btnId);
+            const dropdown = document.getElementById(dropdownId);
+            if (!btn || !dropdown) return;
+
+            btn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                document.querySelectorAll('[id$="-dropdown"]').forEach(el => {
+                    if (el.id !== dropdownId) el.classList.add('hidden');
+                });
+                dropdown.classList.toggle('hidden');
+            });
+        };
+        
+        setupDropdown('profile-btn', 'profile-dropdown');
+        setupDropdown('notifications-btn', 'notifications-dropdown');
+
+        const closeAllDropdowns = () => {
+             document.querySelectorAll('[id$="-dropdown"]').forEach(el => el.classList.add('hidden'));
+        };
+        window.addEventListener('click', closeAllDropdowns);
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAllDropdowns();
+        });
+        
+        document.getElementById('logout-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
             clearAndGoLogin();
         });
-    }
 
-    // carrega dados do backend
-    loadPageData();
-});
+        loadPageData();
+    });
 </script>
 
 </body>
