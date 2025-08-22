@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>OrtoFix - Gerenciar Alunos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #e3ebf2; color: #3c6a99; }
+    </style>
+</head>
+<body>
+    <!-- (Você pode copiar a navbar do painel do professor aqui para consistência) -->
+    
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Meus Alunos</h1>
+        
+        <!-- A lista de alunos será inserida aqui -->
+        <div id="lista-alunos" class="space-y-4">
+            <p>Carregando alunos...</p>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        const listaAlunosDiv = document.getElementById('lista-alunos');
+
+        async function carregarAlunos() {
+            const token = localStorage.getItem('authToken'); // O professor deve estar logado
+            if (!token) {
+                listaAlunosDiv.innerHTML = '<p class="text-red-500">Acesso negado. Faça login como professor.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/alunos', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Não foi possível carregar a lista de alunos.');
+                }
+
+                const alunos = await response.json();
+                listaAlunosDiv.innerHTML = ''; // Limpa a mensagem "Carregando..."
+
+                if (alunos.length === 0) {
+                    listaAlunosDiv.innerHTML = '<p>Você ainda não tem nenhum aluno vinculado.</p>';
+                    return;
+                }
+
+                alunos.forEach(aluno => {
+                    const statusClass = aluno.status === 'ativo' ? 'text-green-600' : 'text-red-500';
+                    const card = `
+                        <div class="bg-white rounded-xl shadow-lg p-5 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg font-semibold">${aluno.nomealuno}</h3>
+                                <p class="text-sm text-gray-500">${aluno.emailaluno}</p>
+                                <p class="text-sm">Moedas: ${aluno.moedas} | Nível: ${aluno.nivel}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold ${statusClass}">${aluno.status.toUpperCase()}</p>
+                                <!-- Futuramente, botões para ver detalhes, bloquear, etc. -->
+                            </div>
+                        </div>
+                    `;
+                    listaAlunosDiv.innerHTML += card;
+                });
+
+            } catch (error) {
+                listaAlunosDiv.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarAlunos);
+    </script>
+</body>
+</html>
