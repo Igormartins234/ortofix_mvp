@@ -188,52 +188,76 @@
         // Função para renderizar os dados do usuário na página
         function renderUserData(userData) {
             if (!userData) return;
-            // Preenche os dados na página
-            document.querySelector('p.text-lg.text-\\[\\#5689b9\\]').textContent = `Bem-vindo(a) de volta, ${userData.nomealuno}!`;
-            document.querySelector('.grid .bg-\\[\\#e3ebf2\\]\\/50 p.text-2xl').textContent = userData.moedas;
-            document.querySelectorAll('.grid .bg-\\[\\#e3ebf2\\]\\/50 p.text-2xl')[1].textContent = userData.nivel;
+            // seletor original mantido; atualiza com dados do servidor
+            const welcomeP = document.querySelector('p.text-lg.text-\\[\\#5689b9\\]');
+            if (welcomeP) welcomeP.textContent = `Bem-vindo(a) de volta, ${userData.nomealuno || userData.nome || localStorage.getItem('userName') || 'Aluno(a)'}!`;
+
+            // Atualiza moedas e nível — seleciona os elementos apropriados
+            const moedasEl = document.querySelectorAll('.grid .bg-\\[\\#e3ebf2\\]\\/50 p.text-2xl')[0];
+            const nivelEl = document.querySelectorAll('.grid .bg-\\[\\#e3ebf2\\]\\/50 p.text-2xl')[1];
+            if (moedasEl && typeof userData.moedas !== 'undefined') moedasEl.textContent = userData.moedas;
+            if (nivelEl && typeof userData.nivel !== 'undefined') nivelEl.textContent = userData.nivel;
         }
 
         // Função para fazer o logout
         function logout() {
             localStorage.removeItem('authToken');
+            localStorage.removeItem('userName'); // Limpa também o nome do usuário
             window.location.href = 'aluno.html';
         }
 
         // Script principal que roda ao carregar a página
         document.addEventListener('DOMContentLoaded', async () => {
+            const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
             const token = localStorage.getItem('authToken');
+            const userName = localStorage.getItem('userName'); // Pega o nome salvo no login
 
             if (!token) {
-                // Se não há token, redireciona para o login.
                 window.location.href = 'aluno.html';
                 return;
             }
 
+            // Exibe o nome do usuário IMEDIATAMENTE, sem esperar a API
+            if (userName) {
+                 const welcomeP = document.querySelector('p.text-lg.text-\\[\\#5689b9\\]');
+                 if (welcomeP) welcomeP.textContent = `Bem-vindo(a) de volta, ${userName}!`;
+            }
+
+            // Agora, busca os dados completos (moedas, nível) em segundo plano
             try {
-                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/aluno/perfil', {
+                const response = await fetch(`${API_BASE}/api/aluno/perfil`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 if (!response.ok) {
-                    // Se o token for inválido, limpa e redireciona.
-                    logout();
-                    return;
+                    // >>> ALTERAÇÃO CRUCIAL: só desloga quando for claramente autorização negada (401/403).
+                    if (response.status === 401 || response.status === 403) {
+                        // token inválido -> limpar e redirecionar
+                        logout();
+                        return;
+                    } else {
+                        // outros status (500, 404, etc): não remover token, apenas informar
+                        console.warn('Resposta inesperada ao buscar perfil:', response.status);
+                        const welcomeP = document.querySelector('p.text-lg.text-\\[\\#5689b9\\]');
+                        if (welcomeP) welcomeP.textContent += ' (erro ao carregar perfil — tente novamente)';
+                        return;
+                    }
                 }
 
                 const userData = await response.json();
-                renderUserData(userData);
+                renderUserData(userData); // Atualiza tudo com os dados completos
 
             } catch (error) {
-                console.error('Falha na autenticação ou busca de perfil:', error);
-                // Em caso de erro de rede, também faz logout por segurança.
-                logout();
+                console.error('Não foi possível buscar dados do perfil. Verifique a conexão.', error);
+                // Em caso de falha de rede, NÃO faz logout. Apenas exibe uma mensagem.
+                const welcomeP = document.querySelector('p.text-lg.text-\\[\\#5689b9\\]');
+                if (welcomeP) welcomeP.textContent += ' (offline)';
             }
         });
 
         // --- SEU CÓDIGO DE MENU, NOTIFICAÇÕES E LOGOUT ---
-        // Adicionando evento de logout ao botão "Sair"
-        const logoutButton = document.querySelector('a[href="../index.html"]'); 
+        // Seleciona o link Sair dentro do dropdown (garante pegar o item certo)
+        const logoutButton = document.querySelector('#dropdown-menu a[href="../index.html"]'); 
         if(logoutButton && logoutButton.innerText.trim().toLowerCase() === 'sair') {
             logoutButton.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -245,6 +269,9 @@
         const dropdownMenu = document.getElementById('dropdown-menu');
         const notificationIndicator = document.getElementById('notification-indicator');
 
+        // Corrigido: variáveis de notificações declaradas (evita erro de referência)
+        const notificationsBtn = document.getElementById('notifications-btn');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
     
         let hasUnreadNotifications = true; 
         if (notificationIndicator) {
@@ -252,7 +279,6 @@
                 notificationIndicator.classList.add('hidden');
             }
         }
-
 
         if (notificationsBtn && notificationsDropdown) {
             notificationsBtn.addEventListener('click', () => {
@@ -263,7 +289,7 @@
                 }
    
                 if (notificationIndicator && hasUnreadNotifications) {
-
+                    // você pode adicionar lógica aqui para marcar notificações como lidas
                 }
             });
     
