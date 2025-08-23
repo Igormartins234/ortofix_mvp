@@ -114,7 +114,7 @@
                         <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
                             <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
                         </a>
-                        <a href="#" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
                             <i data-lucide="volume-2" class="w-5 h-5"></i> Som
                         </a>
                         <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
@@ -177,14 +177,13 @@
                     </div>
 
                     <!-- Ícone de Perfil -->
-                    <a href="perfil.html" class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
+                    <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
                         <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
                     </a>
                 </div>
             </div>
         </nav>
     </header>
-
         <main class="container mx-auto px-4 sm:px-6 py-12 flex-grow">
             <div class="text-center mb-12 fade-in" style="animation-delay: 100ms;">
                 <h1 class="text-4xl md:text-5xl font-bold text-[var(--color-text-dark)] mb-2 tracking-tight">Seu Painel</h1>
@@ -356,6 +355,53 @@ if (notificationsBtn && notificationsDropdown) {
     });
 }
 </script>
+<audio id="click-sound" src="../ortofix_mvp/static/audio/click.wav"></audio>
 
-    </body>
-    </html>
+<!-- Som de clique -->
+<audio id="click-sound" src="../ortofix_mvp/static/audio/click.wav"></audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const clickSound = document.getElementById("click-sound");
+    clickSound.volume = 0.5;
+
+    let soundEnabled = true;
+
+    const soundBtn = document.getElementById("sound-btn");
+    if (soundBtn) {
+        soundBtn.addEventListener("click", () => {
+            soundEnabled = !soundEnabled;
+
+            const icon = soundBtn.querySelector("i");
+
+            if (soundEnabled) {
+                // Som ligado
+                icon.setAttribute("data-lucide", "volume-2");
+                icon.classList.remove("text-red-500");
+                icon.classList.add("text-[#e3ebf2]");
+            } else {
+                // Som mutado, ícone com barra vermelha
+                icon.setAttribute("data-lucide", "volume-x");
+                icon.classList.remove("text-[#e3ebf2]");
+                icon.classList.add("text-red-500");
+            }
+
+            lucide.createIcons();
+        });
+    }
+
+    const clickableElements = document.querySelectorAll("a, button, .nav-card");
+    clickableElements.forEach(el => {
+        el.addEventListener("click", () => {
+            if (soundEnabled) {
+                clickSound.currentTime = 0;
+                clickSound.play().catch(err => {});
+            }
+        });
+    });
+});
+</script>
+
+
+</body>
+</html>
