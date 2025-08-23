@@ -65,46 +65,6 @@
             .fade-in {
                 animation: fadeIn 0.6s ease-out forwards;
             }
-            
-            /* Estilizando os cards de navegação com interações aprimoradas */
-            .nav-card {
-                background-color: var(--color-card-bg);
-                border-radius: 1rem; /* bordas mais arredondadas */
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .nav-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04);
-            }
-            
-            /* Efeito de borda gradiente no hover */
-            .nav-card::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 4px;
-                background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
-                transform: scaleX(0);
-                transform-origin: left;
-                transition: transform 0.4s ease-in-out;
-            }
-
-            .nav-card:hover::after {
-                transform: scaleX(1);
-            }
-            @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(15px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
-        }
         
         /* --- ESTILOS DE COMPONENTES CUSTOMIZADOS --- */
         .header-nav {
@@ -123,9 +83,25 @@
             overflow: hidden;
         }
         .activity-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
         }
+        .activity-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease-in-out;
+    }
+
+    .activity-card:hover::after {
+        transform: scaleX(1);
+    }
         </style>
     </head>
     <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
@@ -205,7 +181,7 @@
                     </div>
 
                     <!-- Ícone de Perfil -->
-                    <a href="perfil.html" class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
+                    <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
                         <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
                     </a>
                 </div>
@@ -419,7 +395,7 @@ if (menuBtn && dropdownMenu) {
         if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
             notificationsDropdown.classList.add("hidden");
         }
-    });
+    })
     document.addEventListener("click", (e) => {
         if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.add("hidden");
