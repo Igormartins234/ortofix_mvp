@@ -357,8 +357,11 @@ if (notificationsBtn && notificationsDropdown) {
 </script>
 
 
-<!-- Som de clique -->
-<audio id="click-sound" src="../ortofix_mvp/static/audio/click.wav"></audio>
+<audio id="click-sound" preload="auto">
+  <source src="/audio/click.wav" type="audio/wav">
+  Seu navegador não suporta áudio.
+</audio>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
