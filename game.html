@@ -232,7 +232,7 @@
         }
         
         // Adiciona som de clique a todos os botões e links
-        document.querySelectorAll("a, button,").forEach(el => {
+        document.querySelectorAll("a, button").forEach(el => {
             el.addEventListener("click", () => {
                  if (soundEnabled && clickSound && !el.closest('#form')) {
                     clickSound.currentTime = 0;
