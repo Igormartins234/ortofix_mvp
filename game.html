@@ -347,7 +347,7 @@
             submitSound.currentTime = 0;
             submitSound.play().catch(err => {});
         }
-            const respostas = [];
+        const respostas = [];
             palavrasAtuais.forEach((_, index) => {
                 const palavra = form.querySelector(`input[name="palavra_${index}"]`).value;
                 const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
@@ -370,7 +370,7 @@
             }
         });
 
-        btnIniciarss.addEventListener('click', () => {
+        btnIniciar.addEventListener('click', () => {
             gerarPalavras();
             startArea.classList.add('hidden');
         });
