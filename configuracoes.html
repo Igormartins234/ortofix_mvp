@@ -1,265 +1,414 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Configurações (Professor)</title>
-    <!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
-        }
-        .navbar-logo {
-            width: 40px; 
-            height: auto;
-        }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
-        #dropdown-menu-prof, #notifications-dropdown-prof {
-            position: fixed;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>OrtoFix - Painel do Aluno</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/lucide@latest"></script> <!-- Lucide Icons -->
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+                --color-primary-dark: #357ABD;
+                --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
+                --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
+                --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
+                --color-text-light: #8492a6;  /* Cinza para textos secundários */
+                --color-card-bg: #ffffff;
+            }
 
-    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <button id="menu-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>   
-            <div id="dropdown-menu-prof" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-60 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
-                </a>
-                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]"> <!-- Página Ativa -->
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="login.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
-            </div>
-            <a href="../index.html" class="mx-auto md:mx-0">
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
-            </a>
-            <div class="flex items-center gap-2">
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: var(--color-background);
+                color: var(-    -color-text-dark);
+                /* Gradiente sutil no fundo para dar profundidade */
+                background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+            }
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+            body {
+                font-family: 'Poppins', sans-serif;
+                color: #3c6a99; 
+            }
+            .navbar-logo {
+                width: 40px; 
+                height: auto;
+            }       
+            .card-custom-icon {
+                width: 48px; 
+                height: 48px; 
+                margin-bottom: 0.75rem; 
+            }
+            /* Estilo para o indicador de notificação (ponto vermelho) */
+            .notification-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 12px;
+                height: 12px;
+                background-color: #EF4444;
+                border-radius: 50%;
+                border: 2px solid var(--color-primary-dark);
+                animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+                50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            }
+            
+            /* Animações de entrada para os elementos da página */
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            
+            .fade-in {
+                animation: fadeIn 0.5s ease-out forwards;
+            }
+            
+            /* Estilizando os cards de navegação com interações aprimoradas */
+            .nav-card {
+                background-color: var(--color-card-bg);
+                border-radius: 1rem; /* bordas mais arredondadas */
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .nav-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04);
+            }
+            
+            /* Efeito de borda gradiente no hover */
+            .nav-card::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.4s ease-in-out;
+            }
+
+            .nav-card:hover::after {
+                transform: scaleX(1);
+            }
+        </style>
+    </head>
+    <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+    <header class="header-nav sticky top-0 z-50">
+        <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+            <!-- Menu Principal -->
                 <div class="relative">
-                    <button id="notifications-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <span class="notification-badge" id="notification-indicator-prof"></span>
+                    <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                        <i data-lucide="menu"></i>
                     </button>
-                    <div id="notifications-dropdown-prof" class="absolute right-0 top-16 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden w-72 sm:w-80">
-                        <div class="p-3 border-b border-gray-200"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3></div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <a href="duvidas_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Nova dúvida: Acentuação</p><p class="text-xs text-gray-500">Aluno João Silva</p><p class="text-xs text-gray-400 mt-1">Há 5 minutos</p></a>
-                        </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">Ver todas</a>
+                    <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                        <!-- Itens do menu -->
+                        <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                        </a>
+                        <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                        </a>
+                        <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                            <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                        </a>
+                    <a href="configuracoes.html" role="menuitem" 
+                        class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                            <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                        </a>
+                        <hr class="my-1 border-gray-200">
+                        <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                            <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                        </a>
                     </div>
                 </div>
-                <a href="perfil_professor.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+
+                <!-- Logo -->
+                <a href="./index.html" class="mx-auto md:mx-0"> 
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
                 </a>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Conteúdo Principal das Configurações -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel
-            </a>
-        </div>
-
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-2xl mx-auto">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-10">
-                Configurações da Conta
-            </h1>
-
-            <form id="configuracoes-professor-form" action="#" method="POST">
-                <section class="mb-10">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="sliders-horizontal" class="w-6 h-6"></i> Aparência e Interface
-                    </h2>
-                    <div class="space-y-5">
-                        <div class="flex items-center justify-between">
-                            <label for="theme-select" class="text-base text-gray-700">Tema da Interface:</label>
-                            <select id="theme-select" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
-                                <option value="light">Claro</option>
-                                <option value="dark">Escuro</option>
-                                <option value="system">Padrão do Sistema</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label for="fonte-padrao" class="text-base text-gray-700">Tamanho da Fonte (Atividades):</label>
-                            <select id="fonte-padrao" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
-                                <option value="pequena">Pequena</option>
-                                <option value="media" selected>Média</option>
-                                <option value="grande">Grande</option>
-                            </select>
+                <!-- Ícones da Direita: Notificações e Perfil -->
+                <div class="flex items-center gap-2">
+                    <!-- Ícone de Notificações -->
+                    <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                        <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                            <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                        
+                            <span class="notification-badge" id="notification-indicator"></span>
+                        </button>
+                        <!-- Dropdown de Notificações -->
+                        <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                            <div class="p-3 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                <!-- Notificação Exemplo 1 -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                    <p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p>
+                                    <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
+                                    <p class="text-xs text-gray-400 mt-1">Há 15 minutos</p>
+                                </a>
+                                <!-- Notificação Exemplo 2 -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                    <p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p>
+                                    <p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p>
+                                    <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
+                                </a>
+                                <!-- Notificação Exemplo 3 (Lida) -->
+                                <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
+                                    <p class="text-sm text-gray-500">Feedback do Professor</p>
+                                    <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
+                                    <p class="text-xs text-gray-400 mt-1">Ontem</p>
+                                </a>
+                                <!-- Mais notificações aqui -->
+                            </div>
+                            <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                                Ver todas as notificações
+                            </a>
                         </div>
                     </div>
-                </section>
 
-                <!-- Seção de Segurança (Alterar Senha) -->
-                <section class="mb-10">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i> Segurança da Conta
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="senha-atual" class="block text-sm font-medium text-[#5689b9] mb-1">Senha Atual:</label>
-                            <input type="password" id="senha-atual" name="senha_atual" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Digite sua senha atual">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Nova Senha:</label>
-                                <input type="password" id="nova_senha_config" name="nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Mínimo 6 caracteres">
+                    <!-- Ícone de Perfil -->
+                    <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
+                        <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+        <!-- Conteúdo Principal das Configurações -->
+        <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+            <div class="mb-6">
+                <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
+                    <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel
+                </a>
+            </div>
+
+            <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-2xl mx-auto">
+                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-10">
+                    Configurações da Conta
+                </h1>
+
+                <form id="configuracoes-professor-form" action="#" method="POST">
+                    <section class="mb-10">
+                        <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
+                            <i data-lucide="sliders-horizontal" class="w-6 h-6"></i> Aparência e Interface
+                        </h2>
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between">
+                                <label for="theme-select" class="text-base text-gray-700">Tema da Interface:</label>
+                                <select id="theme-select" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
+                                    <option value="light">Claro</option>
+                                    <option value="dark">Escuro</option>
+                                    <option value="system">Padrão do Sistema</option>
+                                </select>
                             </div>
-                            <div>
-                                <label for="confirmar_nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Confirmar Nova Senha:</label>
-                                <input type="password" id="confirmar_nova_senha_config" name="confirmar_nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none">
+                            <div class="flex items-center justify-between">
+                                <label for="fonte-padrao" class="text-base text-gray-700">Tamanho da Fonte (Atividades):</label>
+                                <select id="fonte-padrao" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
+                                    <option value="pequena">Pequena</option>
+                                    <option value="media" selected>Média</option>
+                                    <option value="grande">Grande</option>
+                                </select>
                             </div>
                         </div>
-                         <button type="button" id="btn-alterar-senha" class="mt-2 bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
-                            <i data-lucide="key-round" class="w-4 h-4"></i> Alterar Senha
+                    </section>
+
+                    <!-- Seção de Segurança (Alterar Senha) -->
+                    <section class="mb-10">
+                        <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i> Segurança da Conta
+                        </h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="senha-atual" class="block text-sm font-medium text-[#5689b9] mb-1">Senha Atual:</label>
+                                <input type="password" id="senha-atual" name="senha_atual" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Digite sua senha atual">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Nova Senha:</label>
+                                    <input type="password" id="nova_senha_config" name="nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Mínimo 6 caracteres">
+                                </div>
+                                <div>
+                                    <label for="confirmar_nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Confirmar Nova Senha:</label>
+                                    <input type="password" id="confirmar_nova_senha_config" name="confirmar_nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none">
+                                </div>
+                            </div>
+                            <button type="button" id="btn-alterar-senha" class="mt-2 bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                                <i data-lucide="key-round" class="w-4 h-4"></i> Alterar Senha
+                            </button>
+                        </div>
+                    </section>
+                    
+                    <!-- Seção de Notificações -->
+                    <section class="mb-8">
+                        <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
+                            <i data-lucide="mail-check" class="w-6 h-6"></i> Preferências de Notificação
+                        </h2>
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between">
+                                <label for="notif-duvidas" class="text-base text-gray-700">Receber notificações sobre novas atividades</label>
+                                <div><input type="checkbox" id="notif-duvidas" class="toggle-checkbox sr-only" checked><label for="notif-duvidas" class="toggle-label"><span class="toggle-ball"></span></label></div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label for="notif-feedback" class="text-base text-gray-700">Receber notificações de feedbacks</label>
+                                <div><input type="checkbox" id="notif-feedback" class="toggle-checkbox sr-only"><label for="notif-feedback" class="toggle-label"><span class="toggle-ball"></span></label></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                            Salvar Todas as Configurações
                         </button>
                     </div>
-                </section>
-                
-                <!-- Seção de Notificações -->
-                <section class="mb-8">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="mail-check" class="w-6 h-6"></i> Preferências de Notificação
-                    </h2>
-                    <div class="space-y-5">
-                        <div class="flex items-center justify-between">
-                            <label for="notif-duvidas" class="text-base text-gray-700">Receber notificações sobre novas atividades</label>
-                            <div><input type="checkbox" id="notif-duvidas" class="toggle-checkbox sr-only" checked><label for="notif-duvidas" class="toggle-label"><span class="toggle-ball"></span></label></div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label for="notif-feedback" class="text-base text-gray-700">Receber notificações de feedbacks</label>
-                            <div><input type="checkbox" id="notif-feedback" class="toggle-checkbox sr-only"><label for="notif-feedback" class="toggle-label"><span class="toggle-ball"></span></label></div>
-                        </div>
-                    </div>
-                </section>
+                </form>
+            </div>
+        </main>
 
-                <div class="flex justify-end mt-8">
-                    <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-5 h-5"></i>
-                        Salvar Todas as Configurações
-                    </button>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
+        <footer class="bg-[#3c6a99] text-[#e3ebf2] border-t border-gray-200 mt-auto">
+        <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
+            <div class="flex items-center justify-center gap-2">
+                <p>&copy; 2025 OrtoFix</p>
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                    class="h-6" style="filter: brightness(0) invert(1);">
+            </div>
+        </div>  
     </footer>
 
-    <!-- JavaScript -->
-    <script>
-        lucide.createIcons();
+        <!-- JavaScript -->
+        <script>
+            lucide.createIcons();
 
-       
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', function() {
-                dropdownMenuProf.classList.toggle('hidden');
-            });
-        }
-
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
         
-        
-        
-
-        // Lógica para salvar configurações e alterar senha 
-        const configuracoesForm = document.getElementById('configuracoes-professor-form');
-        const btnAlterarSenha = document.getElementById('btn-alterar-senha');
-
-        if(configuracoesForm) {
-            configuracoesForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                Swal.fire({
-                icon: 'success',
-                title: 'Configurações salvas!',
-                text: 'Todas as configurações foram salvas com sucesso.',
-                confirmButtonColor: '#3c6a99'
+            const menuBtnProf = document.getElementById('menu-btn-prof');
+            const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
+            if (menuBtnProf && dropdownMenuProf) {
+                menuBtnProf.addEventListener('click', function() {
+                    dropdownMenuProf.classList.toggle('hidden');
                 });
-            });
-        }
-        
-        if(btnAlterarSenha) {
-            btnAlterarSenha.addEventListener('click', function() {
-                const senhaAtual = document.getElementById('senha-atual').value;
-                const novaSenha = document.getElementById('nova_senha_config').value;
-                const confirmarNovaSenha = document.getElementById('confirmar_nova_senha_config').value;
+            }
 
-                if (!senhaAtual) {
+            const notificationsBtnProf = document.getElementById('notifications-btn-prof');
+            const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
+            
+            
+            
+
+            // Lógica para salvar configurações e alterar senha 
+            const configuracoesForm = document.getElementById('configuracoes-professor-form');
+            const btnAlterarSenha = document.getElementById('btn-alterar-senha');
+
+            if(configuracoesForm) {
+                configuracoesForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Senha atual vazia',
-                        text: 'Por favor, digite sua senha atual.',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                    return;
-                }
-                if (!novaSenha || novaSenha.length < 6) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Nova senha inválida',
-                        text: 'A nova senha deve ter pelo menos 6 caracteres.',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                    return;
-                }
-                if (novaSenha !== confirmarNovaSenha) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Senhas diferentes',
-                        text: 'As novas senhas não coincidem.',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                    return;
-                }
-                
-                // enviar para o backend
-                console.log("Tentando alterar senha:", { senhaAtual, novaSenha });
-                Swal.fire({
                     icon: 'success',
-                    title: 'Senha alterada',
-                    text: 'Solicitação de alteração de senha enviada.',
+                    title: 'Configurações salvas!',
+                    text: 'Todas as configurações foram salvas com sucesso.',
                     confirmButtonColor: '#3c6a99'
                     });
-                document.getElementById('senha-atual').value = '';
-                document.getElementById('nova_senha_config').value = '';
-                document.getElementById('confirmar_nova_senha_config').value = '';
-            });
+                });
+            }
+            
+            if(btnAlterarSenha) {
+                btnAlterarSenha.addEventListener('click', function() {
+                    const senhaAtual = document.getElementById('senha-atual').value;
+                    const novaSenha = document.getElementById('nova_senha_config').value;
+                    const confirmarNovaSenha = document.getElementById('confirmar_nova_senha_config').value;
+
+                    if (!senhaAtual) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Senha atual vazia',
+                            text: 'Por favor, digite sua senha atual.',
+                            confirmButtonColor: '#3c6a99'
+                        });
+                        return;
+                    }
+                    if (!novaSenha || novaSenha.length < 6) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Nova senha inválida',
+                            text: 'A nova senha deve ter pelo menos 6 caracteres.',
+                            confirmButtonColor: '#3c6a99'
+                        });
+                        return;
+                    }
+                    if (novaSenha !== confirmarNovaSenha) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Senhas diferentes',
+                            text: 'As novas senhas não coincidem.',
+                            confirmButtonColor: '#3c6a99'
+                        });
+                        return;
+                    }
+                    
+                    // enviar para o backend
+                    console.log("Tentando alterar senha:", { senhaAtual, novaSenha });
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Senha alterada',
+                        text: 'Solicitação de alteração de senha enviada.',
+                        confirmButtonColor: '#3c6a99'
+                        });
+                    document.getElementById('senha-atual').value = '';
+                    document.getElementById('nova_senha_config').value = '';
+                    document.getElementById('confirmar_nova_senha_config').value = '';
+                });
+            }
+            // 🔹 Corrigindo bug do ID errado ("drop  down-menu")
+    const menuBtn = document.getElementById("menu-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    if (menuBtn && dropdownMenu) {
+    menuBtn.addEventListener("click", () => {
+        dropdownMenu.classList.toggle("hidden");
+        if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
+            notificationsDropdown.classList.add("hidden");
         }
-    </script>
-</body>
-</html>
+    });
+    document.addEventListener("click", (e) => {
+        if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
+    }
+
+    // 🔹 Script de notificações
+    const notificationsBtn = document.getElementById("notifications-btn");
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
+    const notificationIndicator = document.getElementById("notification-indicator");
+
+    let hasUnreadNotifications = true;
+    if (notificationIndicator && !hasUnreadNotifications) {
+    notificationIndicator.classList.add("hidden");
+    }
+
+    if (notificationsBtn && notificationsDropdown) {
+    notificationsBtn.addEventListener("click", () => {
+        notificationsDropdown.classList.toggle("hidden");
+        if (dropdownMenu && !dropdownMenu.classList.contains("hidden")) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
+    document.addEventListener("click", (e) => {
+        if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
+            notificationsDropdown.classList.add("hidden");
+        }
+    });
+    }
+        </script>
+    </body>
+    </html>
