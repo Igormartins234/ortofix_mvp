@@ -45,6 +45,60 @@
     .fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;
     }
+    /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
+#mascote-assistente {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transform: translateY(200%);
+    opacity: 0;
+}
+#mascote-assistente.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+#mascote-assistente .mascote-img {
+    height: 100px;
+    width: auto;
+    animation: bobbing 3s ease-in-out infinite;
+}
+#chat-bubble {
+    position: absolute;
+    bottom: 84px;
+    right: 47px;
+    background-color: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    width: 210px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: 500;
+    color: #3c6a99;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#chat-bubble.show {
+    opacity: 1;
+    transform: scale(1);
+}
+#chat-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+}
+@keyframes bobbing {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
 </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
@@ -168,7 +222,11 @@
     </button>
 </div>
 </main>
-
+<!-- 🔹 Mascote Flutuante -->
+<div id="mascote-assistente">
+    <div id="chat-bubble">Vamos começar o desafio?</div>
+    <img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
+</div>
 
 <footer class="bg-[#3c6a99] text-[#e3ebf2] border-t border-gray-200 mt-auto">
     <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
@@ -271,6 +329,8 @@ clicaveis.forEach(el => {
     let palavrasAtuais = [];
 
     async function gerarPalavras() {
+         hideMascote(); // <-- ADICIONE ESTA LINHA AQUI
+        changeBubbleText("Boa sorte! Escolha os acentos com atenção.");
         try {
             // Mostra um estado de carregamento (opcional)
             inputsArea.innerHTML = '<p class="text-center md:col-span-2 text-gray-500">Gerando novas palavras...</p>';
@@ -324,6 +384,19 @@ clicaveis.forEach(el => {
         if (Object.keys(card).length > 0) { cards.push(card); }
 
         feedbackCards.innerHTML = ''; 
+         // --- LÓGICA DO MASCOTE BASEADA NO DESEMPENHO --- ADICIONE DAQUI PARA BAIXO ---
+        const acertos = cards.filter(c => c.resultado && c.resultado.includes('Correto')).length;
+        const total = cards.length;
+        if (total > 0) {
+            const percentual = (acertos / total) * 100;
+            if (percentual >= 75) {
+                changeBubbleText("Uau, você foi incrível! Parabéns pelo ótimo resultado!");
+            } else if (percentual >= 50) {
+                changeBubbleText("Mandou bem! Continue praticando para ficar craque.");
+            } else {
+                changeBubbleText("Não desanime! Revisar as explicações é o segredo para aprender.");
+            }
+        }
 
         cards.forEach(c => {
             const isCorrect = c.resultado && c.resultado.includes('Correto');
@@ -354,6 +427,8 @@ clicaveis.forEach(el => {
         feedbackArea.classList.remove('hidden');
         feedbackArea.classList.add('fade-in-up');
         lucide.createIcons();
+
+        showMascote();
     }
 
     form.addEventListener('submit', async (e) => {
@@ -394,6 +469,28 @@ clicaveis.forEach(el => {
     btnNovas.addEventListener('click', gerarPalavras);
     btnJogarNovamente.addEventListener('click', gerarPalavras);
 });
+
+    // --- LÓGICA DO MASCOTE ---
+    const mascoteAssistente = document.getElementById('mascote-assistente');
+    const chatBubble = document.getElementById('chat-bubble');
+
+    const showMascote = () => mascoteAssistente.classList.add('visible');
+    const hideMascote = () => mascoteAssistente.classList.remove('visible');
+
+
+    const changeBubbleText = (text) => {
+        chatBubble.classList.remove('show');
+        setTimeout(() => {
+            chatBubble.textContent = text;
+            chatBubble.classList.add('show');
+        }, 300);
+    };
+
+    // Mostra o mascote após um tempo
+    setTimeout(() => {
+        showMascote();
+        changeBubbleText("Clique em 'Começar a Jogar' para testar seus conhecimentos!");
+    }, 1500); // Aparece após 1.5 segundos
 </script>
 
 </body>
