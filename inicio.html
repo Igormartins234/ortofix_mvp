@@ -98,6 +98,66 @@
         .nav-card:hover::after {
             transform: scaleX(1);
         }
+
+         /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
+        #mascote-assistente {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateY(200%);
+            opacity: 0;
+        }
+        #mascote-assistente.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #mascote-assistente .mascote-img {
+            height: 100px;
+            width: auto;
+            animation: bobbing 3s ease-in-out infinite;
+        }
+        #mascote-assistente.hiding {
+            transform: translateY(200%);
+            opacity: 0;
+        }
+        #chat-bubble {
+            position: absolute;
+            bottom: 84px;
+            right: 47px;
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 200px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c6a99;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #chat-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        /* "Calda" do balão de diálogo */
+        #chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
@@ -256,6 +316,10 @@
     </div>
 </footer>
 
+<div id="mascote-assistente">
+    <div id="chat-bubble"></div>
+    <img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
+</div>
 
 
     <script>
@@ -399,6 +463,28 @@ clickableElements.forEach(el => {
     });
 });
 });
+
+// --- LÓGICA DO MASCOTE DE BOAS-VINDAS ---
+const mascoteAssistente = document.getElementById('mascote-assistente');
+const chatBubble = document.getElementById('chat-bubble');
+
+
+setTimeout(() => {
+    
+    chatBubble.textContent = "Olá! Que bom te ver por aqui. Pronto para mais desafios?";
+    
+    
+    mascoteAssistente.classList.add('visible');
+    chatBubble.classList.add('show');
+
+    
+    setTimeout(() => {
+        
+        mascoteAssistente.classList.remove('visible');
+        chatBubble.classList.remove('show');
+    }, 10000); 
+
+}, 2000); 
 </script>
 
 
