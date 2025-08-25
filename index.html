@@ -39,6 +39,10 @@
             width: auto;
             animation: bobbing 3s ease-in-out infinite;
         }
+        #mascote-assistente.hiding {
+            transform: translateY(200%);
+            opacity: 0;
+        }
         #chat-bubble {
             position: absolute;
             bottom: 84px;
@@ -180,6 +184,27 @@
         default: "Olá! Pronto para começar sua jornada ortográfica?",
         features: "Veja como posso te ajudar a aprender de forma divertida!"
     };
+        
+    const navigationLinks = document.querySelectorAll('a[href]:not([href^="#"])');
+    const animationDuration = 300; 
+
+    
+    navigationLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            
+            event.preventDefault();
+
+            const destination = this.href;
+
+            // 4. Aciona a animação de saída do mascote
+            mascoteAssistente.classList.add('hiding');
+
+            
+            setTimeout(() => {
+                window.location.href = destination;
+            }, animationDuration);
+        });
+    });
 
     // Função para mudar o texto do balão
     const changeBubbleText = (text) => {
@@ -194,7 +219,7 @@
     setTimeout(() => {
         mascoteAssistente.classList.add('visible');
         changeBubbleText(mensagens.default);
-    }, 2000); // Aparece após 2 segundos
+    }, 1800); // Aparece após 1,8 segundos
 
     // Intersection Observer para detectar quando a seção de features está visível
     const observer = new IntersectionObserver((entries) => {
