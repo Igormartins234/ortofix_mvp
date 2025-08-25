@@ -20,6 +20,61 @@
             color: transparent;
             background-image: linear-gradient(to right, #3c6a99, #5689b9);
         }
+         /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
+        #mascote-assistente {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateY(200%);
+            opacity: 0;
+        }
+        #mascote-assistente.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #mascote-assistente .mascote-img {
+            height: 100px;
+            width: auto;
+            animation: bobbing 3s ease-in-out infinite;
+        }
+        #chat-bubble {
+            position: absolute;
+            bottom: 84px;
+            right: 47px;
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 200px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c6a99;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #chat-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        /* "Calda" do balão de diálogo */
+        #chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
     </style>
 </head>
 <body class="text-slate-700">
@@ -101,7 +156,11 @@
             <p class="text-sm mt-8 text-blue-200">© 2025 OrtoFix.</p>
         </div>
     </footer>
-
+     <!-- 🔹 Mascote Flutuante -->
+    <div id="mascote-assistente">
+        <div id="chat-bubble">Olá! Pronto para começar sua jornada ortográfica?</div>
+        <img src="./static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
+    </div>
    
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     
@@ -111,6 +170,47 @@
         duration: 800, 
         once: true, 
       });
+
+       // --- SCRIPT DO MASCOTE FLUTUANTE ---
+    const mascoteAssistente = document.getElementById('mascote-assistente');
+    const chatBubble = document.getElementById('chat-bubble');
+    const featuresSection = document.getElementById('features');
+
+    const mensagens = {
+        default: "Olá! Pronto para começar sua jornada ortográfica?",
+        features: "Veja como posso te ajudar a aprender de forma divertida!"
+    };
+
+    // Função para mudar o texto do balão
+    const changeBubbleText = (text) => {
+        chatBubble.classList.remove('show');
+        setTimeout(() => {
+            chatBubble.textContent = text;
+            chatBubble.classList.add('show');
+        }, 300);
+    };
+
+    // Mostra o mascote após um tempo
+    setTimeout(() => {
+        mascoteAssistente.classList.add('visible');
+        changeBubbleText(mensagens.default);
+    }, 2000); // Aparece após 2 segundos
+
+    // Intersection Observer para detectar quando a seção de features está visível
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                changeBubbleText(mensagens.features);
+            } else {
+                // Se saiu da visão, volta para o texto padrão
+                if (window.scrollY < featuresSection.offsetTop) {
+                   changeBubbleText(mensagens.default);
+                }
+            }
+        });
+    }, { threshold: 0.5 }); // Ativa quando 50% da seção está visível
+
+    observer.observe(featuresSection);
     </script>
 
 </body>
