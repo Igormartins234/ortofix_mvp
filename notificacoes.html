@@ -3,80 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Painel do Professor</title>
+    <title>OrtoFix - Painel do Aluno</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root {
+            --color-primary: #4A90E2;
+            --color-primary-dark: #357ABD;
+            --color-accent: #50E3C2;
+            --color-background: #F4F7FA;
+            --color-text-dark: #2c3e50;
+            --color-text-light: #8492a6;
+            --color-card-bg: #ffffff;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
+            background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
         }
+
         .navbar-logo {
             width: 40px; 
             height: auto;
         }
+
         .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
+            position: absolute; top: 0; right: 0;
+            width: 12px; height: 12px; background-color: #EF4444;
+            border-radius: 50%; border: 2px solid #3c6a99;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+            animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
         }
-        #dropdown-menu-prof, #notifications-dropdown-prof {
-            position: fixed;
+        
+        @keyframes pulse {
+            0%,100%{transform:scale(.9);box-shadow:0 0 0 0 rgba(239,68,68,.7);}
+            50%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(239,68,68,0);}
+        }
+
+        .notification-badge.hidden {
+            transform: scale(0);
+            animation: none;
+        }
+
+        .unread-dot {
+            min-width: 10px;
+            height: 10px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
+    <header class="header-nav sticky top-0 z-50">
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <!-- Ícone de Menu Principal -->
-            <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <!-- Menu Dropdown Principal -->
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="image" class="w-5 h-5"></i> Tema
-                </a>
-                <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="type" class="w-5 h-5"></i> Fontes
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                    <!-- Itens do menu -->
+                    <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2  text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a>
+                </div>
             </div>
 
             <!-- Logo -->
-            <a href="../index.html" class="mx-auto md:mx-0"> <!-- Centraliza em telas pequenas se não houver sino -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
 
             <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
                 <!-- Ícone de Notificações -->
-                <div class="relative">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
                         <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <!-- Badge de Notificação (exemplo, seria dinâmico) -->
+                    
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
                     <!-- Dropdown de Notificações -->
@@ -98,12 +130,12 @@
                                 <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
                             </a>
                             <!-- Notificação Exemplo 3 (Lida) -->
-                             <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
                                 <p class="text-sm text-gray-500">Feedback do Professor</p>
                                 <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
                                 <p class="text-xs text-gray-400 mt-1">Ontem</p>
                             </a>
-                             <!-- Mais notificações aqui -->
+                            <!-- Mais notificações aqui -->
                         </div>
                         <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
                             Ver todas as notificações
@@ -112,99 +144,218 @@
                 </div>
 
                 <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
                     <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
                 </a>
             </div>
         </div>
     </nav>
+</header>
 
-    <!-- Conteúdo Principal - Todas as Notificações -->
+    <!-- Conteúdo Principal -->
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel Principal
+        <div class="mb-6 fade-in">
+            <a href="inicio.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i> Voltar ao Painel Principal
             </a>
         </div>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-3xl mx-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99]">
+        <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-4xl mx-auto fade-in" style="animation-delay: 100ms;">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b pb-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] flex items-center gap-3">
+                    <i data-lucide="inbox" class="w-8 h-8"></i>
                     Minhas Notificações
                 </h1>
-                <button id="marcar-todas-lidas-btn" class="bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                <button id="marcar-todas-lidas-btn" class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i data-lucide="check-check" class="w-4 h-4"></i> Marcar todas como lidas
                 </button>
             </div>
 
-            <!-- Lista de Notificações -->
             <div id="lista-todas-notificacoes" class="space-y-3">
-                <!-- Notificações serão inseridas aqui pelo JavaScript -->
-                <p id="aviso-sem-notificacoes" class="text-center text-gray-500 py-10 hidden">
-                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3 text-gray-400"></i>
-                    Você não tem nenhuma notificação no momento.
-                </p>
-            </div>
-            
-            <!-- (Opcional) Paginação -->
-            <div id="paginacao-notificacoes" class="mt-8 text-center hidden">
-                <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">« Anterior</button>
-                <span class="px-3 py-1 text-sm">Página 1 de 3</span>
-                <button class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">Próxima »</button>
+                <div id="aviso-sem-notificacoes" class="text-center text-gray-500 py-16 hidden">
+                    <i data-lucide="party-popper" class="w-16 h-16 mx-auto mb-4 text-gray-400"></i>
+                    <h3 class="text-xl font-semibold">Tudo em dia!</h3>
+                    <p>Você não tem nenhuma notificação no momento.</p>
+                </div>
+                <!-- A lista principal de notificações será injetada aqui -->
             </div>
         </div>
     </main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
-    </footer>
+    <!-- Rodapé Consistente -->
+    <footer class="bg-[#3c6a99] text-[#e3ebf2] border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
 
     <!-- JavaScript -->
     <script>
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
 
-        // Script Navbar Aluno (copiado e IDs verificados)
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        // ... (resto do script da navbar, incluindo o de notificações e tema)
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-        }
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
-            }
-        }
-        if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-        }
+            // --- LÓGICA DOS MENUS DROPDOWN ---
+            const setupDropdown = (btn, menu) => {
+                btn.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    const isHidden = menu.classList.contains("hidden");
+                    document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+                    if (isHidden) menu.classList.remove("hidden");
+                });
+            };
+            
+            const menuBtn = document.getElementById("menu-btn");
+            const dropdownMenu = document.getElementById("dropdown-menu");
+            const notificationsBtn = document.getElementById("notifications-btn");
+            const notificationsDropdown = document.getElementById("notifications-dropdown");
+            
+            setupDropdown(menuBtn, dropdownMenu);
+            setupDropdown(notificationsBtn, notificationsDropdown);
 
+            document.addEventListener("click", () => {
+                document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+            });
 
+            // --- LÓGICA DAS NOTIFICAÇÕES ---
+
+            // 1. DADOS (Simulação de uma API)
+            let notifications = [
+                { id: 1, type: 'activity', title: 'Nova atividade disponível!', description: 'Jogo de Acentuação - Nível Médio', time: 'Há 15 minutos', read: false, icon: 'gamepad-2' },
+                { id: 2, type: 'reward', title: 'Você ganhou 50 moedas!', description: 'Por completar "Caça-Palavras Avançado".', time: 'Há 1 hora', read: false, icon: 'coins' },
+                { id: 3, type: 'feedback', title: 'Feedback do Professor', description: 'Na atividade "Ditado Interativo".', time: 'Ontem', read: true, icon: 'message-square-quote' },
+                { id: 4, type: 'system', title: 'Manutenção agendada', description: 'O sistema ficará offline no domingo.', time: '2 dias atrás', read: true, icon: 'server-cog' },
+                { id: 5, type: 'activity', title: 'Desafio semanal lançado!', description: 'Complete 5 atividades para ganhar um bônus.', time: '3 dias atrás', read: false, icon: 'swords' }
+            ];
+
+            // 2. ELEMENTOS DO DOM
+            const notificationIndicator = document.getElementById('notification-indicator');
+            const dropdownList = document.getElementById('dropdown-notifications-list'); // Agora existe e funciona
+            const mainList = document.getElementById('lista-todas-notificacoes');
+            const markAllReadBtn = document.getElementById('marcar-todas-lidas-btn');
+            const noNotificationsMessage = document.getElementById('aviso-sem-notificacoes');
+
+            // 3. FUNÇÃO PARA CRIAR O HTML DE UMA NOTIFICAÇÃO
+            const createNotificationHTML = (notification) => {
+                const isUnread = !notification.read;
+                const bgColor = isUnread ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-gray-50';
+                const iconColor = {
+                    activity: 'text-purple-500',
+                    reward: 'text-amber-500',
+                    feedback: 'text-green-500',
+                    system: 'text-slate-500'
+                }[notification.type] || 'text-gray-500';
+
+                return `
+                    <div class="notification-item flex items-start gap-4 p-4 border-b border-gray-100 last:border-b-0 transition-colors duration-200 cursor-pointer ${bgColor}" data-id="${notification.id}">
+                        <div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center ${iconColor}">
+                            <i data-lucide="${notification.icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-sm font-semibold text-gray-800">${notification.title}</p>
+                            <p class="text-xs text-gray-600">${notification.description}</p>
+                            <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
+                        </div>
+                        ${isUnread ? '<div class="unread-dot self-center mr-2"></div>' : ''}
+                    </div>
+                `;
+            };
+
+            // 4. FUNÇÃO PRINCIPAL PARA RENDERIZAR TUDO
+            const renderNotifications = () => {
+                const unreadCount = notifications.filter(n => !n.read).length;
+
+                notificationIndicator.classList.toggle('hidden', unreadCount === 0);
+                markAllReadBtn.disabled = unreadCount === 0;
+
+                if (notifications.length === 0) {
+                    mainList.innerHTML = '';
+                    noNotificationsMessage.classList.remove('hidden');
+                    if (dropdownList) dropdownList.innerHTML = `<p class="text-center text-sm text-gray-500 p-4">Nenhuma notificação</p>`;
+                } else {
+                    noNotificationsMessage.classList.add('hidden');
+                    // Renderiza a lista principal e a do dropdown
+                    mainList.innerHTML = notifications.map(createNotificationHTML).join('');
+                    if (dropdownList) dropdownList.innerHTML = notifications.slice(0, 5).map(createNotificationHTML).join('');
+                }
+                
+                lucide.createIcons();
+            };
+            
+            // 5. FUNÇÕES DE INTERAÇÃO
+            const markAsRead = (id) => {
+                const notification = notifications.find(n => n.id === id);
+                if (notification && !notification.read) {
+                    notification.read = true;
+                    renderNotifications();
+                }
+            };
+            
+            const markAllAsRead = () => {
+                notifications.forEach(n => n.read = true);
+                renderNotifications();
+            };
+
+            // 6. EVENT LISTENERS
+            markAllReadBtn.addEventListener('click', markAllAsRead);
+
+            document.body.addEventListener('click', (e) => {
+                const item = e.target.closest('.notification-item');
+                if (item) {
+                    const id = parseInt(item.dataset.id, 10);
+                    markAsRead(id);
+                }
+            });
+
+            // 7. INICIALIZAÇÃO
+            renderNotifications();
+        });
     </script>
 </body>
+<audio id="click-sound" src="/static/audio/click.wav"></audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+const clickSound = document.getElementById("click-sound");
+clickSound.volume = 0.5;
+
+let soundEnabled = true;
+
+const soundBtn = document.getElementById("sound-btn");
+if (soundBtn) {
+    soundBtn.addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+
+        const icon = soundBtn.querySelector("i");
+
+        if (soundEnabled) {
+            // Som ligado
+            icon.setAttribute("data-lucide", "volume-2");
+            icon.classList.remove("text-red-500");
+            icon.classList.add("text-[#e3ebf2]");
+        } else {
+            // Som mutado, ícone com barra vermelha
+            icon.setAttribute("data-lucide", "volume-x");
+            icon.classList.remove("text-[#e3ebf2]");
+            icon.classList.add("text-red-500");
+        }
+
+        lucide.createIcons();
+    });
+}
+
+const clickableElements = document.querySelectorAll("a, button, .nav-card");
+clickableElements.forEach(el => {
+    el.addEventListener("click", () => {
+        if (soundEnabled) {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => {});
+        }
+    });
+});
+});
+</script>
 </html>
