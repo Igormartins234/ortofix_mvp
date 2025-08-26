@@ -391,11 +391,15 @@ clicaveis.forEach(el => {
             const percentual = (acertos / total) * 100;
             if (percentual >= 75) {
                 changeBubbleText("Uau, você foi incrível! Parabéns pelo ótimo resultado!");
+                changeMascoteImage("/static/img/success.webp");
             } else if (percentual >= 50) {
                 changeBubbleText("Mandou bem! Continue praticando para ficar craque.");
+                 changeMascoteImage("/static/img/ortofix.png");
             } else {
                 changeBubbleText("Não desanime! Revisar as explicações é o segredo para aprender.");
+                 changeMascoteImage("/static/img/ortofix.png");
             }
+            
         }
 
         cards.forEach(c => {
@@ -484,6 +488,13 @@ clicaveis.forEach(el => {
             chatBubble.textContent = text;
             chatBubble.classList.add('show');
         }, 300);
+    };
+    // --- ADICIONE A NOVA FUNÇÃO ABAIXO ---
+    const changeMascoteImage = (imageSrc) => {
+        const mascoteImgElement = document.querySelector('#mascote-assistente .mascote-img');
+        if (mascoteImgElement) {
+            mascoteImgElement.src = imageSrc;
+        }
     };
 
     // Mostra o mascote após um tempo
