@@ -6,6 +6,7 @@
 <title>OrtoFix - Desafio de Acentuação</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -387,6 +388,7 @@ clicaveis.forEach(el => {
          // --- LÓGICA DO MASCOTE BASEADA NO DESEMPENHO --- ADICIONE DAQUI PARA BAIXO ---
         const acertos = cards.filter(c => c.resultado && c.resultado.includes('Correto')).length;
         const total = cards.length;
+        
         if (total > 0) {
             const percentual = (acertos / total) * 100;
             if (percentual >= 75) {
@@ -400,6 +402,9 @@ clicaveis.forEach(el => {
                  changeMascoteImage("/static/img/ortofix.png");
             }
             
+        }
+        if (acertos === total && total > 0) {
+            launchConfetti();
         }
 
         cards.forEach(c => {
@@ -502,6 +507,18 @@ clicaveis.forEach(el => {
         showMascote();
         changeBubbleText("Clique em 'Começar a Jogar' para testar seus conhecimentos!");
     }, 1500); // Aparece após 1.5 segundos
+
+
+    function launchConfetti() {
+    confetti({
+        particleCount: 150, 
+        spread: 500,        
+        origin: { y: 0.6 }, 
+        angle: 90,          
+        startVelocity: 40,  
+        colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] 
+    });
+}
 </script>
 
 </body>
