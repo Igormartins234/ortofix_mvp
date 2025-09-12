@@ -65,6 +65,10 @@ footer {
     transition: background-color 0.3s ease;
 }
 
+html.dark .navbar-logo,
+html.dark footer img {
+    filter: brightness(0) invert(1);
+}
 
 body, .settings-card, .form-input, .form-select, .toggle-switch {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -190,7 +194,6 @@ transform: translateX(24px);
 </head>
 <body class="min-h-screen flex flex-col">
 
-<!-- Header (sem alterações) -->
 <header class="header-nav sticky top-0 z-50">
     <nav class="--color-header-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
@@ -309,7 +312,7 @@ transform: translateX(24px);
                     <select id="theme-select" class="form-select w-48">
                         <option value="light">Claro</option>
                         <option value="dark">Escuro</option>
-                        <option value="system">Padrão do Sistema</option>
+                        <option value="light">Padrão do Sistema</option>
                     </select>
                 </div>
                 <div class="flex items-center justify-between">
