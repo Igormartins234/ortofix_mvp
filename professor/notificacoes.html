@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrtoFix - Central de Notificações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #4A90E2;
+            --color-primary-dark: #357ABD;
+            --color-accent: #50E3C2;
+            --color-background: #F4F7FA;
+            --color-text-dark: #2c3e50;
+            --color-text-light: #8492a6;
+            --color-card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
+            background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+        }
+
+        .navbar-logo {
+            width: 40px; 
+            height: auto;
+        }
+
+        .notification-badge {
+            position: absolute; top: 0; right: 0;
+            width: 12px; height: 12px; background-color: #EF4444;
+            border-radius: 50%; border: 2px solid #3c6a99;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+            animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+        
+        @keyframes pulse {
+            0%,100%{transform:scale(.9);box-shadow:0 0 0 0 rgba(239,68,68,.7);}
+            50%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(239,68,68,0);}
+        }
+
+        .notification-badge.hidden {
+            transform: scale(0);
+            animation: none;
+        }
+
+        .unread-dot {
+            min-width: 10px;
+            height: 10px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F7FA] min-h-screen flex flex-col">
+
+<header class="header-nav sticky top-0 z-50">
+    <nav class="bg-[#3c6a99] text-white shadow-lg">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                    <!-- Itens do menu -->
+                    <a href="painel.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="../index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a>
+                </div>
+            </div>
+
+            <!-- Logo -->
+            <a href="index.html" class="mx-auto md:mx-0"> 
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
+            <div class="flex items-center gap-2">
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-white"></i>
+                        <span class="notification-badge" id="notification-indicator"></span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <div class="p-3 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto">
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Aluno 'João Silva' completou uma atividade!</p>
+                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 5 minutos</p>
+                            </a>
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Nova dúvida enviada.</p>
+                                <p class="text-xs text-gray-500">Por 'Mariana Costa' sobre Crase.</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 30 minutos</p>
+                            </a>
+                        </div>
+                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                            Ver todas as notificações
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Ícone de Perfil -->
+                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="user-circle" class="text-white"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+    <div class="mb-6 fade-in">
+        <a href="painel_professor.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i> Voltar ao Painel
+        </a>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-4xl mx-auto fade-in" style="animation-delay: 100ms;">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b pb-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] flex items-center gap-3">
+                <i data-lucide="inbox" class="w-8 h-8"></i>
+                Central de Notificações
+            </h1>
+            <button id="marcar-todas-lidas-btn" class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i data-lucide="check-check" class="w-4 h-4"></i> Marcar todas como lidas
+            </button>
+        </div>
+
+        <div id="lista-todas-notificacoes" class="space-y-3">
+            <div id="aviso-sem-notificacoes" class="text-center text-gray-500 py-16 hidden">
+                <i data-lucide="party-popper" class="w-16 h-16 mx-auto mb-4 text-gray-400"></i>
+                <h3 class="text-xl font-semibold">Tudo em dia!</h3>
+                <p>Nenhuma notificação nova da sua turma.</p>
+            </div>
+            <!-- A lista de notificações do professor será injetada aqui pelo JavaScript -->
+        </div>
+    </div>
+</main>
+
+<footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+
+        // --- LÓGICA DOS MENUS DROPDOWN ---
+        const setupDropdown = (btn, menu) => {
+            if (!btn || !menu) return;
+            btn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                const isHidden = menu.classList.contains("hidden");
+                // Fecha todos os outros menus abertos
+                document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+                if (isHidden) menu.classList.remove("hidden");
+            });
+        };
+        
+        const menuBtn = document.getElementById("menu-btn");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const notificationsBtn = document.getElementById("notifications-btn");
+        const notificationsDropdown = document.getElementById("notifications-dropdown");
+        
+        setupDropdown(menuBtn, dropdownMenu);
+        setupDropdown(notificationsBtn, notificationsDropdown);
+
+        document.addEventListener("click", () => {
+            document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+        });
+
+        // --- LÓGICA DAS NOTIFICAÇÕES PARA PROFESSOR ---
+
+        // 1. DADOS (Simulação para professor)
+        let notifications = [
+            { id: 1, type: 'submission', title: 'Atividade Concluída', description: 'O aluno João Silva finalizou o "Jogo de Acentuação".', time: 'Há 5 minutos', read: false, icon: 'check-circle-2' },
+            { id: 2, type: 'doubt', title: 'Nova Dúvida Recebida', description: 'Mariana Costa enviou uma pergunta sobre Crase.', time: 'Há 20 minutos', read: false, icon: 'help-circle' },
+            { id: 3, type: 'feedback', title: 'Feedback de Aluno', description: 'Ana Paula deu um feedback positivo na atividade "Verbos".', time: 'Há 1 hora', read: true, icon: 'message-square-heart' },
+            { id: 4, type: 'report', title: 'Relatório Semanal Gerado', description: 'O desempenho da Turma 1A já está disponível.', time: 'Ontem', read: true, icon: 'bar-chart-3' },
+            { id: 5, type: 'alert', title: 'Alerta de Desempenho', description: 'O aluno Carlos Souza está com dificuldades em Pontuação.', time: '2 dias atrás', read: false, icon: 'alert-triangle' }
+        ];
+
+        // 2. ELEMENTOS DO DOM
+        const notificationIndicator = document.getElementById('notification-indicator');
+        const mainList = document.getElementById('lista-todas-notificacoes');
+        const markAllReadBtn = document.getElementById('marcar-todas-lidas-btn');
+        const noNotificationsMessage = document.getElementById('aviso-sem-notificacoes');
+
+        // 3. FUNÇÃO PARA CRIAR O HTML DE UMA NOTIFICAÇÃO
+        const createNotificationHTML = (notification) => {
+            const isUnread = !notification.read;
+            const bgColor = isUnread ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-gray-50';
+            const iconColor = {
+                submission: 'text-green-500',
+                doubt: 'text-orange-500',
+                feedback: 'text-pink-500',
+                report: 'text-indigo-500',
+                alert: 'text-red-500'
+            }[notification.type] || 'text-gray-500';
+
+            return `
+                <div class="notification-item flex items-start gap-4 p-4 border-b border-gray-100 last:border-b-0 transition-colors duration-200 cursor-pointer ${bgColor}" data-id="${notification.id}">
+                    <div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center ${iconColor}">
+                        <i data-lucide="${notification.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-sm font-semibold text-gray-800">${notification.title}</p>
+                        <p class="text-xs text-gray-600">${notification.description}</p>
+                        <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
+                    </div>
+                    ${isUnread ? '<div class="unread-dot self-center mr-2"></div>' : ''}
+                </div>
+            `;
+        };
+
+        // 4. FUNÇÃO PRINCIPAL PARA RENDERIZAR TUDO
+        const renderNotifications = () => {
+            const unreadCount = notifications.filter(n => !n.read).length;
+
+            notificationIndicator.classList.toggle('hidden', unreadCount === 0);
+            markAllReadBtn.disabled = unreadCount === 0;
+
+            if (notifications.length === 0) {
+                mainList.innerHTML = '';
+                noNotificationsMessage.classList.remove('hidden');
+                if (notificationsDropdown) notificationsDropdown.innerHTML = `<div class="p-4 text-center text-sm text-gray-500">Nenhuma notificação</div>`;
+            } else {
+                noNotificationsMessage.classList.add('hidden');
+                mainList.innerHTML = notifications.map(createNotificationHTML).join('');
+                if (notificationsDropdown) {
+                    const dropdownHTML = `
+                        <div class="p-3 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto">
+                            ${notifications.slice(0, 3).map(createNotificationHTML).join('')}
+                        </div>
+                        <a href="notificacoes_professor.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                            Ver todas
+                        </a>
+                    `;
+                    notificationsDropdown.innerHTML = dropdownHTML;
+                }
+            }
+            lucide.createIcons();
+        };
+        
+        // 5. FUNÇÕES DE INTERAÇÃO
+        const markAsRead = (id) => {
+            const notification = notifications.find(n => n.id === id);
+            if (notification && !notification.read) {
+                notification.read = true;
+                renderNotifications();
+            }
+        };
+        
+        const markAllAsRead = () => {
+            notifications.forEach(n => n.read = true);
+            renderNotifications();
+        };
+
+        // 6. EVENT LISTENERS
+        markAllReadBtn.addEventListener('click', markAllAsRead);
+
+        document.body.addEventListener('click', (e) => {
+            const item = e.target.closest('.notification-item');
+            if (item) {
+                const id = parseInt(item.dataset.id, 10);
+                markAsRead(id);
+            }
+        });
+
+        // 7. INICIALIZAÇÃO
+        renderNotifications();
+    });
+</script>
+
+</body>
+</html> 
