@@ -1,90 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Minhas Recompensas</title>
-    <!-- SweetAlert2 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrtoFix - Loja de Recompensas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99;
-        }
-        .navbar-logo {
-            height: 40px;
-            width: auto;
-        }
-        .coin-icon { 
-            color: #facc15;
-        }
-        .card-custom-icon {
-            width: 48px; 
-            height: 48px; 
-            margin-bottom: 0.75rem; 
-        }
-        /* Estilo para o indicador de notificação (ponto vermelho) */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
-    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+<style>
+    :root {
+    --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+    --color-primary-dark: #357ABD;
+    --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
+    --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
+    --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
+    --color-text-light: #8492a6;  /* Cinza para textos secundários */
+    --color-card-bg: #ffffff;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    body {
+    font-family: 'Poppins', sans-serif;
+    color: #3c6a99; 
+    }
+
+    .navbar-logo { width: 40px; height: auto; }
+
+    .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: #EF4444;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary-dark);
+    animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse {
+    0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+
+    /* Animações de entrada para os elementos da página */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+    }
+
+
+.reward-card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+/* Estilos para o Canvas da Chuva de Moedas */
+#coin-shower-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none; /* Permite clicar através do canvas */
+    display: none; /* Começa escondido */
+    transition: opacity 0.5s ease-out;
+    opacity: 0;
+}
+</style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
-     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <!-- Ícone de Menu Principal -->
-            <button id="menu-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <!-- Menu Dropdown Principal -->
-            <div id="dropdown-menu" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="image" class="w-5 h-5"></i> Tema
-                </a>
-                <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]"> <!-- Link para notificações gerais -->
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="type" class="w-5 h-5"></i> Fontes
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
+<header class="header-nav sticky top-0 z-50">
+    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                    <!-- Itens do menu -->
+                    <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a>
+                </div>
             </div>
 
             <!-- Logo -->
-            <a href="../index.html" class="mx-auto md:mx-0"> <!-- Centraliza em telas pequenas se não houver sino -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
 
             <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
                 <!-- Ícone de Notificações -->
-                <div class="relative">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
                         <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <!-- Badge de Notificação (exemplo, seria dinâmico) -->
+                    
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
                     <!-- Dropdown de Notificações -->
@@ -106,200 +147,264 @@
                                 <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
                             </a>
                             <!-- Notificação Exemplo 3 (Lida) -->
-                             <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
                                 <p class="text-sm text-gray-500">Feedback do Professor</p>
                                 <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
                                 <p class="text-xs text-gray-400 mt-1">Ontem</p>
                             </a>
-                             <!-- Mais notificações aqui -->
+                            <!-- Mais notificações aqui -->
                         </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
                             Ver todas as notificações
                         </a>
                     </div>
                 </div>
 
                 <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
+                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
                     <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
                 </a>
             </div>
         </div>
     </nav>
+</header>
 
-    <main class="container mx-auto px-4 sm:px-6 py-6 flex-grow">
-        <div class="mb-6">
-            <a href="inicio.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <i data-lucide="arrow-left" class="mr-2"></i>
-                Voltar para Atividades
-            </a>
+<!-- Canvas para a Chuva de Moedas -->
+<canvas id="coin-shower-canvas"></canvas>
+
+<main class="container mx-auto px-4 sm:px-6 py-10 flex-grow">
+    <!-- Cabeçalho da Página -->
+    <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)]">Loja de Recompensas</h1>
+        <p class="text-base text-[var(--color-text-light)] mt-2 max-w-2xl mx-auto">Use suas Moedas OrtoFix para desbloquear avatares, temas e outros itens exclusivos!</p>
+    </div>
+
+    <!-- Card de Saldo de Moedas -->
+    <div class="max-w-xl mx-auto bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-2xl shadow-lg p-6 mb-12 flex items-center justify-center space-x-4">
+        <p class="text-lg font-medium text-[var(--color-text-light)]">Seu Saldo:</p>
+        <div class="flex items-center text-4xl font-bold text-[var(--color-text-dark)]">
+            <i data-lucide="coins" class="w-10 h-10 mr-3 text-yellow-400"></i>
+            <span id="total-moedas">1250</span>
+        </div>
+    </div>
+
+    <!-- Grid da Loja -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        
+        <!-- Item 1 -->
+        <div class="reward-card p-6 flex flex-col text-center">
+            <div class="w-20 h-20 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="smile-plus" class="w-10 h-10 text-blue-500"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-[var(--color-text-dark)]">Novo Avatar: Sorridente</h3>
+            <p class="text-sm text-[var(--color-text-light)] mt-1 mb-4 flex-grow">Um avatar super feliz para seu perfil!</p>
+            <div class="flex items-center justify-center text-lg font-semibold text-[var(--color-text-dark)] mb-4">
+                <i data-lucide="coins" class="w-5 h-5 mr-2 text-yellow-400"></i>
+                500
+            </div>
+            <button class="unlock-btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors" data-cost="500" data-item-name="Novo Avatar: Sorridente">
+                Desbloquear
+            </button>
         </div>
 
-        <div class="text-center">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] mb-4">
-                Minhas Recompensas
-            </h1>
-            <i data-lucide="gift" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-6"></i>
-
-            <!-- Informações sobre Moedas -->
-            <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-xl mx-auto mb-10">
-                <p class="text-lg text-[#5689b9] mb-4">
-                    Ao completar uma atividade ou desafio, você recebe <strong class="text-[#3c6a99]">Moedas OrtoFix</strong>!
-                </p>
-                <div class="flex items-center justify-center bg-[#e3ebf2]/60 p-4 rounded-lg">
-                    <p class="text-xl font-semibold mr-3">Seu total de moedas:</p>
-                    <div class="flex items-center text-3xl font-bold text-[#3c6a99]">
-                        <i data-lucide="coins" class="w-8 h-8 mr-2 coin-icon"></i>
-                        <span id="total-moedas">1250</span>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-500 mt-4">
-                    Use suas moedas para desbloquear itens divertidos na loja abaixo!
-                </p>
+        <!-- Item 2 -->
+        <div class="reward-card p-6 flex flex-col text-center">
+            <div class="w-20 h-20 bg-purple-100 dark:bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="palette" class="w-10 h-10 text-purple-500"></i>
             </div>
-
-            <!-- Loja de Recompensas-->
-            <h2 class="text-xl sm:text-2xl font-semibold text-[#3c6a99] mb-6">
-                Loja de Recompensas
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <!-- Item de Recompensa 1 -->
-                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
-                    <i data-lucide="smile-plus" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
-                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Novo Avatar: Sorridente</h3>
-                    <p class="text-sm text-gray-600 mb-3">Um avatar super feliz para seu perfil!</p>
-                    <div class="flex items-center justify-center mb-3">
-                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
-                        <span class="font-semibold text-[#3c6a99]">500 Moedas</span>
-                    </div>
-                    <button class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
-                        Desbloquear
-                    </button>
-                </div>
-
-                <!-- Item de Recompensa 2 -->
-                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
-                    <i data-lucide="palette" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
-                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Tema: Espaço Sideral</h3>
-                    <p class="text-sm text-gray-600 mb-3">Deixe o OrtoFix com a cara do universo!</p>
-                    <div class="flex items-center justify-center mb-3">
-                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
-                        <span class="font-semibold text-[#3c6a99]">750 Moedas</span>
-                    </div>
-                    <button class="w-full bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
-                        Desbloquear
-                    </button>
-                </div>  
-
-                <!-- Item de Recompensa 3 -->
-                <div class="bg-white shadow-lg rounded-xl p-5 text-center border-2 border-transparent hover:border-[#8bb3d5] transition-all">
-                    <i data-lucide="sticker" class="w-16 h-16 text-[#8bb3d5] mx-auto mb-3"></i>
-                    <h3 class="text-lg font-semibold text-[#3c6a99] mb-1">Adesivo: Mascote Mestre</h3>
-                    <p class="text-sm text-gray-600 mb-3">Um adesivo digital do nosso mascote!</p>
-                    <div class="flex items-center justify-center mb-3">
-                        <i data-lucide="coins" class="w-5 h-5 mr-1 coin-icon"></i>
-                        <span class="font-semibold text-[#3c6a99]">300 Moedas</span>
-                    </div>
-                    <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg text-sm cursor-not-allowed" disabled>
-                        Já Possui
-                    </button>
-                </div>
+            <h3 class="text-lg font-semibold text-[var(--color-text-dark)]">Tema: Espaço Sideral</h3>
+            <p class="text-sm text-[var(--color-text-light)] mt-1 mb-4 flex-grow">Deixe o OrtoFix com a cara do universo!</p>
+            <div class="flex items-center justify-center text-lg font-semibold text-[var(--color-text-dark)] mb-4">
+                <i data-lucide="coins" class="w-5 h-5 mr-2 text-yellow-400"></i>
+                750
             </div>
+            <button class="unlock-btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors" data-cost="750" data-item-name="Tema: Espaço Sideral">
+                Desbloquear
+            </button>
         </div>
-    </main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
-    </footer>
+        <!-- Item 3 (Já possuído) -->
+        <div class="reward-card p-6 flex flex-col text-center">
+            <div class="w-20 h-20 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                 <i data-lucide="sticker" class="w-10 h-10 text-green-500"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-[var(--color-text-dark)]">Adesivo: Mascote Mestre</h3>
+            <p class="text-sm text-[var(--color-text-light)] mt-1 mb-4 flex-grow">Um adesivo digital do nosso mascote!</p>
+            <div class="flex items-center justify-center text-lg font-semibold text-[var(--color-text-dark)] mb-4">
+                <i data-lucide="coins" class="w-5 h-5 mr-2 text-yellow-400"></i>
+                300
+            </div>
+            <button class="w-full bg-gray-400 dark:bg-gray-600 text-white font-semibold py-2.5 px-4 rounded-lg cursor-not-allowed" disabled>
+                Já Possui
+            </button>
+        </div>
+    </div>
+</main>
 
-    <script>
-         lucide.createIcons();
+<footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
 
-        // Script para o Menu Principal
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                // Esconde o menu de notificações se estiver aberto
-                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
-        }
+<script>
 
-        // Script para as notificações
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
+    // --- LÓGICA DO MENU DROPDOWN E NOTIFICAÇÕES ---
+    const menuBtn = document.getElementById("menu-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const notificationsBtn = document.getElementById("notifications-btn");
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
 
-        // Notificações não lidas
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
-            }
-        }
-
-
-        if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                // Esconde o menu principal se estiver aberto
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-                // Opcional: marcar notificações como lidas (remover badge) ao abrir
-                if (notificationIndicator && hasUnreadNotifications) {
-
-                }
-            });
-            // Fecha o dropdown de notificações ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-        }
-
-        // Simulação de lógica de desbloqueio
-        const unlockButtons = document.querySelectorAll('.bg-\\[\\#5689b9\\].hover\\:bg-\\[\\#3c6a99\\]'); 
-        unlockButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const totalMoedasElement = document.getElementById('total-moedas');
-                let totalMoedas = parseInt(totalMoedasElement.textContent);
-                const itemCostText = this.previousElementSibling.querySelector('span').textContent;
-                const itemCost = parseInt(itemCostText.match(/\d+/)[0]); // Extrai o número do texto "XXX Moedas"
-
-                if (totalMoedas >= itemCost) {
-                    totalMoedas -= itemCost;
-                    totalMoedasElement.textContent = totalMoedas;
-                    this.textContent = 'Desbloqueado!';
-                    this.classList.remove('bg-[#5689b9]', 'hover:bg-[#3c6a99]');
-                    this.classList.add('bg-green-500', 'cursor-not-allowed');
-                    this.disabled = true;
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Sucesso!',
-                        text: 'Item desbloqueado com sucesso!',
-                        confirmButtonColor: '#3c6a99'
-                        });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Moedas Insuficientes',
-                        text: 'Você não possui moedas suficientes para desbloquear este item.',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                }
-            });
+    function setupDropdown(btn, menu) {
+        if (!btn || !menu) return;
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isHidden = menu.classList.contains("hidden");
+            // Fecha todos os menus primeiro
+            document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+            // Abre o menu clicado, se estava fechado
+            if (isHidden) menu.classList.remove("hidden");
         });
-    </script>
+    }
+
+    setupDropdown(menuBtn, dropdownMenu);
+    setupDropdown(notificationsBtn, notificationsDropdown);
+
+    document.addEventListener("click", () => {
+        if(dropdownMenu) dropdownMenu.classList.add("hidden");
+        if(notificationsDropdown) notificationsDropdown.classList.add("hidden");
+    });
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    // --- LÓGICA DA CHUVA DE MOEDAS (CANVAS) ---
+    const canvas = document.getElementById('coin-shower-canvas');
+    const ctx = canvas.getContext('2d');
+    let coins = [];
+    let animationFrameId;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Coin {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = -20;
+            this.radius = Math.random() * 8 + 6; // Tamanho da moeda
+            this.speedY = Math.random() * 3 + 2; // Velocidade de queda
+            this.speedX = Math.random() * 2 - 1; // Movimento lateral
+            this.opacity = 1;
+        }
+
+        update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(250, 204, 21, ${this.opacity})`; // Amarelo Dourado
+            ctx.fill();
+            ctx.strokeStyle = `rgba(217, 119, 6, ${this.opacity})`; // Laranja para borda
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+
+    function animateCoins() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        coins.forEach((coin, index) => {
+            coin.update();
+            coin.draw();
+            if (coin.y > canvas.height + 20) {
+                coins.splice(index, 1); // Remove moedas que saíram da tela
+            }
+        });
+        animationFrameId = requestAnimationFrame(animateCoins);
+    }
+
+    function startCoinShower() {
+        coins = [];
+        for (let i = 0; i < 150; i++) { // Quantidade de moedas
+            setTimeout(() => coins.push(new Coin()), i * 10);
+        }
+        canvas.style.display = 'block';
+        setTimeout(() => canvas.style.opacity = '1', 50); // Fade in
+        animateCoins();
+
+        // Para a chuva de moedas após alguns segundos
+        setTimeout(() => {
+            stopCoinShower();
+        }, 3000);
+    }
+    
+    function stopCoinShower() {
+        canvas.style.opacity = '0'; // Fade out
+        setTimeout(() => {
+            cancelAnimationFrame(animationFrameId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'none';
+        }, 500); // Espera a transição do fade out terminar
+    }
+
+    // --- LÓGICA DA LOJA ---
+    const unlockButtons = document.querySelectorAll('.unlock-btn');
+    const totalMoedasElement = document.getElementById('total-moedas');
+    
+    unlockButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const cost = parseInt(this.dataset.cost);
+            const itemName = this.dataset.itemName;
+            let currentCoins = parseInt(totalMoedasElement.textContent);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const swalOptions = {
+                confirmButtonColor: 'var(--color-primary)',
+                customClass: {
+                    popup: isDark ? 'bg-gray-800 text-gray-200' : '',
+                    title: isDark ? 'text-white' : '',
+                },
+            };
+
+            if (currentCoins >= cost) {
+                currentCoins -= cost;
+                totalMoedasElement.textContent = currentCoins;
+                
+                this.textContent = 'Desbloqueado!';
+                this.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                this.classList.add('bg-green-600', 'cursor-not-allowed');
+                this.disabled = true;
+
+                Swal.fire({
+                    ...swalOptions,
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: `Você desbloqueou "${itemName}"!`,
+                }).then(() => {
+                    // Inicia a chuva de moedas após o pop-up ser fechado
+                    startCoinShower();
+                });
+
+            } else {
+                Swal.fire({
+                    ...swalOptions,
+                    icon: 'error',
+                    title: 'Moedas Insuficientes',
+                    text: 'Continue jogando para ganhar mais moedas!',
+                });
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>
