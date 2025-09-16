@@ -276,8 +276,8 @@ function renderActivitiesList(activities) {
         const fallback = [
             { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
             // --- ALTERAÇÃO FEITA AQUI ---
-            { id: 'typerun', titulo: 'TypeRun', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'keyboard', url: 'typerun.html', status: 'available' },
-            { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'file-text', url: 'atividade_correcao.html', status: 'available' },
+            { id: 'typerun', titulo: 'Caça-Erros', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'file-text', url: 'typerun.html', status: 'available' },
+            { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'keyboard', url: 'atividade_correcao.html', status: 'available' },
         ];
         fallback.forEach(act => grid.appendChild(createActivityElement(act)));
     } else {

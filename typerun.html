@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - TypeRun</title>
+    <title>OrtoFix - Caça-Erros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,24 +12,55 @@
     
     <style>
         :root {
-            --color-primary: #4A90E2;
-            --color-primary-dark: #357ABD;
-            --color-background: #F4F7FA;
-            --color-card-bg: #ffffff;
-            --color-border: #e2e8f0;
-        }
+    --color-primary: #4A90E2;
+    --color-primary-dark: #357ABD;
+    --color-accent: #50E3C2;
+    --color-background: #F4F7FA;
+    --color-text-dark: #2c3e50;
+    --color-text-light: #8492a6;
+    --color-card-bg: #ffffff;
+    }
+    body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-dark);
+    background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+    }
+    .navbar-logo { width: 40px; height: auto; }
+    .notification-badge {
+    position: absolute; top: 0; right: 0;
+    width: 12px; height: 12px; background-color: #EF4444;
+    border-radius: 50%; border: 2px solid var(--color-primary-dark);
+    animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse {
+    0%,100%{transform:scale(.9);box-shadow:0 0 0 0 rgba(239,68,68,.7);}
+    50%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(239,68,68,0);}
+    }
+    /* Animação para elementos que surgem */
+    @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+    }
+     /* Animação da barra de tempo */
+    @keyframes decrease {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
+    .timer-bar-inner {
+        animation-name: decrease;
+        animation-timing-function: linear;
+    }
 
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--color-background);
-        }
-
-        .content-card {
-            background-color: var(--color-card-bg);
-            border-radius: 1.25rem; /* Mais arredondado */
-            border: 1px solid var(--color-border);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
+        /* --- ESTILOS ESPECÍFICOS DO TYPERUN --- */
+        #textoComErros {
+            line-height: 2.2;
+            font-size: 1.125rem;
+            letter-spacing: 0.03em;
+            color: #374151; /* Gray 700 */
         }
 
         .word {
@@ -46,7 +77,6 @@
         .word:hover {
             transform: translateY(-2px);
             background-color: #eef2ff; /* Indigo 50 */
-            border-color: #c7d2fe; /* Indigo 200 */
         }
 
         .selected {
@@ -56,256 +86,376 @@
             box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
             border-color: var(--color-primary-dark);
         }
-
-        #textoComErros {
-            line-height: 2.2;
-            font-size: 1.125rem;
-            letter-spacing: 0.03em;
-            color: #374151; /* Gray 700 */
-        }
         
-        /* Animações */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spinner { animation: spin 1s linear infinite; }
+        /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
+        #mascote-assistente {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateY(200%);
+            opacity: 0;
+        }
+        #mascote-assistente.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #mascote-assistente .mascote-img {
+            height: 100px;
+            width: auto;
+            animation: bobbing 3s ease-in-out infinite;
+        }
+        #chat-bubble {
+            position: absolute;
+            bottom: 84px;
+            right: 47px;
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 210px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c6a99;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #chat-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        #chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
+    <!-- 🔹 NAVBAR -->
 <header class="header-nav sticky top-0 z-50">
-    <nav class="bg-[#3c6a99] text-white shadow-lg">
-        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-             <div class="relative">
-                <button id="menu-btn" class="p-2 rounded-full hover:bg-white/10"><i data-lucide="menu"></i></button>
-             </div>
-             <a href="index.html" class="mx-auto md:mx-0"><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="w-10"></a>
-             <div class="flex items-center gap-2">
-                 <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10"><i data-lucide="user-circle"></i></a>
-             </div>
+<nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+    <!-- Botão menu lateral -->
+    <div class="relative">
+        <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10">
+        <i data-lucide="menu"></i>
+        </button>
+        <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
+        <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+        </a>
+        <a href="#" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
+            <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+        </a>
+        <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
+            <i data-lucide="bell-ring" class="w-5 h-5"></i> Notificações
+        </a>
+        <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
+            <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+        </a>
+        <hr class="my-1 border-gray-200">
+        <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
+            <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+        </a>
         </div>
-    </nav>
+    </div>
+    <!-- Logo -->
+    <a href="inicio.html"><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo"></a>
+    <!-- Ícones direita -->
+    <div class="flex items-center gap-2">
+        <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                    
+                        <span class="notification-badge" id="notification-indicator"></span>
+                    </button>
+        <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl hidden z-[60]">
+            <div class="p-3 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] text-gray-600 text-sm">Nenhuma notificação nova</a>
+            </div>
+        </div>
+        </div>
+        <a href="perfil.html" class="p-2 rounded-full hover:bg-white/10"><i data-lucide="user-circle" class="text-[#e3ebf2]"></i></a>
+    </div>
+    </div>
+</nav>
 </header>
 
-<main class="container mx-auto px-4 py-8 flex-grow">
-    <div class="content-card max-w-4xl mx-auto p-6 sm:p-8">
-        <!-- Cabeçalho do Jogo -->
-        <div class="text-center border-b border-gray-200 pb-6 mb-6">
-            <i data-lucide="keyboard" class="w-12 h-12 text-indigo-500 mx-auto bg-indigo-100 p-2.5 rounded-full"></i>
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mt-3">TypeRun</h1>
-            <p class="text-md text-gray-500 mt-1">Encontre e selecione as palavras escritas incorretamente no texto.</p>
-        </div>
+    <!-- 🔹 CONTEÚDO PRINCIPAL DO JOGO -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <a href="atividades.html" class="inline-flex items-center gap-2 text-[var(--color-text-light)] hover:text-[var(--color-text-dark)] transition-colors duration-200">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        <span class="font-semibold">Voltar</span>
+    </a>
+        <div class="max-w-4xl mx-auto">
 
-        <!-- Barra de Controles -->
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <button id="btnGerarTexto" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#3c6a99] hover:bg-[#357ABD] text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                <span>Gerar Novo Texto</span>
-            </button>
-            <div id="loading" class="hidden items-center gap-2 text-gray-500 text-sm">
-                <i data-lucide="loader-2" class="w-5 h-5 spinner"></i>
-                <span id="loading-text">Carregando...</span>
+            <!-- TELA 1: MENU PRINCIPAL -->
+            <div id="main-menu" class="text-center fade-in-up">
+                <i data-lucide="keyboard" class="w-16 h-16 text-indigo-500 mx-auto bg-indigo-100 p-4 rounded-full"></i>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mt-4">Desafio Caça-Erros</h1>
+                <p class="text-lg text-gray-500 mt-2 max-w-2xl mx-auto">Encontre as palavras com erros de digitação no texto para testar sua atenção aos detalhes.</p>
+                <button id="start-game-btn" class="mt-8 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-bold py-3 px-10 rounded-lg shadow-lg transition transform hover:scale-105">
+                    Começar
+                </button>
             </div>
-        </div>
 
-        <!-- Área de Erro -->
-        <div id="error" class="hidden flex items-center gap-3 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg mb-4">
-            <i data-lucide="alert-circle" class="w-5 h-5"></i>
-            <span id="error-text"></span>
-        </div>
-
-        <!-- Área do Exercício -->
-        <div id="areaExercicio" class="hidden">
-            <div id="textoComErros" class="bg-slate-50 border border-slate-200 p-5 rounded-lg mb-6 shadow-inner">
-                <!-- Palavras serão injetadas aqui -->
-            </div>
-            <button id="btnConcluir" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
-                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                <span>Concluir Seleção</span>
-            </button>
-        </div>
-
-        <!-- Área de Resultado -->
-        <div id="areaResultado" class="hidden mt-8 border-t border-gray-200 pt-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Resultado da Avaliação</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Bloco do Gabarito -->
-                <div class="result-block bg-green-50 border border-green-200 p-5 rounded-lg">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
-                        <h3 class="text-lg font-semibold text-green-800">Gabarito</h3>
+            <!-- TELA 2: ÁREA DO JOGO -->
+            <div id="game-area" class="hidden bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
+                <!-- Barra de Controles -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <button id="btnGerarTexto" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#3c6a99] hover:bg-[#357ABD] text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>Gerar Outro Texto</span>
+                    </button>
+                    <div id="loading" class="hidden items-center gap-2 text-gray-500 text-sm">
+                        <i data-lucide="loader-2" class="w-5 h-5 spinner"></i>
+                        <span id="loading-text">Carregando...</span>
                     </div>
-                    <p class="text-sm text-green-700 mb-2">Estas eram as palavras com erros:</p>
-                    <p id="palavrasCorretas" class="text-green-900 font-semibold text-lg"></p>
                 </div>
-                <!-- Bloco da Resposta do Usuário -->
-                <div class="result-block bg-amber-50 border border-amber-200 p-5 rounded-lg">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i>
-                        <h3 class="text-lg font-semibold text-amber-800">Sua Resposta</h3>
-                    </div>
-                    <p class="text-sm text-amber-700 mb-2">Você selecionou estas palavras:</p>
-                    <p id="selecaoUsuario" class="text-amber-900 font-semibold text-lg"></p>
+
+                <!-- Área de Mensagem de Erro -->
+                <div id="error" class="hidden flex items-center gap-3 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg mb-4">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                    <span id="error-text"></span>
                 </div>
+
+                <!-- Área do Exercício -->
+                <div id="textoComErros" class="bg-slate-50 border border-slate-200 p-5 rounded-lg mb-6 shadow-inner"></div>
+                <button id="btnConcluir" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    <span>Concluir Seleção</span>
+                </button>
             </div>
-            <!-- Bloco do Feedback do Gemini -->
-            <div class="result-block bg-indigo-50 border border-indigo-200 p-5 rounded-lg mt-6">
-                <div class="flex items-center gap-3 mb-3">
-                    <i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i>
-                    <h3 class="text-lg font-semibold text-indigo-800">Análise do Gemini</h3>
+
+            <!-- TELA 3: ÁREA DE RESULTADOS -->
+            <div id="results-area" class="hidden mt-8 fade-in-up">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Resultado da Avaliação</h2>
+                
+                <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 bg-white rounded-2xl border border-gray-200">
+                    <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-gray-500">Acertos</p></div>
+                    <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-gray-500">Erros</p></div>
+                    <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-gray-500">Omissões</p></div>
+                    <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-gray-500">Pontuação</p></div>
                 </div>
-                <div id="feedbackGemini" class="text-indigo-800 whitespace-pre-wrap leading-relaxed"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-lg border"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-green-800">Gabarito</h3></div><p class="text-sm text-green-700 mb-2">Palavras com erros:</p><p id="palavrasCorretas" class="text-green-900 font-semibold text-lg"></p></div>
+                    <div class="bg-white p-5 rounded-lg border"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-amber-800">Sua Resposta</h3></div><p class="text-sm text-amber-700 mb-2">Você selecionou:</p><p id="selecaoUsuario" class="text-amber-900 font-semibold text-lg"></p></div>
+                </div>
+                <div class="bg-white p-5 rounded-lg border mt-6"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-indigo-800">Análise do Gemini</h3></div><div id="feedbackGemini" class="text-indigo-800 whitespace-pre-wrap leading-relaxed"></div></div>
             </div>
+
         </div>
+    </main>
+
+    <!-- 🔹 MASCOTE FLUTUANTE -->
+    <div id="mascote-assistente">
+        <div id="chat-bubble">Vamos começar o desafio?</div>
+        <img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
     </div>
-</main>
 
-<footer class="bg-[#3c6a99] text-white text-center p-4 mt-auto">
-    <div class="container mx-auto flex items-center justify-center gap-2">
-      <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
-      <p class="text-sm">&copy; 2025 OrtoFix</p>
-    </div>
-</footer>
+    <!-- 🔹 RODAPÉ PADRONIZADO -->
+    <footer class="bg-[#3c6a99] text-white text-center p-4 mt-auto">
+        <div class="container mx-auto flex items-center justify-center gap-2">
+          <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+          <p class="text-sm">&copy; 2025 OrtoFix</p>
+        </div>
+    </footer>
 
-<script>
-    lucide.createIcons();
-    
-    // --- ELEMENTOS DO DOM ---
-    const btnGerarTexto = document.getElementById('btnGerarTexto');
-    const btnConcluir = document.getElementById('btnConcluir');
-    const textoComErrosDiv = document.getElementById('textoComErros');
-    const areaExercicioDiv = document.getElementById('areaExercicio');
-    const areaResultadoDiv = document.getElementById('areaResultado');
-    const loadingDiv = document.getElementById('loading');
-    const loadingText = document.getElementById('loading-text');
-    const errorDiv = document.getElementById('error');
-    const errorText = document.getElementById('error-text');
-    const palavrasCorretasSpan = document.getElementById('palavrasCorretas');
-    const selecaoUsuarioSpan = document.getElementById('selecaoUsuario');
-    const feedbackGeminiDiv = document.getElementById('feedbackGemini');
+    <!-- 🔹 SCRIPT COMPLETO E CORRIGIDO DO JOGO -->
+    <script>
+        lucide.createIcons();
+        
+        // --- 1. ELEMENTOS DO DOM ---
+        const mainMenu = document.getElementById('main-menu');
+        const gameArea = document.getElementById('game-area');
+        const resultsArea = document.getElementById('results-area');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const btnGerarTexto = document.getElementById('btnGerarTexto');
+        const btnConcluir = document.getElementById('btnConcluir');
+        const textoComErrosDiv = document.getElementById('textoComErros');
+        const loadingDiv = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
+        const errorDiv = document.getElementById('error');
+        const errorText = document.getElementById('error-text');
 
-    let textoOriginalGlobal = "";
-    let palavrasSelecionadas = new Set(); // Usar Set para evitar duplicatas
+        let textoOriginalGlobal = "";
+        let palavrasSelecionadas = new Set();
 
-    // --- FUNÇÕES DE CONTROLE DE UI ---
-    function showLoading(isLoading, message = "Carregando...") {
-        loadingText.textContent = message;
-        loadingDiv.style.display = isLoading ? 'flex' : 'none';
-        btnGerarTexto.disabled = isLoading;
-        btnConcluir.disabled = isLoading;
-        if (isLoading) {
-            errorDiv.classList.add('hidden');
+        // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
+        function showScreen(screenName) {
+            mainMenu.classList.add('hidden');
+            gameArea.classList.add('hidden');
+            resultsArea.classList.add('hidden');
+            document.getElementById(screenName).classList.remove('hidden');
         }
-    }
 
-    function showError(message) {
-        errorText.textContent = message;
-        errorDiv.classList.remove('hidden');
-        showLoading(false);
-    }
-
-    function resetUI() {
-        areaExercicioDiv.classList.add('hidden');
-        areaResultadoDiv.classList.add('hidden');
-        errorDiv.classList.add('hidden');
-        textoComErrosDiv.innerHTML = "";
-        palavrasSelecionadas.clear();
-        btnGerarTexto.querySelector('span').textContent = 'Gerar Novo Texto';
-    }
-
-    // --- LÓGICA DO JOGO ---
-    btnGerarTexto.addEventListener('click', async () => {
-        resetUI();
-        showLoading(true, "Gerando texto...");
-
-        try {
-            const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_exercicio', { method: 'POST' });
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
-                throw new Error(errData.error);
+        function showLoading(isLoading, message = "Carregando...") {
+            loadingText.textContent = message;
+            loadingDiv.style.display = isLoading ? 'flex' : 'none';
+            startGameBtn.disabled = isLoading;
+            btnGerarTexto.disabled = isLoading;
+            btnConcluir.disabled = isLoading;
+            if (isLoading) {
+                errorDiv.classList.add('hidden');
             }
-            const data = await response.json();
-            textoOriginalGlobal = data.texto_com_erros;
-            renderTexto(textoOriginalGlobal);
-            areaExercicioDiv.classList.remove('hidden', 'fade-in');
-            void areaExercicioDiv.offsetWidth; // Force reflow para reiniciar animação
-            areaExercicioDiv.classList.add('fade-in');
-            btnGerarTexto.querySelector('span').textContent = 'Gerar Outro Texto';
-        } catch (err) {
-            console.error('Erro ao gerar texto:', err);
-            showError(err.message || 'Não foi possível conectar à API.');
-        } finally {
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
             showLoading(false);
         }
-    });
 
-    function renderTexto(texto) {
-        const palavras = texto.split(/(\s+)/); // Mantém os espaços para reconstrução
-        textoComErrosDiv.innerHTML = "";
-        palavras.forEach((palavra) => {
-            if (palavra.trim() === '') {
-                textoComErrosDiv.appendChild(document.createTextNode(palavra));
+        function renderTexto(texto) {
+            const palavras = texto.split(/(\s+)/);
+            textoComErrosDiv.innerHTML = "";
+            palavras.forEach((palavra) => {
+                if (palavra.trim() === '') {
+                    textoComErrosDiv.appendChild(document.createTextNode(palavra));
+                    return;
+                }
+                const span = document.createElement("span");
+                span.textContent = palavra;
+                span.classList.add("word");
+                span.addEventListener("click", () => {
+                    const cleanWord = palavra.replace(/[.,!?;:]$/, '');
+                    span.classList.toggle("selected");
+                    if (span.classList.contains("selected")) {
+                        palavrasSelecionadas.add(cleanWord);
+                    } else {
+                        palavrasSelecionadas.delete(cleanWord);
+                    }
+                });
+                textoComErrosDiv.appendChild(span);
+            });
+        }
+
+        // --- 3. FUNÇÕES PRINCIPAIS DO JOGO ---
+        async function generateNewText() {
+            showScreen('game-area');
+            showLoading(true, "Gerando texto...");
+            hideMascote();
+            
+            try {
+                // CORREÇÃO: A URL correta não tem "/typerun" nesta chamada
+                const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_exercicio', { method: 'POST' });
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
+                    throw new Error(errData.error || 'Erro desconhecido na API.');
+                }
+                const data = await response.json();
+                textoOriginalGlobal = data.texto_com_erros;
+                palavrasSelecionadas.clear();
+                renderTexto(textoOriginalGlobal);
+            } catch (err) {
+                console.error('Erro ao gerar texto:', err);
+                showError(err.message);
+                showScreen('main-menu'); // Volta ao menu em caso de erro
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function concluirSelecao() {
+            if (palavrasSelecionadas.size === 0) {
+                showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
+                setTimeout(() => errorDiv.classList.add('hidden'), 3000);
                 return;
             }
-            const span = document.createElement("span");
-            span.textContent = palavra;
-            span.classList.add("word");
-            span.addEventListener("click", () => {
-                const cleanWord = palavra.replace(/[.,!?;:]$/, ''); // Remove pontuação final para seleção
-                span.classList.toggle("selected");
-                if (span.classList.contains("selected")) {
-                    palavrasSelecionadas.add(cleanWord);
-                } else {
-                    palavrasSelecionadas.delete(cleanWord);
-                }
-            });
-            textoComErrosDiv.appendChild(span);
-        });
-    }
 
-    btnConcluir.addEventListener('click', async () => {
-        if (palavrasSelecionadas.size === 0) {
-            showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
-            return;
-        }
-
-        showLoading(true, "Avaliando sua seleção...");
-        areaResultadoDiv.classList.add('hidden');
-
-        try {
-            const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    texto_original: textoOriginalGlobal,
-                    selecao_usuario: Array.from(palavrasSelecionadas)
-                })
-            });
-
-            if (!response.ok) {
-                 const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
-                throw new Error(errData.error);
-            }
-
-            const data = await response.json();
-
-            palavrasCorretasSpan.textContent = data.palavras_com_erro.join(", ") || "Nenhuma";
-            selecaoUsuarioSpan.textContent = data.selecao_usuario.join(", ") || "Nenhuma";
-            feedbackGeminiDiv.textContent = data.feedback;
+            showLoading(true, "Avaliando sua seleção...");
             
-            areaResultadoDiv.classList.remove('hidden', 'fade-in');
-            void areaResultadoDiv.offsetWidth;
-            areaResultadoDiv.classList.add('fade-in');
-            window.scrollTo({ top: areaResultadoDiv.offsetTop - 100, behavior: 'smooth' });
+            try {
+                const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        texto_original: textoOriginalGlobal,
+                        selecao_usuario: Array.from(palavrasSelecionadas)
+                    })
+                });
 
-        } catch (err) {
-            console.error('Erro ao avaliar seleção:', err);
-            showError(err.message || 'Não foi possível conectar à API.');
-        } finally {
-            showLoading(false);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
+                    throw new Error(errData.error);
+                }
+
+                const data = await response.json();
+                
+                const gabaritoSet = new Set(data.palavras_com_erro);
+                const acertos = [...palavrasSelecionadas].filter(p => gabaritoSet.has(p));
+                const erros = [...palavrasSelecionadas].filter(p => !gabaritoSet.has(p));
+                const omissoes = [...gabaritoSet].filter(p => !palavrasSelecionadas.has(p));
+                const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+
+                document.getElementById('stat-acertos').textContent = acertos.length;
+                document.getElementById('stat-erros').textContent = erros.length;
+                document.getElementById('stat-omissoes').textContent = omissoes.length;
+                document.getElementById('stat-pontuacao').textContent = pontuacao;
+                document.getElementById('palavrasCorretas').textContent = data.palavras_com_erro.join(", ") || "Nenhuma";
+                document.getElementById('selecaoUsuario').textContent = Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
+                document.getElementById('feedbackGemini').textContent = data.feedback;
+
+                showScreen('results-area');
+                
+                if (pontuacao >= (data.palavras_com_erro.length * 7)) {
+                    changeBubbleText("Excelente trabalho! Você tem um ótimo olho para detalhes.");
+                } else if (pontuacao > 0) {
+                    changeBubbleText("Mandou bem! Continue praticando para não deixar nenhum erro passar.");
+                } else {
+                    changeBubbleText("Não desanime! A revisão é a parte mais importante do aprendizado.");
+                }
+                showMascote();
+
+            } catch (err) {
+                console.error('Erro ao avaliar seleção:', err);
+                showError(err.message);
+                showScreen('game-area');
+            } finally {
+                showLoading(false);
+            }
         }
-    });
-</script>
+
+        // --- 4. EVENT LISTENERS ---
+        startGameBtn.addEventListener('click', generateNewText);
+        btnGerarTexto.addEventListener('click', generateNewText);
+        btnConcluir.addEventListener('click', concluirSelecao);
+
+        // --- 5. LÓGICA DO MASCOTE ---
+        const mascoteAssistente = document.getElementById('mascote-assistente');
+        const chatBubble = document.getElementById('chat-bubble');
+        const showMascote = () => mascoteAssistente.classList.add('visible');
+        const hideMascote = () => mascoteAssistente.classList.remove('visible');
+        const changeBubbleText = (text) => {
+            chatBubble.classList.remove('show');
+            setTimeout(() => {
+                chatBubble.textContent = text;
+                chatBubble.classList.add('show');
+            }, 300);
+        };
+        setTimeout(() => {
+            showMascote();
+            changeBubbleText("Pronto para o desafio? Clique em 'Começar'.");
+        }, 1500);
+    </script>
+
 </body>
 </html>
