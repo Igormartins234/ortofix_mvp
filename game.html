@@ -46,6 +46,15 @@
     .fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;
     }
+     /* Animação da barra de tempo */
+    @keyframes decrease {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
+    .timer-bar-inner {
+        animation-name: decrease;
+        animation-timing-function: linear;
+    }
     /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
 #mascote-assistente {
     position: fixed;
@@ -100,8 +109,30 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
 }
+/* --- ESTILOS REFINADOS PARA EFEITO DE ERRO --- */
+@keyframes targeted-shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(5px); }
+  50% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Classe que será aplicada via JavaScript */
+.shake-effect {
+  animation: targeted-shake 0.3s ease-in-out;
+}
+#feedback-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000; /* Z-index alto para ficar sobre todos os elementos */
+    pointer-events: none; /* Essencial para permitir cliques nos botões abaixo */
+}
 </style>
 </head>
+<!-- NOVO ELEMENTO CANVAS -->
+<canvas id="feedback-canvas"></canvas>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
 <!-- 🔹 NAVBAR -->
@@ -159,69 +190,86 @@
 
 <!-- 🔹 CONTEÚDO PRINCIPAL -->
 <main class="container mx-auto px-4 py-8 sm:py-12 flex-grow">
-    <!-- 🔹 Botão Voltar -->
-<div class="mb-6">
-    <a href="inicio.html" class="inline-flex items-center gap-2 text-[var(--color-text-light)] hover:text-[var(--color-text-dark)] transition-colors duration-200">
-        <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        <span class="font-semibold">Voltar ao Painel</span>
-    </a>
-</div>
-<!-- Cabeçalho da Página -->
-<div class="text-center mb-8 fade-in-up">
-    <h1 class="text-4xl md:text-5xl font-bold text-[var(--color-text-dark)] mb-2 tracking-tight">
-    Desafio de Acentuação
-    </h1>
-    <p class="text-lg text-[var(--color-text-light)] max-w-2xl mx-auto">
-    Selecione o acento correto para cada palavra e teste seus conhecimentos!
-    </p>
-</div>
-
-<!-- Área do Jogo (inicialmente oculta) -->
-<div id="formArea" class="bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 sm:p-8 max-w-4xl mx-auto hidden">
-    <form id="form">
-    <!-- Grid para as palavras -->
-    <div id="inputsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Os inputs das palavras serão gerados aqui pelo JavaScript -->
+    <!-- TELA DO MENU PRINCIPAL -->
+    <div id="main-menu">
+        <div class="text-center mb-8 fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-bold text-[var(--color-text-dark)] mb-2 tracking-tight">Desafio de Acentuação</h1>
+            <p class="text-lg text-[var(--color-text-light)] max-w-2xl mx-auto">Escolha um modo de jogo e teste seus conhecimentos!</p>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-center gap-6">
+            <!-- Botão para iniciar o Modo Normal -->
+            <button id="start-normal-mode" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105">
+                <span class="text-xl font-bold">Modo Normal</span>
+                <p class="font-normal text-sm">Responda sem pressão de tempo.</p>
+            </button>
+            <!-- Botão para iniciar o Modo Contra o Tempo -->
+            <button id="start-time-attack-mode" class="bg-purple-500 hover:bg-purple-600 text-white px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105">
+                <span class="text-xl font-bold">Contra o Tempo</span>
+                <p class="font-normal text-sm">Corrida contra o relógio e vidas limitadas.</p>
+            </button>
+        </div>
     </div>
 
-    <!-- Botões de Ação -->
-    <div class="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-slate-200">
-        <button type="submit" class="flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-lg w-full font-semibold shadow-md transition-transform transform hover:scale-105">
-        <i data-lucide="send" class="w-5 h-5"></i>
-        <span>Verificar Respostas</span>
-        </button>
-        <button type="button" id="btnNovas" class="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 px-6 py-3 rounded-lg w-full font-semibold transition-transform transform hover:scale-105">
-        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-        <span>Novas Palavras</span>
-        </button>
-    </div>
-    </form>
-</div>
-
-<!-- Área de Feedback (inicialmente oculta) -->
-<div id="feedbackArea" class="max-w-4xl mx-auto hidden">
-    <div class="text-center mb-6">
-        <h2 class="text-3xl font-bold text-[var(--color-text-dark)]">Seu Desempenho</h2>
-    </div>
-    <div id="feedbackCards" class="space-y-4">
-    <!-- Os cartões de feedback serão gerados aqui -->
-    </div>
-
-    <div class="text-center mt-8">
-        <button id="btnJogarNovamente" class="flex items-center justify-center gap-2 mx-auto bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-            <span class="font-semibold">Jogar Novamente</span>
-        </button>
+    <!-- ÁREA DO JOGO - MODO NORMAL (ESCONDIDO) -->
+    <div id="normal-mode-area" class="hidden max-w-3xl mx-auto">
+        <div id="startAreaNormal" class="text-center">
+             <h2 class="text-3xl font-bold text-center mb-6 text-gray-700">Modo Normal</h2>
+            <button id="btnIniciarNormal" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Começar a Jogar</button>
+        </div>
         
-    </div>
-</div>
+        <form id="formNormal" class="hidden">
+             <div id="inputsAreaNormal" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"></div>
+             <div class="text-center">
+                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Verificar Respostas</button>
+             </div>
+        </form>
 
-<!-- Botão de Iniciar (visível no início) -->
-<div id="startArea" class="text-center mt-8">
-    <button id="btnIniciar" class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-    <span class="text-xl font-bold">Começar a Jogar!</span>
-    </button>
-</div>
+        <div id="feedbackAreaNormal" class="hidden mt-10">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-700">Resultados</h2>
+            <div id="feedbackCardsNormal" class="space-y-4"></div>
+            <div class="text-center mt-8">
+                 <button id="btnJogarNovamenteNormal" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Jogar Novamente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÁREA DO JOGO - MODO CONTRA O TEMPO (ESCONDIDO) -->
+    <div id="time-attack-mode-area" class="hidden max-w-3xl mx-auto">
+        <!-- Status do Jogo (Vidas, Pontos, Cronômetro) -->
+        <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-md">
+            <div class="flex items-center gap-2">
+                <i data-lucide="heart" class="text-red-500"></i>
+                <span id="lives-counter" class="text-xl font-bold text-gray-700">3</span>
+            </div>
+            <div class="text-2xl font-bold text-purple-600">
+                Pontos: <span id="score-counter">0</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i data-lucide="clock" class="text-blue-500"></i>
+                <span id="timer-display" class="text-xl font-bold text-gray-700">15</span>
+            </div>
+        </div>
+        <!-- Barra de Tempo -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+            <div id="timer-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300"></div>
+        </div>
+
+        <!-- Área da Pergunta -->
+        <div id="question-area" class="text-center">
+            <!-- O conteúdo será injetado aqui -->
+        </div>
+
+        <!-- Tela de Fim de Jogo -->
+        <div id="game-over-area" class="hidden text-center p-8 bg-white rounded-lg shadow-xl fade-in-up">
+            <h2 class="text-4xl font-bold text-red-600 mb-4">Fim de Jogo!</h2>
+            <p class="text-xl text-gray-700 mb-2">Sua pontuação final foi:</p>
+            <p id="final-score" class="text-6xl font-bold text-purple-600 mb-8">0</p>
+            <div class="flex justify-center gap-4">
+                <button id="restart-time-attack" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105">Jogar Novamente</button>
+                <button id="back-to-menu" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105">Voltar ao Menu</button>
+            </div>
+        </div>
+    </div>
 </main>
 <!-- 🔹 Mascote Flutuante -->
 <div id="mascote-assistente">
@@ -243,13 +291,40 @@
 <!-- 🔹 SONS -->
 <audio id="click-sound" src="/static/audio/click.wav" preload="auto"></audio>
 <audio id="submit-sound" src="/static/audio/confirm.wav" preload="auto"></audio>
+<audio id="correct-sound" src="/static/audio/correct.wav" preload="auto"></audio>
+<audio id="wrong-sound" src="/static/audio/wrong.wav" preload="auto"></audio>
+<audio id="game-over-sound" src="/static/audio/gameover.wav" preload="auto"></audio>
+
 
 <!-- 🔹 SCRIPT UNIFICADO -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Inicializa todos os ícones da página
     lucide.createIcons();
+    preFetchWordForTimeAttack(); // Pré-busca a primeira palavra para o modo contra o tempo
 
+    // ADICIONE ESTA NOVA FUNÇÃO (pode ser em qualquer lugar do script)
+async function preFetchWordForTimeAttack() {
+    try {
+        const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras?limite=1`, { method: 'POST' });
+        if (res.ok) {
+            const data = await res.json();
+            preFetchedWord = data.palavras[0]; // Armazena a palavra na variável global
+        }
+    } catch (error) {
+        console.error("Falha ao pré-carregar palavra:", error);
+        preFetchedWord = null; // Garante que a variável esteja limpa em caso de erro
+    }
+}
+
+    // --- ELEMENTOS GERAIS ---
+    const mainMenu = document.getElementById('main-menu');
+    const normalModeArea = document.getElementById('normal-mode-area');
+    const timeAttackModeArea = document.getElementById('time-attack-mode-area');
+
+    const startNormalModeBtn = document.getElementById('start-normal-mode');
+    const startTimeAttackModeBtn = document.getElementById('start-time-attack-mode');
+    
     // --- LÓGICA DOS MENUS DROPDOWN (PAINEL E NOTIFICAÇÕES) ---
     const menuBtn = document.getElementById("menu-btn");
     const dropdownMenu = document.getElementById("dropdown-menu");
@@ -260,96 +335,84 @@ document.addEventListener("DOMContentLoaded", function() {
         btn.addEventListener("click", (event) => {
             event.stopPropagation();
             const isHidden = menu.classList.contains("hidden");
-            // Fecha todos os outros menus antes de abrir o novo
             document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
-            if (isHidden) {
-                menu.classList.remove("hidden");
-            }
+            if (isHidden) menu.classList.remove("hidden");
         });
     };
     setupDropdown(menuBtn, dropdownMenu);
     setupDropdown(notificationsBtn, notificationsDropdown);
 
-    // Fecha os menus se o usuário clicar em qualquer outro lugar da página
     document.addEventListener("click", () => {
         document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
     });
 
-
-    // --- LÓGICA DO BOTÃO DE SOM ---
+    // --- LÓGICA DE SOM ---
     const soundBtn = document.getElementById("sound-btn");
-    const clickSound = document.getElementById("click-sound");
-    const submitSound = document.getElementById("submit-sound");
-    let soundEnabled = true; // O som começa habilitado
+    let soundEnabled = true; 
+    const sounds = {
+        click: document.getElementById("click-sound"),
+        submit: document.getElementById("submit-sound"),
+        correct: document.getElementById("correct-sound"),
+        wrong: document.getElementById("wrong-sound"),
+        gameOver: document.getElementById("game-over-sound")
+    };
 
-    if (soundBtn && clickSound) {
+    const playSound = (soundName) => {
+        if (soundEnabled && sounds[soundName]) {
+            sounds[soundName].currentTime = 0;
+            sounds[soundName].play().catch(() => {});
+        }
+    };
+
+    if (soundBtn) {
         soundBtn.addEventListener("click", (event) => {
             event.preventDefault(); 
             soundEnabled = !soundEnabled;
             const icon = soundBtn.querySelector("i");
-            if (soundEnabled) {
-                icon.setAttribute("data-lucide", "volume-2");
-                icon.classList.remove("text-red-500");
-            } else {
-                icon.setAttribute("data-lucide", "volume-x");
-                icon.classList.add("text-red-500");
-            }
+            icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+            icon.classList.toggle("text-red-500", !soundEnabled);
             lucide.createIcons();
         });
     }
     
-    // Adiciona som de clique a todos os botões e links
-   function playClickSound(e) {
-    if (soundEnabled && clickSound && !e.target.closest('#form')) {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(() => {});
-    }
-}
+    document.querySelectorAll('a, button, input[type="button"], input[type="submit"], input[type="reset"], [tabindex="0"]')
+        .forEach(el => {
+            el.addEventListener("click", () => playSound('click'));
+        });
 
-// Seleciona todos os elementos clicáveis comuns
-const clicaveis = document.querySelectorAll(
-    'a, button, input[type="button"], input[type="submit"], input[type="reset"], [tabindex="0"]'
-);
-
-clicaveis.forEach(el => {
-    el.addEventListener("click", playClickSound);
-});
-
-    // --- LÓGICA DO JOGO DE ACENTUAÇÃO ---
+    // --- LÓGICA DO JOGO ---
     const API_URL = "https://api-tcc-alpha.vercel.app";
 
-    const btnIniciar = document.getElementById('btnIniciar');
-    const btnNovas = document.getElementById('btnNovas');
-    const formArea = document.getElementById('formArea');
-    const feedbackArea = document.getElementById('feedbackArea');
-    const feedbackCards = document.getElementById('feedbackCards');
-    const inputsArea = document.getElementById('inputsArea');
-    const form = document.getElementById('form');
-    const startArea = document.getElementById('startArea');
+    // --- MODO NORMAL ---
+    const btnIniciarNormal = document.getElementById('btnIniciarNormal');
+    const formNormal = document.getElementById('formNormal');
+    const feedbackAreaNormal = document.getElementById('feedbackAreaNormal');
+    const feedbackCardsNormal = document.getElementById('feedbackCardsNormal');
+    const inputsAreaNormal = document.getElementById('inputsAreaNormal');
+    const startAreaNormal = document.getElementById('startAreaNormal');
+    const btnJogarNovamenteNormal = document.getElementById('btnJogarNovamenteNormal');
+    let palavrasAtuaisNormal = [];
 
-    let palavrasAtuais = [];
-
-    async function gerarPalavras() {
-         hideMascote(); 
+    async function gerarPalavrasNormal() {
+        hideMascote();
         changeBubbleText("Boa sorte! Escolha os acentos com atenção.");
         try {
-            // Mostra um estado de carregamento (opcional)
-            inputsArea.innerHTML = '<p class="text-center md:col-span-2 text-gray-500">Gerando novas palavras...</p>';
-            formArea.classList.remove('hidden');
-            feedbackArea.classList.add('hidden');
+            inputsAreaNormal.innerHTML = '<p class="text-center md:col-span-2 text-gray-500">Gerando novas palavras...</p>';
+            formNormal.classList.remove('hidden');
+            feedbackAreaNormal.classList.add('hidden');
             
             const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras`, { method: 'POST' });
             if (!res.ok) throw new Error('Falha ao buscar palavras da API.');
             const data = await res.json();
-            palavrasAtuais = data.palavras;
-            renderInputs(palavrasAtuais);
+            palavrasAtuaisNormal = data.palavras;
+            renderInputsNormal(palavrasAtuaisNormal);
         } catch (error) {
-            inputsArea.innerHTML = `<p class="text-center md:col-span-2 text-red-500">Erro: ${error.message}</p>`;
+            inputsAreaNormal.innerHTML = `<p class="text-center md:col-span-2 text-red-500">Erro: ${error.message}</p>`;
         }
     }
 
-    function renderInputs(palavras) {
-        inputsArea.innerHTML = '';
+    function renderInputsNormal(palavras) {
+        inputsAreaNormal.innerHTML = '';
         palavras.forEach((palavra, index) => {
             const div = document.createElement('div');
             div.className = 'bg-white/80 p-5 rounded-xl shadow-inner transition-all duration-300 hover:shadow-md';
@@ -365,27 +428,25 @@ clicaveis.forEach(el => {
                     <option value="sem acento">Sem acento</option>
                 </select>
             `;
-            inputsArea.appendChild(div);
+            inputsAreaNormal.appendChild(div);
         });
-        formArea.classList.add('fade-in-up');
-        lucide.createIcons();
+        formNormal.classList.add('fade-in-up');
     }
 
-    function renderFeedback(feedbackRaw) {
+    function renderFeedbackNormal(feedbackRaw) {
         const linhas = feedbackRaw.trim().split('\n').filter(l => l.trim() !== '');
         const cards = [];
         let card = {};
         linhas.forEach(linha => {
-            if (linha.startsWith('- Palavra:')) { if (Object.keys(card).length > 0) { cards.push(card); card = {}; } card.palavra = linha.replace('- Palavra:', '').trim(); }
-            else if (linha.startsWith('- Sua resposta:')) { card.resposta = linha.replace('- Sua resposta:', '').trim(); }
-            else if (linha.startsWith('- Resposta correta:')) { card.correta = linha.replace('- Resposta correta:', '').trim(); }
-            else if (linha.startsWith('- Resultado:')) { card.resultado = linha.replace('- Resultado:', '').trim(); }
-            else if (linha.startsWith('- Explicação:')) { card.explicacao = linha.replace('- Explicação:', '').trim(); }
+            if (linha.startsWith('- Palavra:')) { if (Object.keys(card).length > 0) cards.push(card); card = {}; card.palavra = linha.replace('- Palavra:', '').trim(); }
+            else if (linha.startsWith('- Sua resposta:')) card.resposta = linha.replace('- Sua resposta:', '').trim();
+            else if (linha.startsWith('- Resposta correta:')) card.correta = linha.replace('- Resposta correta:', '').trim();
+            else if (linha.startsWith('- Resultado:')) card.resultado = linha.replace('- Resultado:', '').trim();
+            else if (linha.startsWith('- Explicação:')) card.explicacao = linha.replace('- Explicação:', '').trim();
         });
-        if (Object.keys(card).length > 0) { cards.push(card); }
+        if (Object.keys(card).length > 0) cards.push(card);
 
-        feedbackCards.innerHTML = ''; 
-         // --- LÓGICA DO MASCOTE BASEADA NO DESEMPENHO --- ADICIONE DAQUI PARA BAIXO ---
+        feedbackCardsNormal.innerHTML = ''; 
         const acertos = cards.filter(c => c.resultado && c.resultado.includes('Correto')).length;
         const total = cards.length;
         
@@ -401,83 +462,269 @@ clicaveis.forEach(el => {
                 changeBubbleText("Não desanime! Revisar as explicações é o segredo para aprender.");
                  changeMascoteImage("/static/img/ortofix.png");
             }
-            
         }
-        if (acertos === total && total > 0) {
-            launchConfetti();
-        }
+        if (acertos === total && total > 0) launchConfetti();
 
         cards.forEach(c => {
             const isCorrect = c.resultado && c.resultado.includes('Correto');
             const cardClass = isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50';
             const icon = isCorrect ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-green-600"></i>' : '<i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>';
-            const resultClass = isCorrect ? 'text-green-700' : 'text-red-700';
-
             const cardHTML = `
                 <div class="border-l-4 ${cardClass} rounded-r-lg p-5 shadow-sm fade-in-up bg-white">
                     <div class="flex items-start gap-4">
                         <div>${icon}</div>
                         <div class="flex-grow">
                             <p class="text-xl font-bold text-[var(--color-text-dark)]">${c.palavra}</p>
-                            <p class="text-sm text-gray-600 mt-2">
-                                Você respondeu <span class="font-semibold">${c.resposta}</span>, mas o correto era <span class="font-semibold">${c.correta}</span>.
-                            </p>
-                            <p class="font-semibold mt-1 ${resultClass}">${c.resultado}</p>
-                            <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-gray-200">
-                                <strong>Explicação:</strong> ${c.explicacao}
-                            </p>
+                            <p class="text-sm text-gray-600 mt-2">Você respondeu <span class="font-semibold">${c.resposta}</span>, mas o correto era <span class="font-semibold">${c.correta}</span>.</p>
+                            <p class="font-semibold mt-1 ${isCorrect ? 'text-green-700' : 'text-red-700'}">${c.resultado}</p>
+                            <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-gray-200"><strong>Explicação:</strong> ${c.explicacao}</p>
                         </div>
                     </div>
-                </div>
-            `;
-            feedbackCards.innerHTML += cardHTML;
+                </div>`;
+            feedbackCardsNormal.innerHTML += cardHTML;
         });
 
-        feedbackArea.classList.remove('hidden');
-        feedbackArea.classList.add('fade-in-up');
+        feedbackAreaNormal.classList.remove('hidden');
+        feedbackAreaNormal.classList.add('fade-in-up');
         lucide.createIcons();
-
         showMascote();
     }
 
-    form.addEventListener('submit', async (e) => {
+    formNormal.addEventListener('submit', async (e) => {
         e.preventDefault();
-            if (soundEnabled && submitSound) {
-        submitSound.currentTime = 0;
-        submitSound.play().catch(err => {});
-    }
-    const respostas = [];
-        palavrasAtuais.forEach((_, index) => {
-            const palavra = form.querySelector(`input[name="palavra_${index}"]`).value;
-            const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
+        playSound('submit');
+        const respostas = [];
+        palavrasAtuaisNormal.forEach((_, index) => {
+            const palavra = formNormal.querySelector(`input[name="palavra_${index}"]`).value;
+            const resposta = formNormal.querySelector(`select[name="acento_${index}"]`).value;
             respostas.push({ palavra, resposta_usuario: resposta });
         });
 
         try {
             const res = await fetch(`${API_URL}/api/ortofix/verificar`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ respostas })
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ respostas })
             });
             if (!res.ok) throw new Error('Falha ao verificar respostas.');
             const data = await res.json();
-            renderFeedback(data.feedback);
-            formArea.classList.add('hidden'); // Esconde o formulário para mostrar só o feedback
+            renderFeedbackNormal(data.feedback);
+            formNormal.classList.add('hidden'); 
         } catch (error) {
-            feedbackCards.innerHTML = `<p class="text-center text-red-500">Erro: ${error.message}</p>`;
-            feedbackArea.classList.remove('hidden');
+            feedbackCardsNormal.innerHTML = `<p class="text-center text-red-500">Erro: ${error.message}</p>`;
+            feedbackAreaNormal.classList.remove('hidden');
         }
     });
 
-    btnIniciar.addEventListener('click', () => {
-        gerarPalavras();
-        startArea.classList.add('hidden');
+    btnIniciarNormal.addEventListener('click', () => {
+        gerarPalavrasNormal();
+        startAreaNormal.classList.add('hidden');
     });
 
+    btnJogarNovamenteNormal.addEventListener('click', () => {
+        gerarPalavrasNormal();
+    });
 
-    btnNovas.addEventListener('click', gerarPalavras);
-    btnJogarNovamente.addEventListener('click', gerarPalavras);
-});
+    // --- MODO CONTRA O TEMPO ---
+    const livesCounter = document.getElementById('lives-counter');
+    const scoreCounter = document.getElementById('score-counter');
+    const timerDisplay = document.getElementById('timer-display');
+    const timerBar = document.getElementById('timer-bar');
+    const questionArea = document.getElementById('question-area');
+    const gameOverArea = document.getElementById('game-over-area');
+    const finalScore = document.getElementById('final-score');
+    const restartTimeAttackBtn = document.getElementById('restart-time-attack');
+    const backToMenuBtn = document.getElementById('back-to-menu');
+    
+let lives, score, timer, timerInterval, currentWord, currentTimeLimit;
+let preFetchWord = null;
+    const INITIAL_TIME = 10;
+
+    function startGameTimeAttack() {
+    lives = 3;
+    score = 0;
+    currentTimeLimit = INITIAL_TIME;
+    livesCounter.textContent = lives;
+    scoreCounter.textContent = score;
+    gameOverArea.classList.add('hidden');
+    questionArea.classList.remove('hidden');
+    hideMascote();
+
+    // Inicia o jogo com a palavra pré-carregada
+    const firstWord = preFetchedWord;
+    preFetchedWord = null; // Esvazia a variável para que ela não seja usada duas vezes
+    nextWord(firstWord); // Passa a palavra para a função principal
+
+    // Imediatamente começa a carregar a PRÓXIMA palavra em segundo plano
+    preFetchWordForTimeAttack();
+}
+
+    async function nextWord(wordToUse = null) {
+    // 1. Garante que o jogo não continue se as vidas acabaram
+    if (lives <= 0) return;
+
+    // 2. Limpa qualquer cronômetro anterior para evitar contagens duplas
+    clearInterval(timerInterval);
+
+    // 3. Ajusta o tempo limite com base na pontuação (dificuldade progressiva)
+    if (score >= 200) {
+        currentTimeLimit = 5;
+    } else if (score >= 100) {
+        currentTimeLimit = 7;
+    } else {
+        currentTimeLimit = INITIAL_TIME;
+    }
+    
+    // 4. Define o contador de tempo e atualiza a interface
+    timer = currentTimeLimit;
+    updateTimerDisplay();
+
+    // 5. Reinicia a animação da barra de tempo visual
+    timerBar.style.animation = 'none';
+    timerBar.offsetHeight; // Força o navegador a processar a remoção da animação
+    timerBar.style.animation = `decrease ${currentTimeLimit}s linear forwards`;
+
+    // 6. Inicia o cronômetro regressivo de 1 segundo
+    timerInterval = setInterval(() => {
+        timer--;
+        updateTimerDisplay();
+        if (timer <= 0) {
+            handleAnswer(false); // Considera tempo esgotado como erro
+        }
+    }, 1000);
+
+    // 7. Bloco principal para obter e exibir a palavra
+    try {
+        if (wordToUse) {
+            // Se uma palavra foi pré-carregada e passada para a função, usa-a imediatamente
+            currentWord = wordToUse;
+        } else {
+            // Caso contrário (se o pré-carregamento falhou ou na primeira rodada sem a otimização),
+            // busca uma nova palavra da API como um fallback seguro.
+            console.warn("Nenhuma palavra pré-carregada, buscando da API...");
+            const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras?limite=1`, { method: 'POST' });
+            if (!res.ok) throw new Error('Falha ao buscar palavra da API.');
+            const data = await res.json();
+            currentWord = data.palavras[0];
+        }
+        // 8. Renderiza o card da pergunta com a palavra obtida
+        renderQuestion(currentWord);
+
+    } catch (error) {
+        // Em caso de erro na API, exibe uma mensagem para o jogador
+        console.error("Erro em nextWord:", error);
+        questionArea.innerHTML = `<p class="text-center text-red-500">Erro ao carregar palavra: ${error.message}</p>`;
+    }
+}
+
+    function renderQuestion(palavra) {
+        questionArea.innerHTML = `
+            <div class="bg-white p-8 rounded-xl shadow-lg fade-in-up">
+                <p class="text-lg text-gray-500 mb-2">Qual o acento correto para:</p>
+                <h2 class="text-5xl font-bold text-[var(--color-text-dark)] mb-8">${palavra}</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button data-answer="agudo" class="answer-btn bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-4 rounded-lg transition">Agudo (´)</button>
+                    <button data-answer="circunflexo" class="answer-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-semibold py-4 rounded-lg transition">Circunflexo (^)</button>
+                    <button data-answer="til" class="answer-btn bg-green-100 hover:bg-green-200 text-green-800 font-semibold py-4 rounded-lg transition">Til (~)</button>
+                    <button data-answer="sem acento" class="answer-btn bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-4 rounded-lg transition">Sem Acento</button>
+                </div>
+            </div>`;
+        
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const userAnswer = e.target.getAttribute('data-answer');
+                // Desabilita botões para evitar cliques múltiplos
+                document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+                
+                const res = await fetch(`${API_URL}/api/ortofix/verificar`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ respostas: [{ palavra: currentWord, resposta_usuario: userAnswer }] })
+                });
+                const data = await res.json();
+                const isCorrect = data.feedback.includes("Resultado: Correto");
+
+                // Feedback visual no botão clicado
+                e.target.classList.add(isCorrect ? 'bg-green-500' : 'bg-red-500', 'text-white');
+
+                handleAnswer(isCorrect);
+            });
+        });
+    }
+
+    function handleAnswer(isCorrect) {
+        clearInterval(timerInterval);
+        timerBar.style.animationPlayState = 'paused';
+
+         const wordForNextRound = preFetchedWord; // Guarda a palavra que já foi pré-carregada
+    preFetchedWord = null; // Limpa a variável
+
+    // Inicia o pré-carregamento para a rodada SEGUINTE em segundo plano
+    preFetchWordForTimeAttack(); 
+
+        if (isCorrect) {
+            playSound('correct');
+            score += 10;
+            scoreCounter.textContent = score;
+            setTimeout(() => nextWord(wordForNextRound), 1000); 
+        } else {
+            playSound('wrong');
+            triggerErrorAnimation();
+            lives--;
+            livesCounter.textContent = lives;
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                 setTimeout(() => nextWord(wordForNextRound), 1500); // Espera 1.5s (mais tempo para ver o erro)
+            }
+        }
+    }
+
+    function gameOver() {
+        playSound('gameOver');
+        clearInterval(timerInterval);
+        finalScore.textContent = score;
+        questionArea.classList.add('hidden');
+        gameOverArea.classList.remove('hidden');
+        changeBubbleText(`Fim de jogo! Você fez ${score} pontos. Que tal tentar de novo?`);
+        changeMascoteImage("/static/img/ortofix.png");
+        showMascote();
+    }
+
+    function updateTimerDisplay() {
+        timerDisplay.textContent = timer;
+        const percentage = (timer / INITIAL_TIME) * 100;
+        
+        // Atualização da cor da barra de tempo
+        if(percentage < 25) {
+             timerBar.classList.remove('bg-yellow-500');
+             timerBar.classList.add('bg-red-500');
+        } else if (percentage < 50) {
+            timerBar.classList.remove('bg-blue-500');
+            timerBar.classList.add('bg-yellow-500');
+        } else {
+            timerBar.classList.remove('bg-yellow-500', 'bg-red-500');
+            timerBar.classList.add('bg-blue-500');
+        }
+    }
+
+    // --- CONTROLES DE NAVEGAÇÃO ENTRE MODOS ---
+    startNormalModeBtn.addEventListener('click', () => {
+        mainMenu.classList.add('hidden');
+        normalModeArea.classList.remove('hidden');
+    });
+
+    startTimeAttackModeBtn.addEventListener('click', () => {
+        mainMenu.classList.add('hidden');
+        timeAttackModeArea.classList.remove('hidden');
+        startGameTimeAttack();
+    });
+
+    restartTimeAttackBtn.addEventListener('click', startGameTimeAttack);
+
+    backToMenuBtn.addEventListener('click', () => {
+        timeAttackModeArea.classList.add('hidden');
+        mainMenu.classList.remove('hidden');
+        showMascote();
+        changeBubbleText("Clique em 'Começar a Jogar' para testar seus conhecimentos!");
+    });
 
     // --- LÓGICA DO MASCOTE ---
     const mascoteAssistente = document.getElementById('mascote-assistente');
@@ -485,7 +732,6 @@ clicaveis.forEach(el => {
 
     const showMascote = () => mascoteAssistente.classList.add('visible');
     const hideMascote = () => mascoteAssistente.classList.remove('visible');
-
 
     const changeBubbleText = (text) => {
         chatBubble.classList.remove('show');
@@ -497,29 +743,162 @@ clicaveis.forEach(el => {
     
     const changeMascoteImage = (imageSrc) => {
         const mascoteImgElement = document.querySelector('#mascote-assistente .mascote-img');
-        if (mascoteImgElement) {
-            mascoteImgElement.src = imageSrc;
-        }
+        if (mascoteImgElement) mascoteImgElement.src = imageSrc;
     };
 
-    // Mostra o mascote após um tempo
     setTimeout(() => {
         showMascote();
-        changeBubbleText("Clique em 'Começar a Jogar' para testar seus conhecimentos!");
-    }, 1500); // Aparece após 1.5 segundos
-
+        changeBubbleText("Escolha um modo de jogo para começar o desafio!");
+    }, 1500);
 
     function launchConfetti() {
-    confetti({
-        particleCount: 150, 
-        spread: 500,        
-        origin: { y: 0.6 }, 
-        angle: 90,          
-        startVelocity: 40,  
-        colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] 
-    });
+        confetti({
+            particleCount: 150, spread: 500, origin: { y: 0.6 }, angle: 90, startVelocity: 40, colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] 
+        });
+    }
+});
+// --- LÓGICA DO CANVAS E ANIMAÇÃO (VERSÃO PROFISSIONAL) ---
+const feedbackCanvas = document.getElementById('feedback-canvas');
+const ctx = feedbackCanvas.getContext('2d');
+let effects = [];
+const gravity = 0.1;
+
+function resizeCanvas() {
+    feedbackCanvas.width = window.innerWidth;
+    feedbackCanvas.height = window.innerHeight;
 }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Loop principal que desenha e atualiza todos os efeitos
+function animateEffects() {
+    ctx.clearRect(0, 0, feedbackCanvas.width, feedbackCanvas.height);
+    
+    // Usamos um loop `for` reverso para poder remover itens do array com segurança
+    for (let i = effects.length - 1; i >= 0; i--) {
+        const effect = effects[i];
+        
+        effect.update();
+        effect.draw();
+
+        // Remove o efeito se sua vida útil acabou
+        if (effect.life <= 0) {
+            effects.splice(i, 1);
+        }
+    }
+    requestAnimationFrame(animateEffects);
+}
+
+// --- CLASSES PARA CADA TIPO DE EFEITO ---
+
+// 1. Partícula da explosão
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 5 + 2;
+        this.life = 1; // Representa 100% da vida
+        // Velocidade inicial aleatória para a explosão
+        this.vx = (Math.random() - 0.5) * 8;
+        this.vy = (Math.random() * -5) - 3;
+    }
+    update() {
+        this.vy += gravity; // Aplica gravidade
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= 0.02; // Perde vida (desaparece)
+    }
+    draw() {
+        ctx.fillStyle = `rgba(239, 68, 68, ${this.life})`; // red-500
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+    }
+}
+
+// 2. Círculo da explosão radial
+class RadialBurst {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 0;
+        this.maxRadius = 150;
+        this.life = 1;
+    }
+    update() {
+        this.radius += 15; // Expande rapidamente
+        this.life -= 0.05;
+    }
+    draw() {
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0, `rgba(239, 68, 68, ${this.life * 0.5})`);
+        gradient.addColorStop(1, `rgba(239, 68, 68, 0)`);
+        ctx.fillStyle = gradient;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// 3. Ícone "X" central
+class ErrorIcon {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 0;
+        this.maxSize = 100;
+        this.life = 1;
+        this.rotation = -Math.PI / 4;
+    }
+    update() {
+        // Animação de "overshoot": cresce um pouco a mais e depois volta
+        if (this.size < this.maxSize) {
+            this.size += 15;
+        } else if (this.size > this.maxSize - 10) {
+            this.size -= 1;
+        }
+        this.rotation += 0.1;
+        this.life -= 0.025;
+    }
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.font = `bold ${this.size}px Poppins`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.life})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('✕', 0, 0); // Caractere de "X" (multiplication X)
+        ctx.restore();
+    }
+}
+
+// Função principal que orquestra todos os efeitos de erro
+function triggerErrorAnimation() {
+    const centerX = feedbackCanvas.width / 2;
+    const centerY = feedbackCanvas.height / 2;
+
+    // 1. Adiciona a explosão radial
+    effects.push(new RadialBurst(centerX, centerY));
+
+    // 2. Adiciona o ícone "X"
+    effects.push(new ErrorIcon(centerX, centerY));
+
+    // 3. Adiciona 20 partículas para a explosão
+    for (let i = 0; i < 20; i++) {
+        effects.push(new Particle(centerX, centerY));
+    }
+
+    // 4. Adiciona o efeito de tremor ao card da pergunta
+    const questionCard = document.querySelector('#question-area > div');
+    if (questionCard) {
+        questionCard.classList.add('shake-effect');
+        setTimeout(() => {
+            questionCard.classList.remove('shake-effect');
+        }, 300); // Duração da animação em ms, deve ser igual à do CSS
+    }
+}
+
+animateEffects(); // Inicia o loop de animação global
 </script>
 
 </body>
-</html> 
+</html>
