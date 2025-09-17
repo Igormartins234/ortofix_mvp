@@ -191,9 +191,10 @@
 <!-- SUBSTITUA O CONTEÚDO DE <main> ATÉ O FINAL DE #areaResultado -->
 <main class="container mx-auto px-4 py-8 sm:py-12 flex-grow">
     <div class="mb-6">
-        <a href="atividades.html" class="inline-flex items-center gap-2 text-dynamic-light hover:text-dynamic-dark transition-colors duration-200">
-            <i data-lucide="chevron-left" class="w-5 h-5"></i><span class="font-semibold">Voltar</span>
-        </a>
+         <a href="inicio.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    Voltar
+                </a>
     </div>
     <div class="text-center mb-8 fade-in-up">
         <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mb-2 tracking-tight">Desafio de Correção</h1>
@@ -219,18 +220,34 @@
         <p id="error" class="text-center text-red-500 bg-red-100 border border-red-400 p-3 rounded-md hidden"></p>
     </div>
 
-    <!-- ÁREA DE FEEDBACK -->
-    <div id="areaResultado" class="max-w-4xl mx-auto hidden">
-        <div class="text-center mb-6"><h2 class="text-3xl font-bold text-dynamic-dark">Seu Desempenho</h2></div>
-        <div id="feedbackContainer" class="space-y-4">
-            <!-- Feedback será inserido aqui -->
-        </div>
-        <div class="text-center mt-8">
-            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
-            </button>
-        </div>
+    <!-- NOVA ÁREA DE RESULTADO (BASEADA NO TYPERUN) -->
+<div id="areaResultado" class="max-w-4xl mx-auto hidden mt-8 fade-in-up">
+    <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+    
+    <!-- Placar de pontuação -->
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+        <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+        <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+        <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
     </div>
+
+    <!-- Comparação de textos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><p id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></p></div>
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><p id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></p></div>
+    </div>
+
+    <!-- Feedback da IA -->
+    <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise da IA</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+    
+    <!-- Botão de ação -->
+    <div class="text-center mt-8">
+        <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+        </button>
+    </div>
+</div>
 
     <!-- BOTÃO DE INICIAR -->
     <div id="startArea" class="text-center mt-8">
@@ -371,7 +388,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         gameArea.classList.add('hidden');
         areaResultadoDiv.classList.remove('hidden');
-        feedbackContainer.innerHTML = '<p class="text-center text-gray-500">Avaliando sua resposta...</p>';
+        // Limpa a área de resultado antes de carregar
+        areaResultadoDiv.innerHTML = '<p class="text-center text-dynamic-light p-8">Avaliando sua resposta...</p>';
 
         try {
             const response = await fetch(`${API_URL}/api/avaliar_correcao`, {
@@ -387,63 +405,110 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await response.json();
             renderFeedback(data);
         } catch (err) {
-            feedbackContainer.innerHTML = `<p class="text-center text-red-500">Erro: ${err.message}</p>`;
+            // Se der erro na API, mostra o erro e volta para a tela de jogo
+             showError(err.message);
+             gameArea.classList.remove('hidden');
+             areaResultadoDiv.classList.add('hidden');
         }
     }
     
-    function renderFeedback(data) {
-    const isPerfect = data.sua_tentativa.trim().toLowerCase() === data.correcao_ideal.trim().toLowerCase();
-    
-    // Cores e ícones dinâmicos
-    const idealBorder = isPerfect ? 'border-green-500' : 'border-orange-400';
-    const idealBg = isPerfect ? 'bg-green-50' : 'bg-orange-50';
-    const idealIcon = isPerfect ? 'check-circle-2' : 'clipboard-check';
-    const idealIconColor = isPerfect ? 'text-green-600' : 'text-orange-600';
-    const idealTextColor = isPerfect ? 'text-green-800' : 'text-orange-800';
+    /**
+ * NOVA FUNÇÃO AUXILIAR
+ * Compara duas strings de texto e retorna um Set com as palavras que são diferentes.
+ * @param {string} textoOriginal - O texto base para comparação.
+ * @param {string} textoModificado - O texto que foi alterado.
+ * @returns {Set<string>} Um conjunto de palavras originais que foram modificadas.
+ */
+function calcularDiferencas(textoOriginal, textoModificado) {
+    const palavrasOriginais = textoOriginal.trim().split(/\s+/);
+    const palavrasModificadas = textoModificado.trim().split(/\s+/);
+    const diferencas = new Set();
 
-        
-        feedbackContainer.innerHTML = `
-        <div class="p-5 rounded-lg shadow-sm fade-in-up" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
-            <div class="flex items-start gap-4">
-                <div><i data-lucide="edit-3" class="w-6 h-6" style="color: var(--color-primary);"></i></div>
-                <div class="flex-grow">
-                    <p class="font-semibold text-dynamic-dark">Sua Tentativa:</p>
-                    <p class="text-dynamic-light mt-1">${data.sua_tentativa}</p>
-                </div>
-            </div>
+    // Itera pela menor quantidade de palavras para evitar erros de índice
+    const tamanhoMinimo = Math.min(palavrasOriginais.length, palavrasModificadas.length);
+
+    for (let i = 0; i < tamanhoMinimo; i++) {
+        // Remove pontuação final para uma comparação mais justa
+        const palavraOriginalLimpa = palavrasOriginais[i].replace(/[.,!?;:]$/, '');
+        const palavraModificadaLimpa = palavrasModificadas[i].replace(/[.,!?;:]$/, '');
+
+        if (palavraOriginalLimpa !== palavraModificadaLimpa) {
+            // Adiciona a palavra original que estava errada/foi modificada
+            diferencas.add(palavraOriginalLimpa);
+        }
+    }
+    return diferencas;
+}
+
+
+/**
+ * FUNÇÃO ATUALIZADA
+ * Renderiza o feedback e agora CALCULA a pontuação antes de exibir.
+ * @param {object} data - Os dados recebidos da API.
+ */
+function renderFeedback(data) {
+    // Recria a estrutura HTML da área de resultados
+    areaResultadoDiv.innerHTML = `
+        <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+        <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+            <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+            <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+            <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+            <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
         </div>
-        <div class="border-l-4 ${idealBorder} ${idealBg} rounded-r-lg p-5 shadow-sm fade-in-up" style="animation-delay: 0.1s;">
-            <div class="flex items-start gap-4">
-                <div><i data-lucide="${idealIcon}" class="w-6 h-6 ${idealIconColor}"></i></div>
-                <div class="flex-grow">
-                    <p class="font-semibold ${idealTextColor}">Correção Ideal:</p>
-                    <p class="text-gray-700 mt-1">${data.correcao_ideal}</p>
-                </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><p id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></p></div>
+            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><p id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></p></div>
         </div>
-        <div class="p-5 rounded-lg shadow-sm fade-in-up" style="animation-delay: 0.2s; background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
-            <div class="flex items-start gap-4">
-                <div><i data-lucide="message-circle" class="w-6 h-6 text-purple-600"></i></div>
-                <div class="flex-grow">
-                    <p class="font-semibold text-dynamic-dark">Feedback da IA:</p>
-                    <p class="text-dynamic-light mt-1 whitespace-pre-wrap">${data.feedback_do_gemini}</p>
-                </div>
-            </div>
+        <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise da IA</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+        <div class="text-center mt-8">
+            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+            </button>
         </div>
     `;
+    
+    document.getElementById('btnJogarNovamente').addEventListener('click', gerarExercicio);
+
+    // --- LÓGICA DE CÁLCULO DA PONTUAÇÃO ---
+    // 1. Identifica quais palavras a API diz que estavam erradas (comparando original com ideal)
+    const gabaritoErros = calcularDiferencas(textoOriginalGlobal, data.correcao_ideal);
+    
+    // 2. Identifica quais palavras o usuário realmente mudou (comparando original com a resposta do usuário)
+    const usuarioCorrecoes = calcularDiferencas(textoOriginalGlobal, data.sua_tentativa);
+
+    // 3. Calcula as métricas
+    const acertos = [...usuarioCorrecoes].filter(palavra => gabaritoErros.has(palavra));
+    const erros = [...usuarioCorrecoes].filter(palavra => !gabaritoErros.has(palavra));
+    const omissoes = [...gabaritoErros].filter(palavra => !usuarioCorrecoes.has(palavra));
+    const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+
+    // 4. Popula o placar com os valores CALCULADOS
+    document.getElementById('stat-acertos').textContent = acertos.length;
+    document.getElementById('stat-erros').textContent = erros.length;
+    document.getElementById('stat-omissoes').textContent = omissoes.length;
+    document.getElementById('stat-pontuacao').textContent = pontuacao < 0 ? 0 : pontuacao; // Evita pontuação negativa
+
+    // Popula o restante das informações
+    document.getElementById('palavrasCorretas').textContent = data.correcao_ideal || "Gabarito indisponível.";
+    document.getElementById('selecaoUsuario').textContent = data.sua_tentativa || "Nenhuma resposta enviada.";
+    document.getElementById('feedbackGemini').textContent = data.feedback_do_gemini || "Feedback indisponível.";
+    
     lucide.createIcons();
 
-        if (isPerfect) {
-            playSound(successSound);
-            launchConfetti();
-            changeBubbleText("Incrível! Você acertou tudo. Parabéns!");
-            changeMascoteImage("/static/img/success.webp");
-        } else {
-            changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
-            changeMascoteImage("/static/img/ortofix.png");
-        }
-        showMascote();
+    const isPerfect = (acertos.length === gabaritoErros.size && erros.length === 0 && omissoes.length === 0);
+
+    if (isPerfect) {
+        playSound(successSound);
+        launchConfetti();
+        changeBubbleText("Incrível! Correção perfeita. Parabéns!");
+        changeMascoteImage("/static/img/success.webp");
+    } else {
+        changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
+        changeMascoteImage("/static/img/ortofix.png");
     }
+    showMascote();
+}
 
     btnIniciar.addEventListener('click', () => {
         startArea.classList.add('hidden');
