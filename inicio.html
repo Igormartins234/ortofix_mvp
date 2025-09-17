@@ -237,9 +237,10 @@
                 </div>
 
                 <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
-                </a>
+                <!-- Ícone de Perfil (AGORA DINÂMICO) -->
+<a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+    <!-- O script global-init.js vai inserir o avatar aqui -->
+</a>
             </div>
         </div>
     </nav>
@@ -486,7 +487,7 @@ setTimeout(() => {
 
 }, 2000); 
 </script>
-
+<script src="global-init.js"></script>
 
 </body>
 </html>
