@@ -382,8 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Temas
         { id: 'theme-default', name: 'Tema Padrão', cost: 0, category: 'tema', icon: 'sun', color: 'gray', themeData: {'--color-primary': '#4A90E2','--color-primary-dark': '#357ABD','--color-background': '#F4F7FA','--color-text-dark': '#2c3e50','--color-text-light': '#8492a6','--color-card-bg': '#ffffff','--color-border': '#e2e8f0'} },
         { id: 'theme-space', name: 'Tema: Espaço Sideral', cost: 750, category: 'tema', icon: 'sparkles', color: 'purple', themeData: {'--color-primary': '#a855f7','--color-primary-dark': '#9333ea','--color-background': '#0c1427','--color-text-dark': '#e2e8f0','--color-text-light': '#94a3b8','--color-card-bg': '#1a233b','--color-border': '#334155'} },
-        { id: 'theme-ocean', name: 'Tema: Fundo do Mar', cost: 800, category: 'tema', icon: 'waves', color: 'cyan', themeData: {'--color-primary': '#22d3ee','--color-primary-dark': '#06b6d4','--color-background': '#f0f9ff','--color-text-dark': '#083344','--color-text-light': '#52525b','--color-card-bg': '#ffffff','--color-border': '#bae6fd'} },
-        { id: 'theme-forest', name: 'Tema: Natureza', cost: 700, category: 'tema', icon: 'leaf', color: 'lime', themeData: {'--color-primary': '#4d7c0f','--color-primary-dark': '#365314','--color-background': '#f0fdf4','--color-text-dark': '#14532d','--color-text-light': '#3f6212','--color-card-bg': '#ffffff','--color-border': '#bbf7d0'} },
+       { id: 'theme-ocean', name: 'Tema: Fundo do Mar', cost: 800, category: 'tema', icon: 'waves', color: 'cyan', themeData: {'--color-primary': '#22d3ee','--color-primary-dark': '#06b6d4','--color-background': '#f0f9ff','--color-text-dark': '#083344','--color-text-light': '#52525b','--color-card-bg': '#ffffff','--color-border': '#bae6fd', '--color-navbar-bg': '#0e7490'} },
+       { id: 'theme-forest', name: 'Tema: Natureza', cost: 700, category: 'tema', icon: 'leaf', color: 'lime', themeData: {'--color-primary': '#4d7c0f','--color-primary-dark': '#365314','--color-background': '#f0fdf4','--color-text-dark': '#14532d','--color-text-light': '#3f6212','--color-card-bg': '#ffffff','--color-border': '#bbf7d0', '--color-navbar-bg': '#166534'} },
         // Avatares
         { id: 'avatar-default', name: 'Avatar Padrão', cost: 0, category: 'avatar', icon: 'user', color: 'gray'},
         { id: 'avatar-smile', name: 'Avatar: Sorridente', cost: 500, category: 'avatar', icon: 'smile-plus', color: 'blue' },
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopCoinShower() { canvas.style.opacity='0'; setTimeout(()=>{cancelAnimationFrame(animationFrameId); ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none';}, 500); }
 });
 </script>
-<script src="global-init.js"></script>
+
 
 
 </body>
