@@ -20,13 +20,29 @@
     --color-text-dark: #2c3e50;
     --color-text-light: #8492a6;
     --color-card-bg: #ffffff;
+    --color-border: #e2e8f0;
+    --color-navbar-bg: #3c6a99;
     }
+    /* --- REGRAS GLOBAIS E DE TEMA --- */
     body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--color-background);
-    color: var(--color-text-dark);
-    background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--color-background);
+        transition: background-color 0.5s ease;
     }
+    .text-dynamic-dark { color: var(--color-text-dark); }
+    .text-dynamic-light { color: var(--color-text-light); }
+    .navbar-logo { width: 40px; height: auto; }
+
+    /* --- COMPONENTES DO TEMA --- */
+    .navbar-theme { background-color: var(--color-navbar-bg); transition: background-color 0.5s ease; }
+    .menu-theme { background-color: var(--color-card-bg); transition: background-color 0.5s ease; }
+    .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+    .menu-item-theme:hover { background-color: var(--color-border); }
+    .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
+    .btn-primary-theme { background-color: var(--color-primary); color: white; transition: background-color 0.2s ease; }
+    .btn-primary-theme:hover { background-color: var(--color-primary-dark); }
+    .btn-secondary-theme { background-color: var(--color-card-bg); color: var(--color-text-dark); border: 1px solid var(--color-border); transition: all 0.2s ease; }
+    .btn-secondary-theme:hover { background-color: var(--color-border); }
     .navbar-logo { width: 40px; height: auto; }
     .notification-badge {
     position: absolute; top: 0; right: 0;
@@ -81,77 +97,136 @@
     }
 </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <!-- 🔹 NAVBAR -->
 <header class="header-nav sticky top-0 z-50">
-<nav class="bg-[#3c6a99] text-white shadow-lg">
-    <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-    <div class="relative">
-        <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10"><i data-lucide="menu"></i></button>
-        <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-        <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal</a>
-        <a href="#" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100"><i data-lucide="volume-2" class="w-5 h-5"></i> Som</a>
-        <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100"><i data-lucide="bell-ring" class="w-5 h-5"></i> Notificações</a>
-        <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100"><i data-lucide="settings" class="w-5 h-5"></i> Configurações</a>
-        <hr class="my-1 border-gray-200">
-        <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50"><i data-lucide="log-out" class="w-5 h-5"></i> Sair</a>
-        </div>
+    <nav class="navbar-theme text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+    <!-- Itens do menu -->
+    <a href="inicio.html" role="menuitem" class="menu-item-active flex items-center gap-3 px-4 py-2">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+    </a>
+    <a href="#" role="menuitem" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+    </a>
+    <a href="notificacoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+    </a>
+    <a href="configuracoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+    </a>
+    <hr class="my-1" style="border-color: var(--color-border);">
+    <!-- O botão Sair mantém as cores vermelhas por padrão de UX -->
+    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+    </a>
+</div>
+            </div>
+
+            <!-- Logo -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
+            <div class="flex items-center gap-2">
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                    
+                        <span class="notification-badge" id="notification-indicator"></span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
+<div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+    <!-- Cabeçalho do dropdown -->
+    <div class="p-3 border-b" style="border-color: var(--color-border);">
+        <h3 class="text-sm font-semibold" style="color: var(--color-text-dark);">Notificações Recentes</h3>
     </div>
-    <a href="inicio.html"><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo"></a>
-    <div class="flex items-center gap-2">
-        <div class="relative">
-            <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:bg-[#5689b9]"><i data-lucide="bell"></i><span class="notification-badge" id="notification-indicator"></span></button>
-            <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl hidden z-[60]">
-                <div class="p-3 border-b"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações</h3></div>
-                <div class="max-h-80 overflow-y-auto"><a href="#" class="block px-4 py-3 hover:bg-gray-100 text-gray-600 text-sm">Nenhuma notificação nova</a></div>
+
+    <!-- Lista de notificações -->
+    <div class="max-h-80 overflow-y-auto">
+        <!-- Exemplo 1 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Nova atividade disponível!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Jogo de Acentuação - Nível Médio</p>
+        </a>
+        <!-- Exemplo 2 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Você ganhou 50 moedas!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Por completar "Caça-Palavras Avançado".</p>
+        </a>
+        <!-- Exemplo 3 (Lida) -->
+        <a href="#" class="menu-item-theme block px-4 py-3 opacity-70">
+            <p class="text-sm font-medium">Feedback do Professor</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Na atividade "Ditado Interativo".</p>
+        </a>
+    </div>
+
+    <!-- Link para ver todas -->
+    <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">
+        Ver todas as notificações
+    </a>
+</div>
+                </div>
+
+                <!-- Ícone de Perfil -->
+<a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+    <!-- O script global-init.js vai inserir o avatar aqui -->
+</a>
             </div>
         </div>
-        <a href="perfil.html" class="p-2 rounded-full hover:bg-white/10"><i data-lucide="user-circle"></i></a>
-    </div>
-    </div>
-</nav>
+    </nav>
 </header>
 
 <!-- 🔹 CONTEÚDO PRINCIPAL -->
+<!-- SUBSTITUA O CONTEÚDO DE <main> ATÉ O FINAL DE #areaResultado -->
 <main class="container mx-auto px-4 py-8 sm:py-12 flex-grow">
     <div class="mb-6">
-        <a href="inicio.html" class="inline-flex items-center gap-2 text-[var(--color-text-light)] hover:text-[var(--color-text-dark)] transition-colors duration-200">
-            <i data-lucide="chevron-left" class="w-5 h-5"></i><span class="font-semibold">Voltar ao Painel</span>
+        <a href="atividades.html" class="inline-flex items-center gap-2 text-dynamic-light hover:text-dynamic-dark transition-colors duration-200">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i><span class="font-semibold">Voltar</span>
         </a>
     </div>
     <div class="text-center mb-8 fade-in-up">
-        <h1 class="text-4xl md:text-5xl font-bold text-[var(--color-text-dark)] mb-2 tracking-tight">Desafio de Correção</h1>
-        <p class="text-lg text-[var(--color-text-light)] max-w-2xl mx-auto">Encontre e corrija os erros no texto para aprimorar sua escrita.</p>
+        <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mb-2 tracking-tight">Desafio de Correção</h1>
+        <p class="text-lg text-dynamic-light max-w-2xl mx-auto">Encontre e corrija os erros no texto para aprimorar sua escrita.</p>
     </div>
 
     <!-- ÁREA DO JOGO -->
-    <div id="gameArea" class="bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg p-6 sm:p-8 max-w-4xl mx-auto hidden">
+    <div id="gameArea" class="p-6 sm:p-8 rounded-2xl shadow-lg max-w-4xl mx-auto hidden" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
         <div id="areaExercicio" class="hidden">
-            <h2 class="text-xl font-semibold mb-3 text-center text-[var(--color-text-dark)]">Texto para Corrigir:</h2>
-            <div id="textoComErros" class="bg-amber-50 border-l-4 border-amber-400 text-amber-900 p-4 rounded-lg mb-6 shadow-inner" spellcheck="false"></div>
-            <textarea id="textoUsuario" rows="5" placeholder="Digite o texto corrigido aqui..." class="w-full p-4 border-gray-300 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition resize-none mb-4"></textarea>
+            <h2 class="text-xl font-semibold mb-3 text-center text-dynamic-dark">Texto para Corrigir:</h2>
+            <div id="textoComErros" class="p-4 rounded-lg mb-6 shadow-inner" style="background-color: var(--color-border); color: var(--color-text-dark); border-left: 4px solid var(--color-primary);" spellcheck="false"></div>
+            <textarea id="textoUsuario" rows="5" placeholder="Digite o texto corrigido aqui..." class="w-full p-4 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition resize-none mb-4" style="background-color: var(--color-background); color: var(--color-text-dark); border-color: var(--color-border);"></textarea>
             <div class="flex flex-col sm:flex-row gap-4 mt-6">
-                <button id="btnVerificar" class="flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-lg w-full font-semibold shadow-md transition-transform transform hover:scale-105">
+                <button id="btnVerificar" class="btn-primary-theme flex items-center justify-center gap-2 px-6 py-3 rounded-lg w-full font-semibold shadow-md transition-transform transform hover:scale-105">
                     <i data-lucide="send" class="w-5 h-5"></i><span>Verificar Correção</span>
                 </button>
-                <button id="btnGerarExercicio" class="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 px-6 py-3 rounded-lg w-full font-semibold transition-transform transform hover:scale-105">
+                <button id="btnGerarExercicio" class="btn-secondary-theme flex items-center justify-center gap-2 px-6 py-3 rounded-lg w-full font-semibold transition-transform transform hover:scale-105">
                     <i data-lucide="refresh-cw" class="w-5 h-5"></i><span>Gerar Novo Texto</span>
                 </button>
             </div>
         </div>
-        <p id="loading" class="text-center md:col-span-2 text-gray-500 hidden">Carregando...</p>
-        <p id="error" class="text-center md:col-span-2 text-red-500 bg-red-100 border border-red-400 p-3 rounded-md hidden"></p>
+        <p id="loading" class="text-center text-dynamic-light hidden">Carregando...</p>
+        <p id="error" class="text-center text-red-500 bg-red-100 border border-red-400 p-3 rounded-md hidden"></p>
     </div>
 
     <!-- ÁREA DE FEEDBACK -->
     <div id="areaResultado" class="max-w-4xl mx-auto hidden">
-        <div class="text-center mb-6"><h2 class="text-3xl font-bold text-[var(--color-text-dark)]">Seu Desempenho</h2></div>
+        <div class="text-center mb-6"><h2 class="text-3xl font-bold text-dynamic-dark">Seu Desempenho</h2></div>
         <div id="feedbackContainer" class="space-y-4">
             <!-- Feedback será inserido aqui -->
         </div>
         <div class="text-center mt-8">
-            <button id="btnJogarNovamente" class="flex items-center justify-center gap-2 mx-auto bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
             </button>
         </div>
@@ -159,7 +234,7 @@
 
     <!-- BOTÃO DE INICIAR -->
     <div id="startArea" class="text-center mt-8">
-        <button id="btnIniciar" class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+        <button id="btnIniciar" class="btn-primary-theme px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
             <span class="text-xl font-bold">Começar o Desafio!</span>
         </button>
     </div>
@@ -171,11 +246,12 @@
     <img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
 </div>
 
-<footer class="bg-[#3c6a99] text-[#e3ebf2] border-t border-gray-200 mt-auto">
-    <div class="container mx-auto py-2 px-4 text-center text-sm">
+    <footer class="navbar-theme text-[#e3ebf2] border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
         <div class="flex items-center justify-center gap-2">
             <p>&copy; 2025 OrtoFix</p>
-            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                class="h-6" style="filter: brightness(0) invert(1);">
         </div>
     </div>
 </footer>
@@ -316,38 +392,46 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     function renderFeedback(data) {
-        const isPerfect = data.sua_tentativa.trim().toLowerCase() === data.correcao_ideal.trim().toLowerCase();
+    const isPerfect = data.sua_tentativa.trim().toLowerCase() === data.correcao_ideal.trim().toLowerCase();
+    
+    // Cores e ícones dinâmicos
+    const idealBorder = isPerfect ? 'border-green-500' : 'border-orange-400';
+    const idealBg = isPerfect ? 'bg-green-50' : 'bg-orange-50';
+    const idealIcon = isPerfect ? 'check-circle-2' : 'clipboard-check';
+    const idealIconColor = isPerfect ? 'text-green-600' : 'text-orange-600';
+    const idealTextColor = isPerfect ? 'text-green-800' : 'text-orange-800';
+
         
         feedbackContainer.innerHTML = `
-            <div class="border-l-4 border-blue-400 bg-blue-50 rounded-r-lg p-5 shadow-sm fade-in-up">
-                <div class="flex items-start gap-4">
-                    <div><i data-lucide="edit-3" class="w-6 h-6 text-blue-600"></i></div>
-                    <div class="flex-grow">
-                        <p class="font-semibold text-blue-800">Sua Tentativa:</p>
-                        <p class="text-gray-700 mt-1">${data.sua_tentativa}</p>
-                    </div>
+        <div class="p-5 rounded-lg shadow-sm fade-in-up" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+            <div class="flex items-start gap-4">
+                <div><i data-lucide="edit-3" class="w-6 h-6" style="color: var(--color-primary);"></i></div>
+                <div class="flex-grow">
+                    <p class="font-semibold text-dynamic-dark">Sua Tentativa:</p>
+                    <p class="text-dynamic-light mt-1">${data.sua_tentativa}</p>
                 </div>
             </div>
-            <div class="border-l-4 ${isPerfect ? 'border-green-500 bg-green-50' : 'border-orange-400 bg-orange-50'} rounded-r-lg p-5 shadow-sm fade-in-up" style="animation-delay: 0.1s;">
-                <div class="flex items-start gap-4">
-                    <div><i data-lucide="${isPerfect ? 'check-circle-2' : 'clipboard-check'}" class="w-6 h-6 ${isPerfect ? 'text-green-600' : 'text-orange-600'}"></i></div>
-                    <div class="flex-grow">
-                        <p class="font-semibold ${isPerfect ? 'text-green-800' : 'text-orange-800'}">Correção Ideal:</p>
-                        <p class="text-gray-700 mt-1">${data.correcao_ideal}</p>
-                    </div>
+        </div>
+        <div class="border-l-4 ${idealBorder} ${idealBg} rounded-r-lg p-5 shadow-sm fade-in-up" style="animation-delay: 0.1s;">
+            <div class="flex items-start gap-4">
+                <div><i data-lucide="${idealIcon}" class="w-6 h-6 ${idealIconColor}"></i></div>
+                <div class="flex-grow">
+                    <p class="font-semibold ${idealTextColor}">Correção Ideal:</p>
+                    <p class="text-gray-700 mt-1">${data.correcao_ideal}</p>
                 </div>
             </div>
-            <div class="border-l-4 border-purple-400 bg-purple-50 rounded-r-lg p-5 shadow-sm fade-in-up" style="animation-delay: 0.2s;">
-                <div class="flex items-start gap-4">
-                    <div><i data-lucide="message-circle" class="w-6 h-6 text-purple-600"></i></div>
-                    <div class="flex-grow">
-                        <p class="font-semibold text-purple-800">Feedback da IA:</p>
-                        <p class="text-gray-700 mt-1 whitespace-pre-wrap">${data.feedback_do_gemini}</p>
-                    </div>
+        </div>
+        <div class="p-5 rounded-lg shadow-sm fade-in-up" style="animation-delay: 0.2s; background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+            <div class="flex items-start gap-4">
+                <div><i data-lucide="message-circle" class="w-6 h-6 text-purple-600"></i></div>
+                <div class="flex-grow">
+                    <p class="font-semibold text-dynamic-dark">Feedback da IA:</p>
+                    <p class="text-dynamic-light mt-1 whitespace-pre-wrap">${data.feedback_do_gemini}</p>
                 </div>
             </div>
-        `;
-        lucide.createIcons();
+        </div>
+    `;
+    lucide.createIcons();
 
         if (isPerfect) {
             playSound(successSound);
@@ -395,6 +479,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-
+<script src="global-init.js"></script>
 </body>
 </html>

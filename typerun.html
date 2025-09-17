@@ -19,13 +19,29 @@
     --color-text-dark: #2c3e50;
     --color-text-light: #8492a6;
     --color-card-bg: #ffffff;
+    --color-border: #e2e8f0;
+    --color-navbar-bg: #3c6a99;
     }
     body {
-    font-family: 'Poppins', sans-serif;
+   font-family: 'Poppins', sans-serif;
     background-color: var(--color-background);
-    color: var(--color-text-dark);
-    background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
+    transition: background-color 0.5s ease;
     }
+    .text-dynamic-dark { color: var(--color-text-dark); }
+    .text-dynamic-light { color: var(--color-text-light); }
+    .navbar-logo { width: 40px; height: auto; }
+
+    /* --- COMPONENTES DO TEMA --- */
+    .navbar-theme { background-color: var(--color-navbar-bg); transition: background-color 0.5s ease; }
+    .menu-theme { background-color: var(--color-card-bg); transition: background-color 0.5s ease; }
+    .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+    .menu-item-theme:hover { background-color: var(--color-border); }
+    .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
+    .btn-primary-theme { background-color: var(--color-primary); color: white; transition: background-color 0.2s ease; }
+    .btn-primary-theme:hover { background-color: var(--color-primary-dark); }
+    .btn-secondary-theme { background-color: var(--color-card-bg); color: var(--color-text-dark); border: 1px solid var(--color-border); transition: all 0.2s ease; }
+    .btn-secondary-theme:hover { background-color: var(--color-border); }
+
     .navbar-logo { width: 40px; height: auto; }
     .notification-badge {
     position: absolute; top: 0; right: 0;
@@ -57,34 +73,39 @@
 
         /* --- ESTILOS ESPECÍFICOS DO TYPERUN --- */
         #textoComErros {
-            line-height: 2.2;
-            font-size: 1.125rem;
-            letter-spacing: 0.03em;
-            color: #374151; /* Gray 700 */
+           line-height: 2.2;
+        font-size: 1.125rem;
+        letter-spacing: 0.03em;
+        color: var(--color-text-dark); /* Conectado ao tema */
+        background-color: var(--color-background); /* Fundo sutilmente diferente */
+        border: 1px solid var(--color-border);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
         }
 
         .word {
-            display: inline-block;
-            cursor: pointer;
-            padding: 0.25rem 0.6rem;
-            margin: 0.15rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
-            font-weight: 500;
+           display: inline-block;
+        cursor: pointer;
+        padding: 0.25rem 0.6rem;
+        margin: 0.15rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+        font-weight: 500;
         }
 
         .word:hover {
             transform: translateY(-2px);
-            background-color: #eef2ff; /* Indigo 50 */
+            background-color: var(--color-border);
         }
 
         .selected {
             background-color: var(--color-primary);
-            color: white;
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
-            border-color: var(--color-primary-dark);
+        color: white !important; /* !important para sobrescrever outras regras */
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        border-color: var(--color-primary-dark);
         }
         
         /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
@@ -143,59 +164,94 @@
         }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
     <!-- 🔹 NAVBAR -->
 <header class="header-nav sticky top-0 z-50">
-<nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-    <!-- Botão menu lateral -->
-    <div class="relative">
-        <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10">
-        <i data-lucide="menu"></i>
-        </button>
-        <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-        <a href="inicio.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
-            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-        </a>
-        <a href="#" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
-            <i data-lucide="volume-2" class="w-5 h-5"></i> Som
-        </a>
-        <a href="notificacoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
-            <i data-lucide="bell-ring" class="w-5 h-5"></i> Notificações
-        </a>
-        <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100">
-            <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-        </a>
-        <hr class="my-1 border-gray-200">
-        <a href="../index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-            <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-        </a>
-        </div>
-    </div>
-    <!-- Logo -->
-    <a href="inicio.html"><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo"></a>
-    <!-- Ícones direita -->
-    <div class="flex items-center gap-2">
-        <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+    <nav class="navbar-theme text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+    <!-- Itens do menu -->
+    <a href="inicio.html" role="menuitem" class="menu-item-active flex items-center gap-3 px-4 py-2">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+    </a>
+    <a href="#" role="menuitem" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+    </a>
+    <a href="notificacoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+    </a>
+    <a href="configuracoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+    </a>
+    <hr class="my-1" style="border-color: var(--color-border);">
+    <!-- O botão Sair mantém as cores vermelhas por padrão de UX -->
+    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+    </a>
+</div>
+            </div>
+
+            <!-- Logo -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
+            <div class="flex items-center gap-2">
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
                     <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
                         <i data-lucide="bell" class="text-[#e3ebf2]"></i>
                     
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
-        <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl hidden z-[60]">
-            <div class="p-3 border-b border-gray-200">
-            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
-            </div>
-            <div class="max-h-80 overflow-y-auto">
-            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] text-gray-600 text-sm">Nenhuma notificação nova</a>
+                    <!-- Dropdown de Notificações -->
+                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
+<div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+    <!-- Cabeçalho do dropdown -->
+    <div class="p-3 border-b" style="border-color: var(--color-border);">
+        <h3 class="text-sm font-semibold" style="color: var(--color-text-dark);">Notificações Recentes</h3>
+    </div>
+
+    <!-- Lista de notificações -->
+    <div class="max-h-80 overflow-y-auto">
+        <!-- Exemplo 1 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Nova atividade disponível!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Jogo de Acentuação - Nível Médio</p>
+        </a>
+        <!-- Exemplo 2 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Você ganhou 50 moedas!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Por completar "Caça-Palavras Avançado".</p>
+        </a>
+        <!-- Exemplo 3 (Lida) -->
+        <a href="#" class="menu-item-theme block px-4 py-3 opacity-70">
+            <p class="text-sm font-medium">Feedback do Professor</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Na atividade "Ditado Interativo".</p>
+        </a>
+    </div>
+
+    <!-- Link para ver todas -->
+    <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">
+        Ver todas as notificações
+    </a>
+</div>
+                </div>
+
+                <!-- Ícone de Perfil -->
+<a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+    <!-- O script global-init.js vai inserir o avatar aqui -->
+</a>
             </div>
         </div>
-        </div>
-        <a href="perfil.html" class="p-2 rounded-full hover:bg-white/10"><i data-lucide="user-circle" class="text-[#e3ebf2]"></i></a>
-    </div>
-    </div>
-</nav>
+    </nav>
 </header>
 
     <!-- 🔹 CONTEÚDO PRINCIPAL DO JOGO -->
@@ -207,62 +263,65 @@
         <div class="max-w-4xl mx-auto">
 
             <!-- TELA 1: MENU PRINCIPAL -->
-            <div id="main-menu" class="text-center fade-in-up">
-                <i data-lucide="keyboard" class="w-16 h-16 text-indigo-500 mx-auto bg-indigo-100 p-4 rounded-full"></i>
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mt-4">Desafio Caça-Erros</h1>
-                <p class="text-lg text-gray-500 mt-2 max-w-2xl mx-auto">Encontre as palavras com erros de digitação no texto para testar sua atenção aos detalhes.</p>
-                <button id="start-game-btn" class="mt-8 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-bold py-3 px-10 rounded-lg shadow-lg transition transform hover:scale-105">
-                    Começar
-                </button>
-            </div>
+           <div id="main-menu" class="text-center fade-in-up">
+    <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style="background-color: var(--color-border);">
+        <i data-lucide="keyboard" class="w-10 h-10" style="color: var(--color-primary);"></i>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mt-4">Desafio Caça-Erros</h1>
+    <p class="text-lg text-dynamic-light mt-2 max-w-2xl mx-auto">Encontre as palavras com erros de digitação no texto para testar sua atenção aos detalhes.</p>
+    <button id="start-game-btn" class="mt-8 btn-primary-theme font-bold py-3 px-10 rounded-lg shadow-lg transition transform hover:scale-105">
+        Começar
+    </button>
+</div>
 
-            <!-- TELA 2: ÁREA DO JOGO -->
-            <div id="game-area" class="hidden bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
-                <!-- Barra de Controles -->
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                    <button id="btnGerarTexto" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#3c6a99] hover:bg-[#357ABD] text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        <span>Gerar Outro Texto</span>
-                    </button>
-                    <div id="loading" class="hidden items-center gap-2 text-gray-500 text-sm">
-                        <i data-lucide="loader-2" class="w-5 h-5 spinner"></i>
-                        <span id="loading-text">Carregando...</span>
-                    </div>
-                </div>
+            <!-- SUBSTITUA AS TELAS DE JOGO E RESULTADOS POR ESTE BLOCO INTEIRO -->
 
-                <!-- Área de Mensagem de Erro -->
-                <div id="error" class="hidden flex items-center gap-3 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg mb-4">
-                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                    <span id="error-text"></span>
-                </div>
-
-                <!-- Área do Exercício -->
-                <div id="textoComErros" class="bg-slate-50 border border-slate-200 p-5 rounded-lg mb-6 shadow-inner"></div>
-                <button id="btnConcluir" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
-                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                    <span>Concluir Seleção</span>
-                </button>
-            </div>
-
-            <!-- TELA 3: ÁREA DE RESULTADOS -->
-            <div id="results-area" class="hidden mt-8 fade-in-up">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Resultado da Avaliação</h2>
-                
-                <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 bg-white rounded-2xl border border-gray-200">
-                    <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-gray-500">Acertos</p></div>
-                    <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-gray-500">Erros</p></div>
-                    <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-gray-500">Omissões</p></div>
-                    <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-gray-500">Pontuação</p></div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-lg border"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-green-800">Gabarito</h3></div><p class="text-sm text-green-700 mb-2">Palavras com erros:</p><p id="palavrasCorretas" class="text-green-900 font-semibold text-lg"></p></div>
-                    <div class="bg-white p-5 rounded-lg border"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-amber-800">Sua Resposta</h3></div><p class="text-sm text-amber-700 mb-2">Você selecionou:</p><p id="selecaoUsuario" class="text-amber-900 font-semibold text-lg"></p></div>
-                </div>
-                <div class="bg-white p-5 rounded-lg border mt-6"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-indigo-800">Análise do Gemini</h3></div><div id="feedbackGemini" class="text-indigo-800 whitespace-pre-wrap leading-relaxed"></div></div>
-            </div>
-
+<!-- TELA 2: ÁREA DO JOGO (CORRIGIDA) -->
+<div id="game-area" class="hidden p-6 sm:p-8 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+    <!-- Barra de Controles -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <button id="btnGerarTexto" class="btn-secondary-theme w-full sm:w-auto flex items-center justify-center gap-2 font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Gerar Outro Texto</span>
+        </button>
+        <div id="loading" class="hidden items-center gap-2 text-dynamic-light text-sm">
+            <i data-lucide="loader-2" class="w-5 h-5 spinner"></i>
+            <span id="loading-text">Carregando...</span>
         </div>
+    </div>
+
+    <!-- Área de Mensagem de Erro (Mantém cores de alerta) -->
+    <div id="error" class="hidden flex items-center gap-3 bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg mb-4">
+        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+        <span id="error-text"></span>
+    </div>
+
+    <!-- Área do Exercício (Já corrigida no CSS com a classe #textoComErros) -->
+    <div id="textoComErros" class="mb-6"></div>
+    
+    <button id="btnConcluir" class="btn-primary-theme w-full sm:w-auto flex items-center justify-center gap-2 font-bold py-2.5 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait">
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        <span>Concluir Seleção</span>
+    </button>
+</div>
+
+<!-- TELA 3: ÁREA DE RESULTADOS (CORRIGIDA) -->
+<div id="results-area" class="hidden mt-8 fade-in-up">
+    <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+    
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+        <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+        <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+        <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Palavras com erros:</p><p id="palavrasCorretas" class="font-semibold text-lg text-dynamic-dark"></p></div>
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você selecionou:</p><p id="selecaoUsuario" class="font-semibold text-lg text-dynamic-dark"></p></div>
+    </div>
+    <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise do Gemini</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+</div>
     </main>
 
     <!-- 🔹 MASCOTE FLUTUANTE -->
@@ -272,12 +331,15 @@
     </div>
 
     <!-- 🔹 RODAPÉ PADRONIZADO -->
-    <footer class="bg-[#3c6a99] text-white text-center p-4 mt-auto">
-        <div class="container mx-auto flex items-center justify-center gap-2">
-          <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
-          <p class="text-sm">&copy; 2025 OrtoFix</p>
+    <footer class="navbar-theme text-[#e3ebf2] border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                class="h-6" style="filter: brightness(0) invert(1);">
         </div>
-    </footer>
+    </div>
+</footer>
 
     <!-- 🔹 SCRIPT COMPLETO E CORRIGIDO DO JOGO -->
     <script>
@@ -457,5 +519,6 @@
         }, 1500);
     </script>
 
+<script src="global-init.js"></script>
 </body>
 </html>
