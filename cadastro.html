@@ -83,6 +83,17 @@
                                    class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
                                    placeholder="seuemail@exemplo.com">
                         </div>
+                        <div class="relative mb-6">
+                            <label for="anoAluno" class="block text-sm font-medium text-gray-700">Ano do Ensino Médio</label>
+                            <div class="mt-1">
+                                <select id="anoAluno" name="anoAluno" required class="w-full mt-1 p-2 border-gray-300 rounded-md shadow-sm form-input">
+                                <option value="" disabled selected>Selecione o ano</option>
+                                <option value="1º EM">1º Ano do Ensino Médio</option>
+                                <option value="2º EM">2º Ano do Ensino Médio</option>
+                                <option value="3º EM">3º Ano do Ensino Médio</option>
+                                </select>
+                                </div>
+                        </div>
                         <div>
                             <label for="senha" class="block text-slate-600 text-sm font-semibold mb-2">Senha:</label>
                             <input type="password" id="senha" required
@@ -188,6 +199,7 @@
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmar-senha').value;
             const idProfessor = professorSelect.value;
+            const anoAluno = document.getElementById('anoAluno').value; // Captura o valor do select
 
             if (senha !== confirmarSenha) {
                 messageArea.textContent = 'As senhas não coincidem!';
@@ -203,6 +215,11 @@
                 submitBtn.textContent = 'Criar Conta';
                 return;
             }
+            if (!anoAluno) {
+                messageArea.textContent = 'Por favor, selecione o ano do Ensino Médio.';
+                messageArea.classList.add('text-red-500');
+                return;
+            }
 
             try {
                 const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/register/aluno', {
@@ -213,6 +230,7 @@
                         cpfAluno: cpf,
                         emailAluno: email,
                         senhaAluno: senha,
+                        anoAluno: anoAluno,
                         idProfessor: idProfessor
                     })
                 });
