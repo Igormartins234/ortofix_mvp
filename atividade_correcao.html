@@ -1,304 +1,398 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Correção de Texto</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-   <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
-        }
-        .navbar-logo {
-            width: 40px; 
-            height: auto;
-        }
-        .card-custom-icon {
-            width: 48px; 
-            height: 48px; 
-            margin-bottom: 0.75rem; 
-        }
-        /* Estilo para o indicador de notificação (ponto vermelho) */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
-        #textoComErros {
-    user-select: none; /* Bloqueia seleção de texto */
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    -moz-user-select: none;
-    pointer-events: none; /* Bloqueia clique, arrastar e seleção */
-}
-    </style>
-</head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrtoFix - Desafio de Correção</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+    --color-primary: #4A90E2;
+    --color-primary-dark: #357ABD;
+    --color-accent: #50E3C2;
+    --color-background: #F4F7FA;
+    --color-text-dark: #2c3e50;
+    --color-text-light: #8492a6;
+    --color-card-bg: #ffffff;
+    --color-border: #e2e8f0;
+    --color-navbar-bg: #3c6a99;
+    }
+    /* --- REGRAS GLOBAIS E DE TEMA --- */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--color-background);
+        transition: background-color 0.5s ease;
+    }
+    .text-dynamic-dark { color: var(--color-text-dark); }
+    .text-dynamic-light { color: var(--color-text-light); }
+    .navbar-logo { width: 40px; height: auto; }
 
-    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="inicio.html">
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="w-10">
+    /* --- COMPONENTES DO TEMA --- */
+    .navbar-theme { background-color: var(--color-navbar-bg); transition: background-color 0.5s ease; }
+    .menu-theme { background-color: var(--color-card-bg); transition: background-color 0.5s ease; }
+    .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+    .menu-item-theme:hover { background-color: var(--color-border); }
+    .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
+    .btn-primary-theme { background-color: var(--color-primary); color: white; transition: background-color 0.2s ease; }
+    .btn-primary-theme:hover { background-color: var(--color-primary-dark); }
+    .btn-secondary-theme { background-color: var(--color-card-bg); color: var(--color-text-dark); border: 1px solid var(--color-border); transition: all 0.2s ease; }
+    .btn-secondary-theme:hover { background-color: var(--color-border); }
+    .navbar-logo { width: 40px; height: auto; }
+    .notification-badge {
+    position: absolute; top: 0; right: 0;
+    width: 12px; height: 12px; background-color: #EF4444;
+    border-radius: 50%; border: 2px solid #3c6a99;
+    animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse {
+    0%,100%{transform:scale(.9);box-shadow:0 0 0 0 rgba(239,68,68,.7);}
+    50%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(239,68,68,0);}
+    }
+    @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+    }
+    #mascote-assistente {
+    position: fixed; bottom: 20px; right: 20px;
+    z-index: 100;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transform: translateY(200%); opacity: 0;
+    }
+    #mascote-assistente.visible { transform: translateY(0); opacity: 1; }
+    #mascote-assistente .mascote-img {
+    height: 100px; width: auto;
+    animation: bobbing 3s ease-in-out infinite;
+    }
+    #chat-bubble {
+    position: absolute; bottom: 84px; right: 47px;
+    background-color: white; padding: 12px 16px;
+    border-radius: 12px; width: 210px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-size: 14px; font-weight: 500;
+    color: #3c6a99; opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #chat-bubble.show { opacity: 1; transform: scale(1); }
+    #chat-bubble::after {
+    content: ''; position: absolute;
+    bottom: -8px; right: 20px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+    }
+    @keyframes bobbing {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<!-- 🔹 NAVBAR -->
+<header class="header-nav sticky top-0 z-50">
+    <nav class="navbar-theme text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+    <!-- Itens do menu -->
+    <a href="inicio.html" role="menuitem" class="menu-item-active flex items-center gap-3 px-4 py-2">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+    </a>
+    <a href="#" role="menuitem" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+    </a>
+    <a href="notificacoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+    </a>
+    <a href="configuracoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+    </a>
+    <hr class="my-1" style="border-color: var(--color-border);">
+    <!-- O botão Sair mantém as cores vermelhas por padrão de UX -->
+    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+    </a>
+</div>
+            </div>
+
+            <!-- Logo -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
-            <div class="flex gap-4">
-                <a href="inicio.html" class="hover:underline">Início</a>
-                <a href="atividades.html" class="hover:underline">Atividades</a>
-                <a href="../index.html" class="hover:text-red-400">Sair</a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
+            <div class="flex items-center gap-2">
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
+                    
+                        <span class="notification-badge" id="notification-indicator"></span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
+<div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+    <!-- Cabeçalho do dropdown -->
+    <div class="p-3 border-b" style="border-color: var(--color-border);">
+        <h3 class="text-sm font-semibold" style="color: var(--color-text-dark);">Notificações Recentes</h3>
+    </div>
+
+    <!-- Lista de notificações -->
+    <div class="max-h-80 overflow-y-auto">
+        <!-- Exemplo 1 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Nova atividade disponível!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Jogo de Acentuação - Nível Médio</p>
+        </a>
+        <!-- Exemplo 2 -->
+        <a href="#" class="menu-item-theme block px-4 py-3">
+            <p class="text-sm font-medium">Você ganhou 50 moedas!</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Por completar "Caça-Palavras Avançado".</p>
+        </a>
+        <!-- Exemplo 3 (Lida) -->
+        <a href="#" class="menu-item-theme block px-4 py-3 opacity-70">
+            <p class="text-sm font-medium">Feedback do Professor</p>
+            <p class="text-xs" style="color: var(--color-text-light);">Na atividade "Ditado Interativo".</p>
+        </a>
+    </div>
+
+    <!-- Link para ver todas -->
+    <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">
+        Ver todas as notificações
+    </a>
+</div>
+                </div>
+
+                <!-- Ícone de Perfil -->
+<a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+    <!-- O script global-init.js vai inserir o avatar aqui -->
+</a>
             </div>
         </div>
     </nav>
+</header>
 
- 
-    <main class="container mx-auto px-4 py-8 flex-grow">
-        <h1 class="text-3xl font-bold text-center mb-4">📝 Correção de Texto</h1>
-        <p class="text-lg text-center text-[#5689b9] mb-6">Corrija os erros ortográficos do texto gerado pela IA.</p>
+<!-- 🔹 CONTEÚDO PRINCIPAL -->
+<!-- SUBSTITUA O CONTEÚDO DE <main> ATÉ O FINAL DE #areaResultado -->
+<main class="container mx-auto px-4 py-8 sm:py-12 flex-grow">
+    <div class="mb-6">
+         <a href="inicio.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    Voltar
+                </a>
+    </div>
+    <div class="text-center mb-8 fade-in-up">
+        <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mb-2 tracking-tight">Desafio de Correção</h1>
+        <p class="text-lg text-dynamic-light max-w-2xl mx-auto">Encontre e corrija os erros no texto para aprimorar sua escrita.</p>
+    </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 max-w-4xl mx-auto">
-            <div class="flex flex-col sm:flex-row sm:justify-center sm:items-center mb-6">
-                <button id="btnGerarExercicio"
-                    class="bg-[#3c6a99] hover:bg-[#5689b9] text-white px-6 py-2 rounded-md w-full sm:w-auto">
-                    Gerar Novo Texto
+    <!-- ÁREA DO JOGO -->
+    <div id="gameArea" class="p-6 sm:p-8 rounded-2xl shadow-lg max-w-4xl mx-auto hidden" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+        <div id="areaExercicio" class="hidden">
+            <h2 class="text-xl font-semibold mb-3 text-center text-dynamic-dark">Texto para Corrigir:</h2>
+            <div id="textoComErros" class="p-4 rounded-lg mb-6 shadow-inner" style="background-color: var(--color-border); color: var(--color-text-dark); border-left: 4px solid var(--color-primary);" spellcheck="false"></div>
+            <textarea id="textoUsuario" rows="5" placeholder="Digite o texto corrigido aqui..." class="w-full p-4 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition resize-none mb-4" style="background-color: var(--color-background); color: var(--color-text-dark); border-color: var(--color-border);"></textarea>
+            <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                <button id="btnVerificar" class="btn-primary-theme flex items-center justify-center gap-2 px-6 py-3 rounded-lg w-full font-semibold shadow-md transition-transform transform hover:scale-105">
+                    <i data-lucide="send" class="w-5 h-5"></i><span>Verificar Correção</span>
                 </button>
-                <p id="loading" class="text-sm text-gray-600 hidden basis-full mt-2 text-center"></p>
-            </div>
-
-            <p id="error" class="text-sm text-red-600 bg-red-100 border border-red-400 p-3 rounded-md hidden mb-4"></p>
-
-            <div id="areaExercicio" class="hidden">
-                <h2 class="text-xl font-semibold mb-2">Texto com Erros:</h2>
-                <div id="textoComErros"
-                    class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4" spellcheck="false">
-                </div>
-
-                <textarea id="textoUsuario" rows="5" placeholder="Digite aqui sua correção..."
-                    class="w-full p-4 border border-[#3c6a99] rounded-md focus:outline-none focus:ring-2 focus:ring-[#5689b9] resize-none mb-4"></textarea>
-
-                <button id="btnVerificar"
-                    class="bg-[#28a745] hover:bg-[#218838] text-white px-6 py-2 rounded-md w-full sm:w-auto">
-                    Verificar Correção
+                <button id="btnGerarExercicio" class="btn-secondary-theme flex items-center justify-center gap-2 px-6 py-3 rounded-lg w-full font-semibold transition-transform transform hover:scale-105">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i><span>Gerar Novo Texto</span>
                 </button>
-            </div>
-
-            <div id="areaResultado" class="hidden mt-8">
-                <h2 class="text-2xl font-bold text-[#3c6a99] mb-4">Resultado da Avaliação</h2>
-                <div class="space-y-4">
-                    <div class="bg-[#e6f4ea] border border-[#28a745] rounded-xl p-4">
-                        <p><strong>✔️ Correção Ideal:</strong></p>
-                        <p id="correcaoIdeal" class="text-[#14532d] font-semibold"></p>
-                    </div>
-
-                    <div class="bg-[#fff7ed] border border-[#f97316] rounded-xl p-4">
-                        <p><strong>✍️ Sua Tentativa:</strong></p>
-                        <p id="tentativaUsuario" class="text-[#7c2d12] font-semibold"></p>
-                    </div>
-
-                    <div class="bg-gray-50 border border-gray-300 rounded-xl p-4">
-                        <p><strong>💡 Feedback do Gemini:</strong></p>
-                        <div id="feedbackGemini" class="text-[#374151] whitespace-pre-wrap"></div>
-                    </div>
-                </div>
             </div>
         </div>
-    </main>
+        <p id="loading" class="text-center text-dynamic-light hidden">Carregando...</p>
+        <p id="error" class="text-center text-red-500 bg-red-100 border border-red-400 p-3 rounded-md hidden"></p>
+    </div>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
-    </footer>
+    <!-- NOVA ÁREA DE RESULTADO (BASEADA NO TYPERUN) -->
+<div id="areaResultado" class="max-w-4xl mx-auto hidden mt-8 fade-in-up">
+    <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+    
+    <!-- Placar de pontuação -->
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+        <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+        <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+        <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+        <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
+    </div>
 
-    <!-- Substitua a tag <script> inteira no final de atividade_correcao.html por este bloco -->
+    <!-- Comparação de textos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><p id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></p></div>
+        <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><p id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></p></div>
+    </div>
+
+    <!-- Feedback da IA -->
+    <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise da IA</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+    
+    <!-- Botão de ação -->
+    <div class="text-center mt-8">
+        <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+        </button>
+    </div>
+</div>
+
+    <!-- BOTÃO DE INICIAR -->
+    <div id="startArea" class="text-center mt-8">
+        <button id="btnIniciar" class="btn-primary-theme px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            <span class="text-xl font-bold">Começar o Desafio!</span>
+        </button>
+    </div>
+</main>
+
+<!-- 🔹 Mascote Flutuante -->
+<div id="mascote-assistente">
+    <div id="chat-bubble">Vamos começar?</div>
+    <img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
+</div>
+
+    <footer class="navbar-theme text-[#e3ebf2] border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-text-muted text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" 
+                class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
+    
+<!-- 🔹 SONS -->
+<audio id="click-sound" src="/static/audio/click.wav" preload="auto"></audio>
+<audio id="submit-sound" src="/static/audio/confirm.wav" preload="auto"></audio>
+<audio id="success-sound" src="/static/audio/success.wav" preload="auto"></audio>
+
+<!-- 🔹 SCRIPT UNIFICADO -->
 <script>
+document.addEventListener("DOMContentLoaded", function() {
     lucide.createIcons();
 
-    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
-    const API_GEMINI_URL = 'https://api-tcc-alpha.vercel.app';
-    const API_BACKEND_URL = 'https://back-end-mvp-tcc.vercel.app';
+    // --- LÓGICA DOS MENUS DROPDOWN E SOM ---
+    const menuBtn = document.getElementById("menu-btn"), dropdownMenu = document.getElementById("dropdown-menu");
+    const notificationsBtn = document.getElementById("notifications-btn"), notificationsDropdown = document.getElementById("notifications-dropdown");
+    const soundBtn = document.getElementById("sound-btn"), clickSound = document.getElementById("click-sound");
+    const submitSound = document.getElementById("submit-sound"), successSound = document.getElementById("success-sound");
+    let soundEnabled = true;
+
+    const setupDropdown = (btn, menu) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isHidden = menu.classList.contains("hidden");
+            document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+            if (isHidden) menu.classList.remove("hidden");
+        });
+    };
+    setupDropdown(menuBtn, dropdownMenu);
+    setupDropdown(notificationsBtn, notificationsDropdown);
+    document.addEventListener("click", () => document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden')));
+
+    if(soundBtn) soundBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        soundEnabled = !soundEnabled;
+        const icon = soundBtn.querySelector("i");
+        icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+        icon.classList.toggle("text-red-500", !soundEnabled);
+        lucide.createIcons();
+    });
+
+    function playSound(sound) {
+        if (soundEnabled && sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+    document.querySelectorAll('a, button').forEach(el => el.addEventListener("click", () => playSound(clickSound)));
     
-    // Elementos do DOM
+    // --- LÓGICA DO JOGO DE CORREÇÃO ---
+    const API_URL = "https://api-tcc-alpha.vercel.app";
+    const btnIniciar = document.getElementById('btnIniciar');
     const btnGerarExercicio = document.getElementById('btnGerarExercicio');
     const btnVerificar = document.getElementById('btnVerificar');
-    const textoComErrosDiv = document.getElementById('textoComErros');
-    const textoUsuarioTextarea = document.getElementById('textoUsuario');
+    const btnJogarNovamente = document.getElementById('btnJogarNovamente');
+    
+    const startArea = document.getElementById('startArea');
+    const gameArea = document.getElementById('gameArea');
     const areaExercicioDiv = document.getElementById('areaExercicio');
     const areaResultadoDiv = document.getElementById('areaResultado');
+    const feedbackContainer = document.getElementById('feedbackContainer');
+
+    const textoComErrosDiv = document.getElementById('textoComErros');
+    const textoUsuarioTextarea = document.getElementById('textoUsuario');
     const loadingP = document.getElementById('loading');
     const errorP = document.getElementById('error');
-    const tentativaUsuarioSpan = document.getElementById('tentativaUsuario');
-    const correcaoIdealSpan = document.getElementById('correcaoIdeal');
-    const feedbackGeminiDiv = document.getElementById('feedbackGemini');
+    
+    let textoOriginalGlobal = "", textoCorrigidoIdealGlobal = "";
 
-    // Variáveis de estado
-    let textoOriginalGlobal = "";
-    let textoCorrigidoIdealGlobal = "";
-
-    // --- FUNÇÕES HELPER (REUTILIZÁVEIS) ---
     function showLoading(isLoading, message = "Carregando...") {
         loadingP.textContent = message;
         loadingP.style.display = isLoading ? 'block' : 'none';
-        btnGerarExercicio.disabled = isLoading;
-        btnVerificar.disabled = isLoading;
-        if (isLoading) {
-            errorP.classList.add('hidden');
-            errorP.textContent = '';
-        }
+        areaExercicioDiv.style.display = isLoading ? 'none' : 'block';
+        if (isLoading) errorP.classList.add('hidden');
     }
-     function showRewardToast(coins) {
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
-        toast.style.transform = 'translateX(120%)';
-        toast.style.transition = 'transform 0.5s ease-in-out';
-        
-        toast.innerHTML = `
-            <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
-            <div>
-                <p class="font-bold text-lg">Recompensa Recebida!</p>
-                <p class="text-base">Você ganhou +${coins} moedas!</p>
-            </div>
-        `;
-        document.body.appendChild(toast);
-        lucide.createIcons();
-        
-        // Animação de entrada
-        setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
-
-        // Animação de saída
-        setTimeout(() => {
-            toast.style.transform = 'translateX(120%)';
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-    }
-
-    async function registrarAtividadeConcluida(pontuacao, feedback) {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
-        try {
-            const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({
-                    idAtividade: 1, // ID para "Correção de Texto"
-                    pontuacao: pontuacao,
-                    feedbackGemini: feedback
-                })
-            });
-            const result = await response.json();
-            if (response.ok) {
-                showRewardToast(result.moedasGanhas);
-            } else {
-                alert(`Erro ao salvar progresso: ${result.msg}`);
-            }
-        } catch (error) {
-            console.error("Erro ao registrar atividade:", error);
-        }
-    }
-
+    
     function showError(message) {
         errorP.textContent = "Erro: " + message;
         errorP.classList.remove('hidden');
         loadingP.style.display = 'none';
     }
 
-    function showRewardToast(message, coins) {
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg flex items-center gap-3 z-[100] transform translate-x-full animate-slide-in';
-        toast.innerHTML = `
-            <i data-lucide="party-popper" class="w-8 h-8"></i>
-            <div>
-                <p class="font-bold">${message}</p>
-                <p class="text-sm">Você ganhou +${coins} moedas!</p>
-            </div>
-        `;
-        document.body.appendChild(toast);
-        lucide.createIcons();
-        setTimeout(() => {
-            toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(100%)';
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-    }
-
-    async function registrarAtividadeConcluida(pontuacao, feedback) {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            console.warn("Usuário não autenticado. O progresso não será salvo.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    idAtividade: 1, // ID fixo para "Correção de Texto"
-                    pontuacao: pontuacao,
-                    feedbackGemini: feedback
-                })
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                showRewardToast("Atividade Concluída!", result.moedasGanhas);
-            } else {
-                alert(`Erro ao salvar progresso: ${result.msg}`);
-            }
-        } catch (error) {
-            console.error("Erro ao registrar atividade:", error);
-        }
-    }
-
-    // --- LÓGICA DE EVENTOS ---
-    btnGerarExercicio.addEventListener('click', async () => {
-        showLoading(true, "Gerando novo exercício...");
-        areaExercicioDiv.classList.add('hidden');
+    async function gerarExercicio() {
+        hideMascote();
+        changeBubbleText("Boa sorte! Leia o texto com atenção.");
+        gameArea.classList.remove('hidden');
         areaResultadoDiv.classList.add('hidden');
+        areaExercicioDiv.classList.add('fade-in-up');
+        showLoading(true, "Gerando novo exercício...");
         textoUsuarioTextarea.value = "";
 
         try {
-            const response = await fetch(`${API_GEMINI_URL}/api/gerar_exercicio`, { method: 'POST' });
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-            }
+            const response = await fetch(`${API_URL}/api/gerar_exercicio`, { method: 'POST' });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
             textoOriginalGlobal = data.texto_com_erros;
             textoCorrigidoIdealGlobal = data.texto_corrigido_ideal;
-
             textoComErrosDiv.textContent = textoOriginalGlobal;
-            areaExercicioDiv.classList.remove('hidden');
         } catch (err) {
-            console.error('Erro ao gerar exercício:', err);
             showError(err.message);
         } finally {
             showLoading(false);
+            showMascote();
         }
-    });
+    }
 
-    btnVerificar.addEventListener('click', async () => {
+    async function verificarExercicio() {
         const textoCorrigidoPeloUsuario = textoUsuarioTextarea.value.trim();
         if (!textoCorrigidoPeloUsuario) {
-            showError("Por favor, digite sua correção antes de verificar.");
-            textoUsuarioTextarea.focus();
+            alert("Por favor, digite sua correção antes de verificar.");
             return;
         }
+        playSound(submitSound);
+        hideMascote();
+        changeBubbleText("Vamos ver como você se saiu...");
 
-        showLoading(true, "Avaliando sua correção...");
-        areaResultadoDiv.classList.add('hidden');
+        gameArea.classList.add('hidden');
+        areaResultadoDiv.classList.remove('hidden');
+        // Limpa a área de resultado antes de carregar
+        areaResultadoDiv.innerHTML = '<p class="text-center text-dynamic-light p-8">Avaliando sua resposta...</p>';
 
         try {
-            const response = await fetch(`${API_GEMINI_URL}/api/avaliar_correcao`, {
+            const response = await fetch(`${API_URL}/api/avaliar_correcao`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -307,78 +401,149 @@
                     texto_corrigido_ideal: textoCorrigidoIdealGlobal
                 })
             });
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-
-            tentativaUsuarioSpan.textContent = data.sua_tentativa;
-            correcaoIdealSpan.textContent = data.correcao_ideal;
-            feedbackGeminiDiv.textContent = data.feedback_do_gemini;
-            areaResultadoDiv.classList.remove('hidden');
-
-            // --- LÓGICA DE PONTUAÇÃO E RECOMPENSA ---
-            const pontuacao = (data.sua_tentativa.toLowerCase().trim() === data.correcao_ideal.toLowerCase().trim()) ? 100 : 75;
-            await registrarAtividadeConcluida(pontuacao, data.feedback_do_gemini);
-            // --- FIM DA INTEGRAÇÃO ---
-
+            renderFeedback(data);
         } catch (err) {
-            console.error('Erro ao avaliar correção:', err);
-            showError(err.message);
-        } finally {
-            showLoading(false);
+            // Se der erro na API, mostra o erro e volta para a tela de jogo
+             showError(err.message);
+             gameArea.classList.remove('hidden');
+             areaResultadoDiv.classList.add('hidden');
         }
-    });
-
-    // --- LÓGICA DE SAIR ---
-    const logoutButton = document.querySelector('a[href="../index.html"]');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userName');
-            window.location.href = '../aluno/aluno.html'; // Ajuste o caminho se necessário
-        });
-
-    async function registrarAtividadeConcluida(idAtividade, pontuacao, feedback) {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-        console.warn("Usuário não autenticado. O progresso não será salvo.");
-        return;
     }
+    
+    /**
+ * NOVA FUNÇÃO AUXILIAR
+ * Compara duas strings de texto e retorna um Set com as palavras que são diferentes.
+ * @param {string} textoOriginal - O texto base para comparação.
+ * @param {string} textoModificado - O texto que foi alterado.
+ * @returns {Set<string>} Um conjunto de palavras originais que foram modificadas.
+ */
+function calcularDiferencas(textoOriginal, textoModificado) {
+    const palavrasOriginais = textoOriginal.trim().split(/\s+/);
+    const palavrasModificadas = textoModificado.trim().split(/\s+/);
+    const diferencas = new Set();
 
-    try {
-        const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                idAtividade: idAtividade,
-                pontuacao: pontuacao,
-                feedback: feedback
-            })
-        });
+    // Itera pela menor quantidade de palavras para evitar erros de índice
+    const tamanhoMinimo = Math.min(palavrasOriginais.length, palavrasModificadas.length);
 
-        const result = await response.json();
+    for (let i = 0; i < tamanhoMinimo; i++) {
+        // Remove pontuação final para uma comparação mais justa
+        const palavraOriginalLimpa = palavrasOriginais[i].replace(/[.,!?;:]$/, '');
+        const palavraModificadaLimpa = palavrasModificadas[i].replace(/[.,!?;:]$/, '');
 
-        if (response.ok) {
-            console.log(result.msg);
-            showRewardToast(result.moedasGanhas);
-        } else {
-            console.error('Erro ao registrar atividade:', result.msg);
+        if (palavraOriginalLimpa !== palavraModificadaLimpa) {
+            // Adiciona a palavra original que estava errada/foi modificada
+            diferencas.add(palavraOriginalLimpa);
         }
-    } catch (error) {
-        console.error('Erro na requisição:', error);
     }
+    return diferencas;
 }
-    }
 
+
+/**
+ * FUNÇÃO ATUALIZADA
+ * Renderiza o feedback e agora CALCULA a pontuação antes de exibir.
+ * @param {object} data - Os dados recebidos da API.
+ */
+function renderFeedback(data) {
+    // Recria a estrutura HTML da área de resultados
+    areaResultadoDiv.innerHTML = `
+        <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+        <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+            <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+            <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+            <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+            <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><p id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></p></div>
+            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><p id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></p></div>
+        </div>
+        <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise da IA</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+        <div class="text-center mt-8">
+            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('btnJogarNovamente').addEventListener('click', gerarExercicio);
+
+    // --- LÓGICA DE CÁLCULO DA PONTUAÇÃO ---
+    // 1. Identifica quais palavras a API diz que estavam erradas (comparando original com ideal)
+    const gabaritoErros = calcularDiferencas(textoOriginalGlobal, data.correcao_ideal);
+    
+    // 2. Identifica quais palavras o usuário realmente mudou (comparando original com a resposta do usuário)
+    const usuarioCorrecoes = calcularDiferencas(textoOriginalGlobal, data.sua_tentativa);
+
+    // 3. Calcula as métricas
+    const acertos = [...usuarioCorrecoes].filter(palavra => gabaritoErros.has(palavra));
+    const erros = [...usuarioCorrecoes].filter(palavra => !gabaritoErros.has(palavra));
+    const omissoes = [...gabaritoErros].filter(palavra => !usuarioCorrecoes.has(palavra));
+    const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+
+    // 4. Popula o placar com os valores CALCULADOS
+    document.getElementById('stat-acertos').textContent = acertos.length;
+    document.getElementById('stat-erros').textContent = erros.length;
+    document.getElementById('stat-omissoes').textContent = omissoes.length;
+    document.getElementById('stat-pontuacao').textContent = pontuacao < 0 ? 0 : pontuacao; // Evita pontuação negativa
+
+    // Popula o restante das informações
+    document.getElementById('palavrasCorretas').textContent = data.correcao_ideal || "Gabarito indisponível.";
+    document.getElementById('selecaoUsuario').textContent = data.sua_tentativa || "Nenhuma resposta enviada.";
+    document.getElementById('feedbackGemini').textContent = data.feedback_do_gemini || "Feedback indisponível.";
+    
+    lucide.createIcons();
+
+    const isPerfect = (acertos.length === gabaritoErros.size && erros.length === 0 && omissoes.length === 0);
+
+    if (isPerfect) {
+        playSound(successSound);
+        launchConfetti();
+        changeBubbleText("Incrível! Correção perfeita. Parabéns!");
+        changeMascoteImage("/static/img/success.webp");
+    } else {
+        changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
+        changeMascoteImage("/static/img/ortofix.png");
+    }
+    showMascote();
+}
+
+    btnIniciar.addEventListener('click', () => {
+        startArea.classList.add('hidden');
+        gerarExercicio();
+    });
+    btnGerarExercicio.addEventListener('click', gerarExercicio);
+    btnJogarNovamente.addEventListener('click', gerarExercicio);
+    btnVerificar.addEventListener('click', verificarExercicio);
+
+    // --- LÓGICA DO MASCOTE ---
+    const mascoteAssistente = document.getElementById('mascote-assistente'), chatBubble = document.getElementById('chat-bubble');
+    const showMascote = () => mascoteAssistente.classList.add('visible');
+    const hideMascote = () => mascoteAssistente.classList.remove('visible');
+    const changeBubbleText = (text) => {
+        chatBubble.classList.remove('show');
+        setTimeout(() => {
+            chatBubble.textContent = text;
+            chatBubble.classList.add('show');
+        }, 300);
+    };
+    const changeMascoteImage = (imageSrc) => {
+        const mascoteImg = document.querySelector('#mascote-assistente .mascote-img');
+        if (mascoteImg) mascoteImg.src = imageSrc;
+    };
+    setTimeout(() => {
+        showMascote();
+        changeBubbleText("Pronto para o desafio de correção?");
+    }, 1500);
+
+    // --- LÓGICA DOS CONFETES ---
+    function launchConfetti() {
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] });
+    }
+});
 </script>
-</body>
-</html>
+<script src="global-init.js"></script>
 </body>
 </html>

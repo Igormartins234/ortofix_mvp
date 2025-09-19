@@ -1,4 +1,3 @@
-<!-- aluno.html (corrigido) -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,114 +8,179 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #e3ebf2; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc; 
+        }
+        .form-input:focus {
+            border-color: #3c6a99;
+            box-shadow: 0 0 0 2px rgba(60, 106, 153, 0.2);
+            outline: none;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="mb-8 text-center"><a href="../index.html"><img src="../../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20"></a></div>
-
-    <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-[#3c6a99] mb-6 text-center">Login do Aluno</h2>
-        <form id="login-form">
-            <div class="mb-4">
-                <label for="email" class="block text-[#5689b9] text-sm font-semibold mb-2">Email:</label>
-                <input type="email" id="email" required class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] outline-none text-[#3c6a99]" placeholder="aluno@email.com">
+<body class="text-slate-700">
+    
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <img src="./static/img/ortofix.png" alt="OrtoFix Logo" class="h-12">
             </div>
-            <div class="mb-6">
-                <label for="senha" class="block text-[#5689b9] text-sm font-semibold mb-2">Senha:</label>
-                <input type="password" id="senha" required class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] outline-none text-[#3c6a99]" placeholder="********">
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="../index.html#features" class="hover:text-[#3c6a99] transition-colors">Funcionalidades</a>
+                <a href="cadastro.html" class="bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+                    Cadastro
+                </a>
             </div>
-            <p id="message-area" class="text-red-500 text-center text-sm mb-4 h-5"></p>
-            <button type="submit" id="submit-btn" class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition">Entrar</button>
-        </form>
-        <p class="text-center text-[#5689b9] mt-6 text-sm">
-            Não tem cadastro?
-            <a href="./cadastro.html" class="text-[#3c6a99] hover:text-[#5689b9] font-semibold hover:underline">Cadastre-se</a>
-        </p>
-    </div>
+        </nav>
+    </header>
 
-<script>
-const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+    <main class="flex-grow">
+        <section class="py-20 md:py-24 px-6">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl">
+                
+                <div class="hidden md:flex flex-col items-center text-center" data-aos="fade-right">
+                    <h2 class="text-3xl font-bold text-[#3c6a99] mt-8">Sua jornada para uma ortografia perfeita continua.</h2>
+                    <p class="text-slate-500 mt-4">Aprender é uma aventura. Continue de onde parou e conquiste novas habilidades!</p>
+                </div>
 
-// Helper: limpa token e outros dados
-function clearAuthAndStay() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userName');
-}
+                <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full" data-aos="fade-left">
+                    <div class="text-center mb-6">
+                         <a href="../index.html" class="md:hidden mb-4 inline-block">
+                            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-16">
+                        </a>
+                        <h2 class="text-3xl font-bold text-[#3c6a99]">Login do Aluno</h2>
+                        <p class="text-slate-500 mt-2">Que bom te ver de volta!</p>
+                    </div>
+                    
+                    <!-- Formulário adaptado para o script de backend -->
+                    <form id="login-form">
+                        <div class="mb-4">
+                            <label for="email" class="block text-slate-600 text-sm font-semibold mb-2">Email:</label>
+                            <input type="email" id="email" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="seu.email@exemplo.com">
+                        </div>
+                        <div class="mb-4">
+                            <label for="senha" class="block text-slate-600 text-sm font-semibold mb-2">Senha:</label>
+                            <input type="password" id="senha" required
+                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
+                                   placeholder="********">
+                        </div>
 
-// Ao abrir a página: se já há token, vamos verificar se ele ainda é válido (chamada ao /api/aluno/perfil).
-// Isso evita redirecionamentos baseados somente na presença do token.
-document.addEventListener('DOMContentLoaded', async () => {
-    const messageArea = document.getElementById('message-area');
-    const token = localStorage.getItem('authToken');
-    if (!token) return; // sem token, segue normalmente
+                        <!-- Área para exibir mensagens de erro/status -->
+                        <p id="message-area" class="text-red-500 text-center text-sm mb-4 h-5"></p>
 
-    try {
-        const resp = await fetch(`${API_BASE}/api/aluno/perfil`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+                        <button type="submit" id="submit-btn"
+                                class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg disabled:bg-slate-400 disabled:cursor-wait">
+                            Entrar
+                        </button>
+                    </form>
+                    <p class="text-center text-slate-500 mt-8 text-sm">
+                        Ainda não tem uma conta?
+                        <a href="./cadastro.html" class="font-semibold text-[#3c6a99] hover:text-[#5689b9] hover:underline">
+                            Cadastre-se agora
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-[#3c6a99] text-white">
+        <div class="container mx-auto py-10 px-6 text-center" data-aos="fade-in" data-aos-duration="6000">
+             <img src="./static/img/ortofix.png" alt="OrtoFix Logo" class="h-12 mx-auto mb-4" style="filter: brightness(0) invert(1);">
+            <p class="mb-4">Transformando o aprendizado da ortografia, uma palavra de cada vez.</p>
+            <div class="flex justify-center space-x-6 text-sm">
+                <a href="termo.html" class="hover:underline">Termos de Uso</a>
+                <a href="privacidade.html" class="hover:underline">Política de Privacidade</a>
+                <a href="contato.html" class="hover:underline">Contato</a>
+            </div>
+            <p class="text-sm mt-8 text-blue-200">© 2025 OrtoFix.</p>
+        </div>
+    </footer>
 
-        if (resp.ok) {
-            // token válido -> redireciona para painel
-            window.location.href = 'inicio.html';
-            return;
-        } else {
-            // token inválido (401/403) -> limpa e permanece na página de login
-            if (resp.status === 401 || resp.status === 403) {
-                clearAuthAndStay();
-                messageArea.textContent = 'Sua sessão expirou. Por favor, faça login novamente.';
-            } else {
-                // outros status (500 etc.) -> não remover imediatamente o token, apenas informar
-                messageArea.textContent = 'Erro temporário ao verificar sessão — tente novamente em instantes.';
+    <!-- Scripts de Animação e Lógica de Backend -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+      });
+    </script>
+    
+    <script>
+        const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+
+        function clearAuthAndStay() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const messageArea = document.getElementById('message-area');
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/aluno/perfil`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (resp.ok) {
+                    window.location.href = 'inicio.html';
+                } else {
+                    if (resp.status === 401 || resp.status === 403) {
+                        clearAuthAndStay();
+                        messageArea.textContent = 'Sua sessão expirou. Faça login novamente.';
+                    } else {
+                        messageArea.textContent = 'Erro ao verificar sessão. Tente novamente.';
+                    }
+                }
+            } catch (err) {
+                console.warn('Erro de rede ao verificar token:', err);
+                messageArea.textContent = 'Falha na conexão. Verifique sua internet.';
             }
-        }
-    } catch (err) {
-        // Falha de rede -> não removemos o token aqui (pode ser temporário)
-        console.warn('Erro ao verificar token no carregamento do login:', err);
-    }
-});
-
-// Login
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const messageArea = document.getElementById('message-area');
-    const submitBtn = document.getElementById('submit-btn');
-    messageArea.textContent = '';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Entrando...';
-
-    try {
-        const response = await fetch(`${API_BASE}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: document.getElementById('email').value,
-                senha: document.getElementById('senha').value
-            })
         });
-        const data = await response.json();
 
-        if (!response.ok || data.user_role !== 'aluno') {
-            throw new Error(data.msg || 'Acesso negado ou credenciais inválidas.');
-        }
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageArea = document.getElementById('message-area');
+            const submitBtn = document.getElementById('submit-btn');
+            messageArea.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Entrando...';
 
-        // Salva token e dados do usuário (padronizado: chave = "authToken")
-        localStorage.setItem('authToken', data.access_token);
-        localStorage.setItem('userName', data.user_name);
+            try {
+                const response = await fetch(`${API_BASE}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        senha: document.getElementById('senha').value
+                    })
+                });
+                const data = await response.json();
 
-        // Redireciona para o painel principal
-        window.location.href = 'inicio.html';
+                if (!response.ok || data.user_role !== 'aluno') {
+                    throw new Error(data.msg || 'Acesso negado ou credenciais inválidas.');
+                }
 
-    } catch (error) {
-        messageArea.textContent = error.message;
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Entrar';
-    }
-});
-</script>
+                localStorage.setItem('authToken', data.access_token);
+                localStorage.setItem('userName', data.user_name);
+
+                window.location.href = 'inicio.html';
+
+            } catch (error) {
+                messageArea.textContent = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Entrar';
+            }
+        });
+    </script>
 </body>
 </html>

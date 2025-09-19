@@ -1,266 +1,463 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Configurações (Professor)</title>
-     <!-- SweetAlert2 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrtoFix - Configurações do Professor</title>
+
+<!-- BIBLIOTECAS CSS E FONTES -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- BIBLIOTECAS JAVASCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
+<!-- ✅ SCRIPT DOS ÍCONES (LUCIDE) ADICIONADO AQUI -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+    /* --- PADRÃO VISUAL UNIFICADO (BASEADO NO PAINEL) --- */
+    :root {
+        --color-primary: #4A90E2;
+        --color-primary-dark: #357ABD;
+        --color-accent: #50E3C2;
+        --color-background: #F4F7FA;
+        --color-text-dark: #2c3e50;
+        --color-text-light: #8492a6;
+        --color-card-bg: #ffffff;
+        --color-border: #E2E8F0;
+        --color-navbar-bg: #3c6a99;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--color-background);
+        color: var(--color-text-dark);
+    }
+
+    .navbar-logo {
+        width: 40px;
+        height: auto;
+    }
+
+    /* --- ESTILOS DE COMPONENTES DE TEMA --- */
+    .navbar-theme {
+        background-color: var(--color-navbar-bg);
+    }
+
+    .menu-theme {
+        background-color: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+    }
+
+    .menu-item-theme {
+        color: var(--color-text-dark);
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .menu-item-theme:hover {
+        background-color: var(--color-border);
+    }
+
+    /* Estilo para o item ATIVO do menu */
+    .menu-item-active {
+        color: var(--color-primary);
+        background-color: var(--color-border);
+        font-weight: 600;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 0; right: 0;
+        width: 12px; height: 12px;
+        background-color: #EF4444;
+        border-radius: 50%;
+        border: 2px solid var(--color-navbar-bg); /* Alterado para combinar com a navbar */
+         animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse {
+            0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
         }
-        .navbar-logo {
-            width: 40px; 
-            height: auto;
-        }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            border: 1px solid white;
-        }
-        #dropdown-menu-prof, #notifications-dropdown-prof {
-            position: fixed;
-        }
-    </style>
+        
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+        
+    /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA DE CONFIGURAÇÕES --- */
+    .settings-card {
+        background-color: var(--color-card-bg);
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--color-border);
+    }
+
+    .settings-section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-text-dark);
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-description {
+        font-size: 0.8rem;
+        color: var(--color-text-light);
+    }
+
+    .form-input, .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        background-color: var(--color-background);
+        color: var(--color-text-dark);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    }
+
+    /* Toggle Switch */
+    .toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+        cursor: pointer;
+    }
+    .toggle-checkbox { opacity: 0; width: 0; height: 0; }
+    .toggle-switch {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #CBD5E1;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .toggle-ball {
+        position: absolute; content: '';
+        height: 20px; width: 20px;
+        left: 4px; bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    .toggle-checkbox:checked + .toggle-switch { background-color: var(--color-primary); }
+    .toggle-checkbox:checked + .toggle-switch .toggle-ball { transform: translateX(24px); }
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
+<!-- 🔹 NAVBAR PADRONIZADA -->
+<header class="header-nav sticky top-0 z-50">
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <button id="menu-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <div id="dropdown-menu-prof" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-60 hidden z-[60]">
-                <a href="painel.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
-                </a>
-                <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                 <a href="#" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="login.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                    <!-- Itens do menu -->
+                     <a href="painel.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="../index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a>
+                </div>
             </div>
-            <a href="../index.html" class="mx-auto md:mx-0">
+
+            <!-- Logo -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
-                <div class="relative">
-                    <button id="notifications-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <span class="notification-badge" id="notification-indicator-prof"></span>
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-white"></i>
+                        <span class="notification-badge" id="notification-indicator"></span>
                     </button>
-                    <div id="notifications-dropdown-prof" class="absolute right-0 top-16 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden w-72 sm:w-80">
-                        <div class="p-3 border-b border-gray-200"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3></div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <a href="duvidas_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Nova dúvida: Acentuação</p><p class="text-xs text-gray-500">Aluno João Silva</p><p class="text-xs text-gray-400 mt-1">Há 5 minutos</p></a>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <div class="p-3 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
                         </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">Ver todas</a>
+                        <div class="max-h-80 overflow-y-auto">
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Aluno 'João Silva' completou uma atividade!</p>
+                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 5 minutos</p>
+                            </a>
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Nova dúvida enviada.</p>
+                                <p class="text-xs text-gray-500">Por 'Mariana Costa' sobre Crase.</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 30 minutos</p>
+                            </a>
+                        </div>
+                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                            Ver todas as notificações
+                        </a>
                     </div>
                 </div>
-                <a href="perfil_professor.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+
+                <!-- Ícone de Perfil -->
+                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="user-circle" class="text-white"></i>
                 </a>
             </div>
         </div>
     </nav>
+</header>
 
-    <!-- Conteúdo Principal das Configurações -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-            <a href="painel.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel
+<!-- 🔹 CONTEÚDO PRINCIPAL -->
+<main class="container mx-auto px-4 sm:px-6 py-10 flex-grow">
+    <div class="max-w-4xl    mx-auto">
+        <!-- Cabeçalho da Página -->
+        <div class="mb-8">
+            <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                Voltar ao Painel
             </a>
+            <h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)] mt-2">Configurações do Professor</h1>
+            <p class="text-base text-[var(--color-text-light)] mt-1">Gerencie suas preferências de ensino, segurança e notificações da plataforma.</p>
         </div>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-2xl mx-auto">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-10">
-                Configurações da Conta
-            </h1>
-
-            <form id="configuracoes-professor-form" action="#" method="POST">
-                <!-- Seção de Preferências da Interface (Tema e Fonte) -->
-                <section class="mb-10">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="sliders-horizontal" class="w-6 h-6"></i> Aparência e Interface
+        <!-- Card de Configurações -->
+        <div class="settings-card p-6 md:p-8">
+            <form id="configuracoes-form" class="space-y-10">
+                
+                
+                <!-- Seção: Aparência e Interface (Simplificada) -->
+                <section>
+                    <h2 class="settings-section-header">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        Aparência e Interface
                     </h2>
-                    <div class="space-y-5">
-                        <div class="flex items-center justify-between">
-                            <label for="theme-select" class="text-base text-gray-700">Tema da Interface:</label>
-                            <select id="theme-select" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
-                                <option value="light">Claro</option>
-                                <option value="dark">Escuro</option>
-                                <option value="system">Padrão do Sistema</option>
-                            </select>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="font-size-select" class="form-label">Tamanho da Fonte</label>
+                            <p class="form-description">Ajuste o tamanho do texto nas atividades.</p>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <label for="fonte-padrao" class="text-base text-gray-700">Tamanho da Fonte (Atividades):</label>
-                            <select id="fonte-padrao" class="w-40 px-3 py-1.5 border border-[#9aaec1] rounded-md focus:ring-2 focus:ring-[#5689b9] text-sm bg-white outline-none">
-                                <option value="pequena">Pequena</option>
-                                <option value="media" selected>Média</option>
-                                <option value="grande">Grande</option>
-                            </select>
-                        </div>
+                        <select id="font-size-select" class="form-select w-48">
+                            <option value="pequena">Pequena</option>
+                            <option value="media" selected>Média</option>
+                            <option value="grande">Grande</option>
+                        </select>
                     </div>
                 </section>
 
-                <!-- Seção de Segurança (Alterar Senha) -->
-                <section class="mb-10">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i> Segurança da Conta
+                <!-- Seção: Segurança da Conta -->
+                <section>
+                    <h2 class="settings-section-header">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        Segurança da Conta
                     </h2>
                     <div class="space-y-4">
                         <div>
-                            <label for="senha-atual" class="block text-sm font-medium text-[#5689b9] mb-1">Senha Atual:</label>
-                            <input type="password" id="senha-atual" name="senha_atual" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Digite sua senha atual">
+                            <label for="senha-atual" class="form-label">Senha Atual</label>
+                            <input type="password" id="senha-atual" class="form-input" placeholder="••••••••">
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                             <div>
-                                <label for="nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Nova Senha:</label>
-                                <input type="password" id="nova_senha_config" name="nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none" placeholder="Mínimo 6 caracteres">
+                                <label for="nova-senha" class="form-label">Nova Senha</label>
+                                <input type="password" id="nova-senha" class="form-input" placeholder="Mínimo de 8 caracteres">
                             </div>
                             <div>
-                                <label for="confirmar_nova_senha_config" class="block text-sm font-medium text-[#5689b9] mb-1">Confirmar Nova Senha:</label>
-                                <input type="password" id="confirmar_nova_senha_config" name="confirmar_nova_senha_config" class="w-full px-4 py-2 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none">
+                                <label for="confirmar-nova-senha" class="form-label">Confirmar Nova Senha</label>
+                                <input type="password" id="confirmar-nova-senha" class="form-input" placeholder="Repita a nova senha">
                             </div>
                         </div>
-                         <button type="button" id="btn-alterar-senha" class="mt-2 bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
-                            <i data-lucide="key-round" class="w-4 h-4"></i> Alterar Senha
-                        </button>
+                        <div class="pt-2">
+                            <button type="button" id="btn-alterar-senha" class="bg-blue-50 text-[var(--color-primary)] hover:bg-blue-100 text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                                <i data-lucide="key-round" class="w-4 h-4"></i>
+                                Alterar Senha
+                            </button>
+                        </div>
                     </div>
                 </section>
                 
-                
-                <section class="mb-8">
-                    <h2 class="text-xl font-semibold text-[#5689b9] mb-4 border-b pb-2 flex items-center gap-2">
-                        <i data-lucide="mail-check" class="w-6 h-6"></i> Preferências de Notificação
+                <!-- Seção: Preferências de Notificação -->
+                <section>
+                    <h2 class="settings-section-header">
+                        <i data-lucide="mail-check" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        Preferências de Notificação
                     </h2>
                     <div class="space-y-5">
-                        <div class="flex items-center justify-between">
-                            <label for="notif-duvidas" class="text-base text-gray-700">Receber email sobre novas dúvidas</label>
-                            <div><input type="checkbox" id="notif-duvidas" class="toggle-checkbox sr-only" checked><label for="notif-duvidas" class="toggle-label"><span class="toggle-ball"></span></label></div>
+                        <div class="flex items-start justify-between py-2">
+                            <div>
+                                <label for="notif-envio" class="form-label">Envio de Atividades por Alunos</label>
+                                <p class="form-description">Receber aviso quando um aluno completar e enviar uma tarefa.</p>
+                            </div>
+                            <label for="notif-envio" class="toggle-label mt-1">
+                                <input type="checkbox" id="notif-envio" class="toggle-checkbox" checked>
+                                <div class="toggle-switch"><div class="toggle-ball"></div></div>
+                            </label>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <label for="notif-feedback" class="text-base text-gray-700">Receber email sobre novos feedbacks</label>
-                            <div><input type="checkbox" id="notif-feedback" class="toggle-checkbox sr-only"><label for="notif-feedback" class="toggle-label"><span class="toggle-ball"></span></label></div>
+                        <hr style="border-color: var(--color-border);">
+                        <div class="flex items-start justify-between py-2">
+                            <div>
+                                <label for="notif-relatorio" class="form-label">Relatórios de Desempenho</label>
+                                <p class="form-description">Ser notificado(a) quando relatórios semanais das turmas forem gerados.</p>
+                            </div>
+                            <label for="notif-relatorio" class="toggle-label mt-1">
+                                <input type="checkbox" id="notif-relatorio" class="toggle-checkbox" checked>
+                                <div class="toggle-switch"><div class="toggle-ball"></div></div>
+                            </label>
+                        </div>
+                        <hr style="border-color: var(--color-border);">
+                        <div class="flex items-start justify-between py-2">
+                            <div>
+                                <label for="notif-inativo" class="form-label">Alunos com Baixa Atividade</label>
+                                <p class="form-description">Receber alertas sobre alunos que não acessam a plataforma há mais de 7 dias.</p>
+                            </div>
+                            <label for="notif-inativo" class="toggle-label mt-1">
+                                <input type="checkbox" id="notif-inativo" class="toggle-checkbox">
+                                <div class="toggle-switch"><div class="toggle-ball"></div></div>
+                            </label>
                         </div>
                     </div>
                 </section>
 
-                <div class="flex justify-end mt-8">
-                    <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <!-- Ações do Formulário -->
+                <div class="flex justify-end pt-6 border-t" style="border-color: var(--color-border);">
+                    <button type="submit" class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transform hover:-translate-y-0.5">
                         <i data-lucide="save" class="w-5 h-5"></i>
-                        Salvar Todas as Configurações
+                        Salvar Alterações
                     </button>
                 </div>
             </form>
         </div>
-    </main>
+    </div>
+</main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
-    </footer>
+<!-- 🔹 FOOTER PADRONIZADO -->
+<footer class="navbar-theme text-[#e3ebf2] mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
 
-    <!-- JavaScript -->
-    <script>
-        lucide.createIcons();
+<!-- 🔹 SCRIPTS -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // ESSENCIAL: Transforma as tags <i> em ícones SVG
+    lucide.createIcons();
 
-       
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', function() {
-                dropdownMenuProf.classList.toggle('hidden');
+    // --- Interatividade dos Menus (Dropdown) ---
+    const menuBtn = document.getElementById("menu-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const notificationsBtn = document.getElementById("notifications-btn");
+    // ✅ VARIÁVEL CORRIGIDA (removido o espaço)
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
+
+    function setupDropdown(btn, menu) {
+        if (!btn || !menu) return;
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            // Esconde todos os outros menus abertos antes de mostrar o atual
+            document.querySelectorAll('.menu-theme.absolute').forEach(m => {
+                if (m !== menu) m.classList.add('hidden');
             });
+            menu.classList.toggle("hidden");
+        });
+    }
+    setupDropdown(menuBtn, dropdownMenu);
+    setupDropdown(notificationsBtn, notificationsDropdown);
+
+    // Fecha menus ao clicar fora
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest('.relative')) {
+            document.querySelectorAll('.menu-theme.absolute').forEach(m => m.classList.add('hidden'));
         }
+    });
+    
+    // Evita que o clique dentro do dropdown o feche
+    document.querySelectorAll('.menu-theme.absolute').forEach(menu => {
+        menu.addEventListener('click', e => e.stopPropagation());
+    });
 
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-        
-        
-        
+    // --- Lógica do Formulário com SweetAlert ---
+    const configuracoesForm = document.getElementById('configuracoes-form');
+    const btnAlterarSenha = document.getElementById('btn-alterar-senha');
 
-        // Lógica para salvar configurações e alterar senha
-        const configuracoesForm = document.getElementById('configuracoes-professor-form');
-        const btnAlterarSenha = document.getElementById('btn-alterar-senha');
-
-        if(configuracoesForm) {
-            configuracoesForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                Swal.fire({
+    if (configuracoesForm) {
+        configuracoesForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            Swal.fire({
                 icon: 'success',
-                title: 'Configurações salvas!',
-                text: 'Todas as configurações foram salvas com sucesso.',
-                confirmButtonColor: '#3c6a99'
-                });
+                title: 'Configurações Salvas!',
+                text: 'Suas preferências de ensino e notificações foram atualizadas.',
+                confirmButtonColor: 'var(--color-primary)'
             });
-        }
-        
-        if(btnAlterarSenha) {
-            btnAlterarSenha.addEventListener('click', function() {
-                const senhaAtual = document.getElementById('senha-atual').value;
-                const novaSenha = document.getElementById('nova_senha_config').value;
-                const confirmarNovaSenha = document.getElementById('confirmar_nova_senha_config').value;
+        });
+    }
 
-                if (!senhaAtual) {
-                    Swal.fire({
-                    icon: 'warning',
-                    title: 'Senha atual vazia',
-                    text: 'Por favor, digite sua senha atual.',
-                    confirmButtonColor: '#3c6a99'
-                });
-                    return;
-                }
-                if (!novaSenha || novaSenha.length < 6) {
-                    Swal.fire({
-                    icon: 'warning',
-                    title: 'Nova senha inválida',
-                    text: 'A nova senha deve ter pelo menos 6 caracteres.',
-                    confirmButtonColor: '#3c6a99'
-                });
-                    return;
-                }
-                if (novaSenha !== confirmarNovaSenha) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Confirmação de senha inválida',
-                        text: 'As novas senhas não coincidem!',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                    return;
-                }
-                
-                // enviar para o backend
-                console.log("Tentando alterar senha:", { senhaAtual, novaSenha });
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Senha alterada',
-                    text: 'Solicitação de alteração de senha enviada.',
-                    confirmButtonColor: '#3c6a99'
-                    });
+    if (btnAlterarSenha) {
+        btnAlterarSenha.addEventListener('click', function() {
+            const senhaAtual = document.getElementById('senha-atual').value;
+            const novaSenha = document.getElementById('nova-senha').value;
+            const confirmarNovaSenha = document.getElementById('confirmar-nova-senha').value;
+
+            if (!senhaAtual) {
+                Swal.fire({ icon: 'warning', title: 'Campo Obrigatório', text: 'Por favor, informe sua senha atual.', confirmButtonColor: 'var(--color-primary)' });
+                return;
+            }
+            if (!novaSenha || novaSenha.length < 8) {
+                Swal.fire({ icon: 'warning', title: 'Nova Senha Inválida', text: 'A nova senha precisa ter no mínimo 8 caracteres.', confirmButtonColor: 'var(--color-primary)' });
+                return;
+            }
+            if (novaSenha !== confirmarNovaSenha) {
+                Swal.fire({ icon: 'error', title: 'As Senhas Não Coincidem', text: 'A confirmação não é igual à nova senha digitada.', confirmButtonColor: '#d33' });
+                return;
+            }
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Senha Alterada!',
+                text: 'Sua senha foi atualizada com sucesso.',
+                confirmButtonColor: 'var(--color-primary)'
+            }).then(() => {
                 document.getElementById('senha-atual').value = '';
-                document.getElementById('nova_senha_config').value = '';
-                document.getElementById('confirmar_nova_senha_config').value = '';
+                document.getElementById('nova-senha').value = '';
+                document.getElementById('confirmar-nova-senha').value = '';
             });
-        }
-    </script>
+        });
+    }
+});
+</script>
+
 </body>
 </html>
