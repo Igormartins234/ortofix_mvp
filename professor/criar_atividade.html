@@ -162,46 +162,87 @@
     </footer>
 
     <script>
-        lucide.createIcons();
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', () => {
-                dropdownMenuProf.classList.toggle('hidden');
-                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-        }
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
-        let hasUnreadNotificationsProf = true; 
-        if (notificationIndicatorProf) {
-            if (!hasUnreadNotificationsProf) {
-                notificationIndicatorProf.classList.add('hidden');
-            }
-        }
-        if (notificationsBtnProf && notificationsDropdownProf) {
-            notificationsBtnProf.addEventListener('click', () => {
-                notificationsDropdownProf.classList.toggle('hidden');
-                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
-        }
-        
-        
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  const tituloEl = document.getElementById('titulo_atividade');
+  const tipoEl = document.getElementById('tipo_atividade');
+  const descricaoEl = document.getElementById('descricao_atividade');
+  const camposEspecificos = document.getElementById('campos-especificos-atividade');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const instrucoes = descricaoEl.value || (tituloEl.value ? `Crie atividade: ${tituloEl.value}` : '');
+    const tipo_preferido = tipoEl.value || '';
+
+    if (!instrucoes) {
+      alert('Insira as instruções da atividade.');
+      return;
+    }
+
+    // 1) Chama IA para gerar conteúdo
+    try {
+      const aiResp = await fetch('https://api-tcc-alpha.vercel.app//api/gerar_atividade_professor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instrucoes, tipo_preferido })
+      });
+      if (!aiResp.ok) {
+        const err = await aiResp.json();
+        console.error('Erro IA:', err);
+        alert('Falha ao gerar atividade pela IA.');
+        return;
+      }
+      const atividadeGerada = await aiResp.json();
+
+      // mostra preview simples dentro do formulário
+      camposEspecificos.innerHTML = `<pre class="text-sm bg-gray-50 p-3 rounded">${JSON.stringify(atividadeGerada, null, 2)}</pre>`;
+
+      // Pergunta para professor confirmar envio
+      if (!confirm('Geramos a atividade. Deseja salvar e publicar para os alunos?')) return;
+
+      // 2) Envia para o backend principal para salvar (usa token JWT do storage)
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Sessão expirada. Faça login novamente.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const salvarResp = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/atividades', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          titulo: atividadeGerada.titulo || tituloEl.value || 'Atividade gerada',
+          tipo: atividadeGerada.tipo || tipo_preferido || 'multipla_escolha',
+          descricao: atividadeGerada.descricao || descricaoEl.value || '',
+          conteudo_especifico: atividadeGerada.conteudo_especifico || {},
+          icon: atividadeGerada.icon || 'file-text',
+          turmas: atividadeGerada.turmas || []
+        })
+      });
+
+      if (!salvarResp.ok) {
+        const err = await salvarResp.json();
+        console.error('Erro salvar atividade:', err);
+        alert('Falha ao salvar atividade no backend.');
+        return;
+      }
+
+      const result = await salvarResp.json();
+      alert('Atividade criada com sucesso! ID: ' + (result.idAtividade || result.idAtividade));
+      window.location.href = 'painel.html';
+    } catch (err) {
+      console.error('Erro geral criar atividade:', err);
+      alert('Ocorreu um erro ao criar atividade.');
+    }
+
+  });
+});
+</script>
+
 </body>
 </html>

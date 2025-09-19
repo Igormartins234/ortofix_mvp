@@ -114,63 +114,204 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-    <script>
-        const btnGerarExercicio = document.getElementById('btnGerarExercicio');
-        const btnVerificar = document.getElementById('btnVerificar');
-        const textoComErrosDiv = document.getElementById('textoComErros');
-        const textoUsuarioTextarea = document.getElementById('textoUsuario');
-        const areaExercicioDiv = document.getElementById('areaExercicio');
-        const areaResultadoDiv = document.getElementById('areaResultado');
-        const loadingP = document.getElementById('loading');
-        const errorP = document.getElementById('error');
+    <!-- Substitua a tag <script> inteira no final de atividade_correcao.html por este bloco -->
+<script>
+    lucide.createIcons();
 
-        const tentativaUsuarioSpan = document.getElementById('tentativaUsuario');
-        const correcaoIdealSpan = document.getElementById('correcaoIdeal');
-        const feedbackGeminiDiv = document.getElementById('feedbackGemini');
+    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
+    const API_GEMINI_URL = 'https://api-tcc-alpha.vercel.app';
+    const API_BACKEND_URL = 'https://back-end-mvp-tcc.vercel.app';
+    
+    // Elementos do DOM
+    const btnGerarExercicio = document.getElementById('btnGerarExercicio');
+    const btnVerificar = document.getElementById('btnVerificar');
+    const textoComErrosDiv = document.getElementById('textoComErros');
+    const textoUsuarioTextarea = document.getElementById('textoUsuario');
+    const areaExercicioDiv = document.getElementById('areaExercicio');
+    const areaResultadoDiv = document.getElementById('areaResultado');
+    const loadingP = document.getElementById('loading');
+    const errorP = document.getElementById('error');
+    const tentativaUsuarioSpan = document.getElementById('tentativaUsuario');
+    const correcaoIdealSpan = document.getElementById('correcaoIdeal');
+    const feedbackGeminiDiv = document.getElementById('feedbackGemini');
 
-        let textoOriginalGlobal = "";
-        let textoCorrigidoIdealGlobal = "";
+    // Variáveis de estado
+    let textoOriginalGlobal = "";
+    let textoCorrigidoIdealGlobal = "";
 
-        // NOVA FUNÇÃO para registrar a atividade no seu backend
+    // --- FUNÇÕES HELPER (REUTILIZÁVEIS) ---
+    function showLoading(isLoading, message = "Carregando...") {
+        loadingP.textContent = message;
+        loadingP.style.display = isLoading ? 'block' : 'none';
+        btnGerarExercicio.disabled = isLoading;
+        btnVerificar.disabled = isLoading;
+        if (isLoading) {
+            errorP.classList.add('hidden');
+            errorP.textContent = '';
+        }
+    }
+     function showRewardToast(coins) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
+        toast.style.transform = 'translateX(120%)';
+        toast.style.transition = 'transform 0.5s ease-in-out';
+        
+        toast.innerHTML = `
+            <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
+            <div>
+                <p class="font-bold text-lg">Recompensa Recebida!</p>
+                <p class="text-base">Você ganhou +${coins} moedas!</p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        lucide.createIcons();
+        
+        // Animação de entrada
+        setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
+
+        // Animação de saída
+        setTimeout(() => {
+            toast.style.transform = 'translateX(120%)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
     async function registrarAtividadeConcluida(pontuacao, feedback) {
         const token = localStorage.getItem('authToken');
-        if (!token) return; // Não faz nada se o aluno não estiver logado
+        if (!token) return;
 
         try {
-            // Usamos um ID fixo para cada tipo de atividade. Você pode criar mais na sua tabela Atividade.
-            // ID 1 = Correção de Texto
-            const idAtividade = 1; 
-
-            const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
+            const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
-                    idAtividade: idAtividade,
-                    pontuacao: pontuacao, // Precisamos calcular isso
+                    idAtividade: 1, // ID para "Correção de Texto"
+                    pontuacao: pontuacao,
                     feedbackGemini: feedback
                 })
             });
-
             const result = await response.json();
             if (response.ok) {
-                // Exibe uma mensagem de sucesso para o aluno!
-                alert(result.msg);
+                showRewardToast(result.moedasGanhas);
+            } else {
+                alert(`Erro ao salvar progresso: ${result.msg}`);
             }
         } catch (error) {
             console.error("Erro ao registrar atividade:", error);
         }
     }
 
+    function showError(message) {
+        errorP.textContent = "Erro: " + message;
+        errorP.classList.remove('hidden');
+        loadingP.style.display = 'none';
+    }
 
-    btnVerificar.addEventListener('click', async () => {
-        // ... (código existente do btnVerificar) ...
+    function showRewardToast(message, coins) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg flex items-center gap-3 z-[100] transform translate-x-full animate-slide-in';
+        toast.innerHTML = `
+            <i data-lucide="party-popper" class="w-8 h-8"></i>
+            <div>
+                <p class="font-bold">${message}</p>
+                <p class="text-sm">Você ganhou +${coins} moedas!</p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        lucide.createIcons();
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            console.warn("Usuário não autenticado. O progresso não será salvo.");
+            return;
+        }
 
         try {
-            // ... (código existente do fetch para a API do Gemini) ...
-            
+            const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    idAtividade: 1, // ID fixo para "Correção de Texto"
+                    pontuacao: pontuacao,
+                    feedbackGemini: feedback
+                })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                showRewardToast("Atividade Concluída!", result.moedasGanhas);
+            } else {
+                alert(`Erro ao salvar progresso: ${result.msg}`);
+            }
+        } catch (error) {
+            console.error("Erro ao registrar atividade:", error);
+        }
+    }
+
+    // --- LÓGICA DE EVENTOS ---
+    btnGerarExercicio.addEventListener('click', async () => {
+        showLoading(true, "Gerando novo exercício...");
+        areaExercicioDiv.classList.add('hidden');
+        areaResultadoDiv.classList.add('hidden');
+        textoUsuarioTextarea.value = "";
+
+        try {
+            const response = await fetch(`${API_GEMINI_URL}/api/gerar_exercicio`, { method: 'POST' });
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            textoOriginalGlobal = data.texto_com_erros;
+            textoCorrigidoIdealGlobal = data.texto_corrigido_ideal;
+
+            textoComErrosDiv.textContent = textoOriginalGlobal;
+            areaExercicioDiv.classList.remove('hidden');
+        } catch (err) {
+            console.error('Erro ao gerar exercício:', err);
+            showError(err.message);
+        } finally {
+            showLoading(false);
+        }
+    });
+
+    btnVerificar.addEventListener('click', async () => {
+        const textoCorrigidoPeloUsuario = textoUsuarioTextarea.value.trim();
+        if (!textoCorrigidoPeloUsuario) {
+            showError("Por favor, digite sua correção antes de verificar.");
+            textoUsuarioTextarea.focus();
+            return;
+        }
+
+        showLoading(true, "Avaliando sua correção...");
+        areaResultadoDiv.classList.add('hidden');
+
+        try {
+            const response = await fetch(`${API_GEMINI_URL}/api/avaliar_correcao`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    texto_original_com_erros: textoOriginalGlobal,
+                    texto_corrigido_pelo_usuario: textoCorrigidoPeloUsuario,
+                    texto_corrigido_ideal: textoCorrigidoIdealGlobal
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
 
             tentativaUsuarioSpan.textContent = data.sua_tentativa;
@@ -178,175 +319,66 @@
             feedbackGeminiDiv.textContent = data.feedback_do_gemini;
             areaResultadoDiv.classList.remove('hidden');
 
-            // --- INÍCIO DA INTEGRAÇÃO ---
-            // Simples cálculo de pontuação (ex: 100 se for perfeito, 75 se não)
-            const pontuacao = (data.sua_tentativa.toLowerCase() === data.correcao_ideal.toLowerCase()) ? 100 : 75;
-            
-            // Chama a nova função para registrar no nosso backend
+            // --- LÓGICA DE PONTUAÇÃO E RECOMPENSA ---
+            const pontuacao = (data.sua_tentativa.toLowerCase().trim() === data.correcao_ideal.toLowerCase().trim()) ? 100 : 75;
             await registrarAtividadeConcluida(pontuacao, data.feedback_do_gemini);
             // --- FIM DA INTEGRAÇÃO ---
 
         } catch (err) {
-            // ... (código de erro existente) ...
+            console.error('Erro ao avaliar correção:', err);
+            showError(err.message);
         } finally {
             showLoading(false);
         }
     });
 
-
-        function showLoading(isLoading, message = "Carregando...") {
-            loadingP.textContent = message;
-            loadingP.style.display = isLoading ? 'block' : 'none';
-            btnGerarExercicio.disabled = isLoading;
-            btnVerificar.disabled = isLoading;
-            if (isLoading) {
-                errorP.classList.add('hidden');
-                errorP.textContent = '';
-            }
-        }
-
-        function showError(message) {
-            errorP.textContent = "Erro: " + message;
-            errorP.classList.remove('hidden');
-            loadingP.style.display = 'none';
-        }
-
-        btnGerarExercicio.addEventListener('click', async () => {
-            showLoading(true, "Gerando novo exercício...");
-            areaExercicioDiv.classList.add('hidden');
-            areaResultadoDiv.classList.add('hidden');
-            textoUsuarioTextarea.value = "";
-
-            try {
-                const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_exercicio', { method: 'POST' });
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                textoOriginalGlobal = data.texto_com_erros;
-                textoCorrigidoIdealGlobal = data.texto_corrigido_ideal;
-
-                textoComErrosDiv.textContent = textoOriginalGlobal;
-                areaExercicioDiv.classList.remove('hidden');
-            } catch (err) {
-                console.error('Erro ao gerar exercício:', err);
-                showError(err.message);
-            } finally {
-                showLoading(false);
-            }
+    // --- LÓGICA DE SAIR ---
+    const logoutButton = document.querySelector('a[href="../index.html"]');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            window.location.href = '../aluno/aluno.html'; // Ajuste o caminho se necessário
         });
 
-        btnVerificar.addEventListener('click', async () => {
-            const textoCorrigidoPeloUsuario = textoUsuarioTextarea.value.trim();
-            if (!textoCorrigidoPeloUsuario) {
-                showError("Por favor, digite sua correção antes de verificar.");
-                textoUsuarioTextarea.focus();
-                return;
-            }
+    async function registrarAtividadeConcluida(idAtividade, pontuacao, feedback) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        console.warn("Usuário não autenticado. O progresso não será salvo.");
+        return;
+    }
 
-            showLoading(true, "Avaliando sua correção...");
-            areaResultadoDiv.classList.add('hidden');
-
-            try {
-                const response = await fetch('https://api-tcc-alpha.vercel.app/api/avaliar_correcao', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        texto_original_com_erros: textoOriginalGlobal,
-                        texto_corrigido_pelo_usuario: textoCorrigidoPeloUsuario,
-                        texto_corrigido_ideal: textoCorrigidoIdealGlobal
-                    })
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-
-                tentativaUsuarioSpan.textContent = data.sua_tentativa;
-                correcaoIdealSpan.textContent = data.correcao_ideal;
-                feedbackGeminiDiv.textContent = data.feedback_do_gemini;
-                areaResultadoDiv.classList.remove('hidden');
-
-            } catch (err) {
-                console.error('Erro ao avaliar correção:', err);
-                showError(err.message);
-            } finally {
-                showLoading(false);
-            }
+    try {
+        const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                idAtividade: idAtividade,
+                pontuacao: pontuacao,
+                feedback: feedback
+            })
         });
 
-        lucide.createIcons();
+        const result = await response.json();
 
-        // Script para o Menu Principal
-        const menuBtn = document.getElementById('menu-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (menuBtn && dropdownMenu) {
-            menuBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('hidden');
-                // Esconde o menu de notificações se estiver aberto
-                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
+        if (response.ok) {
+            console.log(result.msg);
+            showRewardToast(result.moedasGanhas);
+        } else {
+            console.error('Erro ao registrar atividade:', result.msg);
         }
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+    }
+}
+    }
 
-        // Script para as notificações
-        const notificationsBtn = document.getElementById('notifications-btn');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        const notificationIndicator = document.getElementById('notification-indicator');
-
-        // Notificações não lidas
-        let hasUnreadNotifications = true; 
-        if (notificationIndicator) {
-            if (!hasUnreadNotifications) {
-                notificationIndicator.classList.add('hidden');
-            }
-        }
-
-
-        if (notificationsBtn && notificationsDropdown) {
-            notificationsBtn.addEventListener('click', () => {
-                notificationsDropdown.classList.toggle('hidden');
-                // Esconde o menu principal se estiver aberto
-                if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('hidden');
-                }
-                // Opcional: marcar notificações como lidas (remover badge) ao abrir
-                if (notificationIndicator && hasUnreadNotifications) {
-
-                }
-            });
-            // Fecha o dropdown de notificações ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtn.contains(e.target) && !notificationsDropdown.contains(e.target)) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-            });
-            
-        }   
-        document.getElementById('btnGerarExercicio').addEventListener('click', function() {
-        const botao = this;
-        const carregando = document.getElementById('loading');
-        
-        botao.classList.add('hidden'); // Esconde botão
-        carregando.classList.remove('hidden'); // Mostra carregando
-        
-        // Depois de 3 segundos, volta ao normal
-        setTimeout(() => {
-            carregando.classList.add('hidden');
-            botao.classList.remove('hidden');
-        }, 400);
-    });
-
-        
-    </script>
+</script>
+</body>
+</html>
 </body>
 </html>

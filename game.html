@@ -66,113 +66,202 @@
         <p>© 2025 OrtoFix.</p>
     </footer>
 
-    <script>
-        const API_URL = "https://api-tcc-alpha.vercel.app";
+    <!-- Substitua a tag <script> inteira no final de game.html por este bloco -->
+<script>
+    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
+    const API_URL_GEMINI = "https://api-tcc-alpha.vercel.app";
+    const API_URL_BACKEND = "https://back-end-mvp-tcc.vercel.app";
 
-        const btnIniciar = document.getElementById('btnIniciar');
-        const btnNovas = document.getElementById('btnNovas');
-        const formArea = document.getElementById('formArea');
-        const feedbackArea = document.getElementById('feedbackArea');
-        const feedbackCards = document.getElementById('feedbackCards');
-        const inputsArea = document.getElementById('inputsArea');
-        const form = document.getElementById('form');
+    // Elementos do DOM
+    const btnIniciar = document.getElementById('btnIniciar');
+    const btnNovas = document.getElementById('btnNovas');
+    const formArea = document.getElementById('formArea');
+    const feedbackArea = document.getElementById('feedbackArea');
+    const feedbackCards = document.getElementById('feedbackCards');
+    const inputsArea = document.getElementById('inputsArea');
+    const form = document.getElementById('form');
 
-        let palavrasAtuais = [];
+    // Variáveis de estado
+    let palavrasAtuais = [];
 
-        async function gerarPalavras() {
-            const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras`, { method: 'POST' });
-            const data = await res.json();
-            palavrasAtuais = data.palavras;
-            renderInputs(palavrasAtuais);
-            formArea.classList.remove('hidden');
-            feedbackArea.classList.add('hidden');
-        }
+    // --- FUNÇÕES HELPER (REUTILIZÁVEIS) ---
+    function showRewardToast(message, coins) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg flex items-center gap-3 z-[100] transform translate-x-full animate-slide-in';
+        toast.innerHTML = `
+            <i data-lucide="party-popper" class="w-8 h-8"></i>
+            <div>
+                <p class="font-bold">${message}</p>
+                <p class="text-sm">Você ganhou +${coins} moedas!</p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        lucide.createIcons();
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
 
-        function renderInputs(palavras) {
-            inputsArea.innerHTML = '';
-            palavras.forEach((palavra, index) => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <label class="block text-[#3c6a99] font-semibold mb-1">
-                        Palavra: <span class="font-bold">${palavra}</span>
-                    </label>
-                    <input type="hidden" name="palavra_${index}" value="${palavra}" />
-                    <select name="acento_${index}" class="w-full border border-[#3c6a99] rounded-md px-4 py-2">
-                        <option value="agudo">Agudo (´)</option>
-                        <option value="circunflexo">Circunflexo (^)</option>
-                        <option value="til">Til (~)</option>
-                        <option value="sem acento">Sem acento</option>
-                    </select>
-                `;
-                inputsArea.appendChild(div);
-            });
-        }
+        // NOVA FUNÇÃO DE ANIMAÇÃO DE RECOMPENSA
+    function showRewardToast(coins) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
+        toast.style.transform = 'translateX(120%)';
+        toast.style.transition = 'transform 0.5s ease-in-out';
+        
+        toast.innerHTML = `
+            <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
+            <div>
+                <p class="font-bold text-lg">Recompensa Recebida!</p>
+                <p class="text-base">Você ganhou +${coins} moedas!</p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        lucide.createIcons();
+        
+        // Animação de entrada
+        setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
 
-        function renderFeedback(feedbackRaw) {
-            const linhas = feedbackRaw.trim().split('\n').filter(l => l.trim() !== '');
-            const cards = [];
-            let card = {};
+        // Animação de saída
+        setTimeout(() => {
+            toast.style.transform = 'translateX(120%)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
 
-            linhas.forEach(linha => {
-                if (linha.startsWith('- Palavra:')) {
-                    if (Object.keys(card).length > 0) {
-                        cards.push(card);
-                        card = {};
-                    }
-                    card.palavra = linha.replace('- Palavra:', '').trim();
-                } else if (linha.startsWith('- Sua resposta:')) {
-                    card.resposta = linha.replace('- Sua resposta:', '').trim();
-                } else if (linha.startsWith('- Resposta correta:')) {
-                    card.correta = linha.replace('- Resposta correta:', '').trim();
-                } else if (linha.startsWith('- Resultado:')) {
-                    card.resultado = linha.replace('- Resultado:', '').trim();
-                } else if (linha.startsWith('- Explicação:')) {
-                    card.explicacao = linha.replace('- Explicação:', '').trim();
-                }
-            });
+    async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
 
-            if (Object.keys(card).length > 0) {
-                cards.push(card);
-            }
-
-            feedbackCards.innerHTML = '';
-
-            cards.forEach(c => {
-                const cor = c.resultado && c.resultado.includes('Correto') ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800';
-                const html = `
-                    <div class="border ${cor} rounded-xl p-4">
-                        <p><strong>Palavra:</strong> ${c.palavra}</p>
-                        <p><strong>Sua resposta:</strong> ${c.resposta}</p>
-                        <p><strong>Resposta correta:</strong> ${c.correta}</p>
-                        <p><strong>Resultado:</strong> <span class="font-semibold">${c.resultado}</span></p>
-                        <p class="mt-2"><strong>Explicação:</strong> ${c.explicacao}</p>
-                    </div>
-                `;
-                feedbackCards.innerHTML += html;
-            });
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const respostas = [];
-            palavrasAtuais.forEach((palavra, index) => {
-                const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
-                respostas.push({ palavra, resposta_usuario: resposta });
-            });
-
-            const res = await fetch(`${API_URL}/api/ortofix/verificar`, {
+        try {
+            const response = await fetch(`${API_BACKEND_URL}/api/atividades/completar`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ respostas })
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    idAtividade: 1, // ID para "Correção de Texto"
+                    pontuacao: pontuacao,
+                    feedbackGemini: feedback
+                })
             });
+            const result = await response.json();
+            if (response.ok) {
+                showRewardToast(result.moedasGanhas);
+            } else {
+                alert(`Erro ao salvar progresso: ${result.msg}`);
+            }
+        } catch (error) {
+            console.error("Erro ao registrar atividade:", error);
+        }
+    }
 
-            const data = await res.json();
-            renderFeedback(data.feedback);
-            feedbackArea.classList.remove('hidden');
+     async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+        try {
+            const response = await fetch(`${API_URL_BACKEND}/api/atividades/completar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    idAtividade: 2, // ID para "OrtoFix Game"
+                    pontuacao: pontuacao,
+                    feedbackGemini: feedback
+                })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                showRewardToast(result.moedasGanhas);
+            }
+        } catch (error) { console.error("Erro ao registrar atividade:", error); }
+    }
+
+    // --- LÓGICA DO JOGO ---
+    async function gerarPalavras() {
+        btnIniciar.textContent = "Carregando...";
+        btnIniciar.disabled = true;
+        const res = await fetch(`${API_URL_GEMINI}/api/ortofix/gerar_palavras`, { method: 'POST' });
+        const data = await res.json();
+        palavrasAtuais = data.palavras;
+        renderInputs(palavrasAtuais);
+        formArea.classList.remove('hidden');
+        feedbackArea.classList.add('hidden');
+        btnIniciar.classList.add('hidden');
+        btnIniciar.textContent = "Iniciar Jogo";
+        btnIniciar.disabled = false;
+    }
+
+    function renderInputs(palavras) {
+        inputsArea.innerHTML = '';
+        palavras.forEach((palavra, index) => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label class="block text-[#3c6a99] font-semibold mb-1">
+                    Palavra: <span class="font-bold">${palavra}</span>
+                </label>
+                <input type="hidden" name="palavra_${index}" value="${palavra}" />
+                <select name="acento_${index}" class="w-full border border-[#3c6a99] rounded-md px-4 py-2">
+                    <option value="" disabled selected>Escolha o acento...</option>
+                    <option value="agudo">Agudo (´)</option>
+                    <option value="circunflexo">Circunflexo (^)</option>
+                    <option value="til">Til (~)</option>
+                    <option value="sem acento">Sem acento</option>
+                </select>
+            `;
+            inputsArea.appendChild(div);
+        });
+    }
+
+    function renderFeedback(feedbackRaw) {
+        const linhas = feedbackRaw.trim().split('\n').filter(l => l.trim() !== '');
+        const cards = [];
+        let card = {};
+        linhas.forEach(linha => {
+            if (linha.startsWith('- Palavra:')) {
+                if (Object.keys(card).length > 0) cards.push(card);
+                card = { palavra: linha.replace('- Palavra:', '').trim() };
+            } else if (linha.startsWith('- Sua resposta:')) card.resposta = linha.replace('- Sua resposta:', '').trim();
+            else if (linha.startsWith('- Resposta correta:')) card.correta = linha.replace('- Resposta correta:', '').trim();
+            else if (linha.startsWith('- Resultado:')) card.resultado = linha.replace('- Resultado:', '').trim();
+            else if (linha.startsWith('- Explicação:')) card.explicacao = linha.replace('- Explicação:', '').trim();
+        });
+        if (Object.keys(card).length > 0) cards.push(card);
+
+        feedbackCards.innerHTML = '';
+        cards.forEach(c => {
+            const cor = c.resultado && c.resultado.includes('Correto') ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800';
+            const html = `<div class="border ${cor} rounded-xl p-4">...</div>`; // Seu innerHTML do card aqui
+            feedbackCards.innerHTML += html.replace('...', `<p><strong>Palavra:</strong> ${c.palavra}</p><p><strong>Sua resposta:</strong> ${c.resposta}</p><p><strong>Resposta correta:</strong> ${c.correta}</p><p><strong>Resultado:</strong> <span class="font-semibold">${c.resultado}</span></p><p class="mt-2"><strong>Explicação:</strong> ${c.explicacao}</p>`);
+        });
+    }
+
+    // --- LÓGICA DE EVENTOS ---
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const respostas = [];
+        palavrasAtuais.forEach((palavra, index) => {
+            const resposta = form.querySelector(`select[name="acento_${index}"]`).value;
+            respostas.push({ palavra, resposta_usuario: resposta });
         });
 
-        btnIniciar.addEventListener('click', gerarPalavras);
-        btnNovas.addEventListener('click', gerarPalavras);
-    </script>
+        const res = await fetch(`${API_URL_GEMINI}/api/ortofix/verificar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ respostas })
+        });
+        const data = await res.json();
+        renderFeedback(data.feedback);
+        feedbackArea.classList.remove('hidden');
+
+        // --- LÓGICA DE PONTUAÇÃO E RECOMPENSA ---
+        let acertos = (data.feedback.match(/Resultado: Correto!/g) || []).length;
+        const pontuacao = (acertos / palavrasAtuais.length) * 100;
+        await registrarAtividadeConcluida(Math.round(pontuacao), data.feedback);
+    });
+
+    btnIniciar.addEventListener('click', gerarPalavras);
+    btnNovas.addEventListener('click', gerarPalavras);
+</script>
 </body>
 </html>
