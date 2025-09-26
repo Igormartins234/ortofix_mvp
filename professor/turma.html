@@ -1,99 +1,239 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OrtoFix - Médias da Turma</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script> <!-- Lucide Icons -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root {
+            --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+            --color-primary-dark: #357ABD;
+            --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
+            --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
+            --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
+            --color-text-light: #8492a6;  /* Cinza para textos secundários */
+            --color-card-bg: #ffffff;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
+            /* Gradiente sutil no fundo para dar profundidade */
+            background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%);
         }
+        
         .navbar-logo {
             width: 40px; 
             height: auto;
-        }
+        }       
+
+        /* Estilo para o indicador de notificação (ponto vermelho) */
         .notification-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 10px;
-            height: 10px;
-            background-color: red;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #EF4444;
             border-radius: 50%;
-            border: 1px solid white;
+            border: 2px solid var(--color-primary-dark);
+            animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
         }
-        #dropdown-menu-prof, #notifications-dropdown-prof {
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+        
+        /* Animações de entrada para os elementos da página */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Estilizando os cards de navegação com interações aprimoradas */
+        .nav-card {
+            background-color: var(--color-card-bg);
+            border-radius: 1rem; /* bordas mais arredondadas */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04);
+        }
+        
+        /* Efeito de borda gradiente no hover */
+        .nav-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .nav-card:hover::after {
+            transform: scaleX(1);
+        }
+
+         /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
+        #mascote-assistente {
             position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateY(200%);
+            opacity: 0;
         }
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
+        #mascote-assistente.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #mascote-assistente .mascote-img {
+            height: 100px;
+            width: auto;
+            animation: bobbing 3s ease-in-out infinite;
+        }
+        #mascote-assistente.hiding {
+            transform: translateY(200%);
+            opacity: 0;
+        }
+        #chat-bubble {
+            position: absolute;
+            bottom: 84px;
+            right: 47px;
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 200px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c6a99;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #chat-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        /* "Calda" do balão de diálogo */
+        #chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
     </style>
 </head>
 <body class="bg-[#e3ebf2] min-h-screen flex flex-col">
 
+<header class="header-nav sticky top-0 z-50">
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <button id="menu-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                <i data-lucide="menu" class="text-[#e3ebf2]"></i>
-            </button>
-            <div id="dropdown-menu-prof" class="absolute left-4 top-16 bg-white rounded-lg shadow-xl py-2 w-60 hidden z-[60]">
-                <a href="painel.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] bg-[#e3ebf2] hover:bg-[#e3ebf2]"> <!-- Página Ativa -->
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
-                </a>
-                <a href="criar_atividade.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Criar Atividade
-                </a>
-                    <a href="configuracoes.html" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Configurações
-                </a>
-                 <a href="" class="flex items-center gap-3 px-4 py-2 text-[#3c6a99] hover:bg-[#e3ebf2]">
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
-                </a>
-                <hr class="my-1 border-gray-200">
-                <a href="login.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                </a>
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+        <!-- Menu Principal -->
+            <div class="relative">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
+                    <!-- Itens do menu -->
+                    <a href="painel.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="../index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a>
+                </div>
             </div>
-            <a href="../index.html" class="mx-auto md:mx-0">
+
+            <!-- Logo -->
+            <a href="./index.html" class="mx-auto md:mx-0"> 
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
+
+            <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
-                <div class="relative">
-                    <button id="notifications-btn-prof" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                        <span class="notification-badge" id="notification-indicator-prof"></span>
+                <!-- Ícone de Notificações -->
+                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                        <i data-lucide="bell" class="text-white"></i>
+                        <span class="notification-badge" id="notification-indicator"></span>
                     </button>
-                    <div id="notifications-dropdown-prof" class="absolute right-0 top-16 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden w-72 sm:w-80">
-                        <div class="p-3 border-b border-gray-200"><h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3></div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <a href="duvidas_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Nova dúvida: Acentuação</p><p class="text-xs text-gray-500">Aluno João Silva enviou uma dúvida.</p><p class="text-xs text-gray-400 mt-1">Há 5 minutos</p></a>
-                            <a href="feedback_alunos.html" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors"><p class="text-sm text-[#3c6a99] font-medium">Feedback recebido</p><p class="text-xs text-gray-500">Aluno(a) Maria Souza na atividade "Verbos".</p><p class="text-xs text-gray-400 mt-1">Há 30 minutos</p></a>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <div class="p-3 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
                         </div>
-                        <a href="#" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">Ver todas as notificações</a>
+                        <div class="max-h-80 overflow-y-auto">
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Aluno 'João Silva' completou uma atividade!</p>
+                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 5 minutos</p>
+                            </a>
+                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
+                                <p class="text-sm text-[#3c6a99] font-medium">Nova dúvida enviada.</p>
+                                <p class="text-xs text-gray-500">Por 'Mariana Costa' sobre Crase.</p>
+                                <p class="text-xs text-gray-400 mt-1">Há 30 minutos</p>
+                            </a>
+                        </div>
+                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
+                            Ver todas as notificações
+                        </a>
                     </div>
                 </div>
-                <a href="perfil.html" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md">
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
+
+                <!-- Ícone de Perfil -->
+                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                    <i data-lucide="user-circle" class="text-white"></i>
                 </a>
             </div>
         </div>
     </nav>
+</header>
 
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-            <a href="painel.html" class="inline-flex items-center text-[#3c6a99] hover:text-[#5689b9] transition-colors text-lg">
-                <i data-lucide="arrow-left" class="mr-2"></i> Voltar ao Painel
-            </a>
+       <div class="mb-6">
+         <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    Voltar ao Painel
+                </a>
         </div>
 
         <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-4xl mx-auto">
@@ -160,52 +300,54 @@
         </div>
     </main>
 
-    <footer class="bg-[#3c6a99] text-[#e3ebf2] text-center p-4 mt-auto">
-        <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 mx-auto " style="filter: brightness(0) invert(1);">
-        <p>© 2025 OrtoFix.</p>
-    </footer>
+<footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
+</footer>
 
     <!-- JavaScript para a Navbar e Lógica da Página -->
     <script>
         lucide.createIcons();
 
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', () => {
-                dropdownMenuProf.classList.toggle('hidden');
-                if (notificationsDropdownProf && !notificationsDropdownProf.classList.contains('hidden')) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-        }
-        const notificationsBtnProf = document.getElementById('notifications-btn-prof');
-        const notificationsDropdownProf = document.getElementById('notifications-dropdown-prof');
-        const notificationIndicatorProf = document.getElementById('notification-indicator-prof');
-        let hasUnreadNotificationsProf = true; 
-        if (notificationIndicatorProf) {
-            if (!hasUnreadNotificationsProf) {
-                notificationIndicatorProf.classList.add('hidden');
+    // --- LÓGICA DO MENU DROPDOWN E NOTIFICAÇÕES ---
+    const menuBtn = document.getElementById("menu-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const notificationsBtn = document.getElementById("notifications-btn");
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
+
+    if (menuBtn && dropdownMenu) {
+        menuBtn.addEventListener("click", () => {
+            dropdownMenu.classList.toggle("hidden");
+            // Fecha o dropdown de notificações se estiver aberto
+            if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
+                notificationsDropdown.classList.add("hidden");
             }
+        });
+    }
+
+    if (notificationsBtn && notificationsDropdown) {
+        notificationsBtn.addEventListener("click", () => {
+            notificationsDropdown.classList.toggle("hidden");
+            // Fecha o menu principal se estiver aberto
+            if (dropdownMenu && !dropdownMenu.classList.contains("hidden")) {
+                dropdownMenu.classList.add("hidden");
+            }
+        });
+    }
+    
+    // Fecha os dropdowns se clicar fora deles
+    document.addEventListener("click", (e) => {
+        if (menuBtn && !menuBtn.contains(e.target) && dropdownMenu && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add("hidden");
         }
-        if (notificationsBtnProf && notificationsDropdownProf) {
-            notificationsBtnProf.addEventListener('click', () => {
-                notificationsDropdownProf.classList.toggle('hidden');
-                if (dropdownMenuProf && !dropdownMenuProf.classList.contains('hidden')) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!notificationsBtnProf.contains(e.target) && !notificationsDropdownProf.contains(e.target)) {
-                    notificationsDropdownProf.classList.add('hidden');
-                }
-            });
+        if (notificationsBtn && !notificationsBtn.contains(e.target) && notificationsDropdown && !notificationsDropdown.contains(e.target)) {
+            notificationsDropdown.classList.add("hidden");
         }
+    });
 
     
         const selectTurma = document.getElementById('selecionar-turma');
