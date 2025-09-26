@@ -363,9 +363,9 @@ const API_BASE = "https://back-end-mvp-tcc.vercel.app";
 
 // Helper para logout
 function logout() {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userName");
-    window.location.replace("./login.html");
+localStorage.removeItem("authToken");
+localStorage.removeItem("userName");
+window.location.href = "../index.html";
 }
 
 // Ao carregar a página, validar token e buscar perfil
