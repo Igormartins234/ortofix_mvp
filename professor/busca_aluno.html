@@ -228,60 +228,119 @@
     </nav>
 </header>
 
-    <!-- Conteúdo Principal - Pesquisar Aluno -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-         <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
-                    Voltar ao Painel
-                </a>
-        </div>
+<main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+    <div class="mb-6">
+        <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+            Voltar ao Painel
+        </a>
+    </div>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-3xl mx-auto">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
+    <div class="bg-white shadow-2xl rounded-2xl p-6 md:p-10 w-full max-w-4xl mx-auto border border-gray-100">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-[#3c6a99] mb-3">
                 Pesquisar Aluno
             </h1>
+            <p class="text-gray-600 max-w-md mx-auto">Encontre rapidamente informações detalhadas sobre qualquer aluno</p>
+        </div>
 
-            <!-- Campo de Pesquisa -->
-            <div class="relative mb-6">
+        <!-- Campo de Pesquisa Aprimorado -->
+        <div class="relative mb-8">
+            <div class="relative">
                 <input type="search" id="campo-pesquisa-aluno"
-                       class="w-full pl-12 pr-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none text-lg"
+                       class="w-full pl-14 pr-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#5689b9] focus:border-[#5689b9] text-[#3c6a99] outline-none text-lg transition-all duration-300 placeholder-gray-400"
                        placeholder="Digite o nome do aluno...">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="w-6 h-6 text-[#9aaec1]"></i>
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-6 h-6 text-gray-400"></i>
+                </div>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <span id="contador-resultados" class="text-sm text-gray-400 bg-gray-100 px-2 py-1 rounded-md hidden">
+                        <span id="numero-resultados">0</span> encontrados
+                    </span>
                 </div>
             </div>
+            <p class="text-xs text-gray-500 mt-2 ml-1">Digite pelo menos 2 caracteres para iniciar a busca</p>
+        </div>
 
-            <!-- Resultados da Pesquisa -->
-            <div id="resultados-pesquisa-container" class="mb-8 min-h-[100px]">
-                <!-- Os resultados serão inseridos aqui pelo JavaScript -->
-                <p id="aviso-pesquisa" class="text-center text-gray-500 py-4">Digite para buscar alunos.</p>
+        <!-- Resultados da Pesquisa -->
+        <div id="resultados-pesquisa-container" class="mb-8 min-h-[120px] transition-all duration-300">
+            <div id="estado-vazio" class="text-center py-8">
+                <i data-lucide="search" class="w-12 h-12 text-gray-300 mx-auto mb-4"></i>
+                <p class="text-gray-500">Digite o nome de um aluno para buscar</p>
             </div>
+            
+            <div id="estado-carregando" class="hidden text-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5689b9] mx-auto mb-4"></div>
+                <p class="text-gray-500">Buscando alunos...</p>
+            </div>
+            
+            <div id="estado-sem-resultados" class="hidden text-center py-8">
+                <i data-lucide="users" class="w-12 h-12 text-gray-300 mx-auto mb-4"></i>
+                <p class="text-gray-500">Nenhum aluno encontrado com este nome</p>
+                <p class="text-sm text-gray-400 mt-1">Tente verificar a ortografia ou usar termos diferentes</p>
+            </div>
+            
+            <div id="lista-resultados" class="hidden space-y-3"></div>
+        </div>
 
-        
-            <div id="detalhes-aluno-card" class="hidden bg-[#e3ebf2]/50 p-6 rounded-lg shadow-inner">
-                <div class="flex flex-col sm:flex-row items-center gap-6 mb-6">
-                    <img id="detalhe-aluno-foto" src="https://via.placeholder.com/100" alt="Foto do Aluno" class="profile-pic-detail rounded-full border-2 border-white">
-                    <div>
-                        <h2 id="detalhe-aluno-nome" class="text-2xl font-bold text-[#3c6a99]"></h2>
-                        <p class="text-md text-[#5689b9]">Turma: <span id="detalhe-aluno-turma"></span></p>
+        <!-- Card de Detalhes do Aluno Aprimorado -->
+        <div id="detalhes-aluno-card" class="hidden bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg border border-blue-100 transform transition-all duration-500">
+            <div class="flex flex-col lg:flex-row items-center gap-8 mb-8">
+                <div class="relative">
+                    <img id="detalhe-aluno-foto" src="https://via.placeholder.com/120" alt="Foto do Aluno" 
+                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg">
+                    <div id="status-aluno" class="absolute bottom-2 right-2 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
+                <div class="text-center lg:text-left flex-1">
+                    <h2 id="detalhe-aluno-nome" class="text-2xl font-bold text-[#3c6a99] mb-2"></h2>
+                    <p class="text-lg text-[#5689b9] font-medium">Turma: <span id="detalhe-aluno-turma" class="font-semibold"></span></p>
+                    <div class="flex items-center justify-center lg:justify-start gap-4 mt-3">
+                        <span id="badge-nivel" class="bg-[#5689b9] text-white px-3 py-1 rounded-full text-sm font-medium"></span>
+                        <span id="badge-media" class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium"></span>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <p><strong class="font-medium text-[#5689b9]">Nível Atual:</strong> <span id="detalhe-aluno-nivel"></span></p>
-                    <p><strong class="font-medium text-[#5689b9]">Média Geral:</strong> <span id="detalhe-aluno-media"></span></p>
-                    <p><strong class="font-medium text-[#5689b9]">Última Atividade:</strong> <span id="detalhe-aluno-ultima-atividade"></span></p>
-                    <p><strong class="font-medium text-[#5689b9]">Moedas Acumuladas:</strong> <span id="detalhe-aluno-moedas"></span></p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <i data-lucide="trending-up" class="w-6 h-6 text-blue-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-600">Nível Atual</p>
+                    <p id="detalhe-aluno-nivel" class="text-lg font-semibold text-[#3c6a99]"></p>
                 </div>
-                <div class="mt-6 text-center">
-                    <a href="#" id="link-perfil-completo-aluno" class="inline-flex items-center justify-center gap-2 bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                        Ver Perfil Completo do Aluno
-                    </a>
+                <div class="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <i data-lucide="bar-chart-3" class="w-6 h-6 text-green-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-600">Média Geral</p>
+                    <p id="detalhe-aluno-media" class="text-lg font-semibold text-green-600"></p>
+                </div>
+                <div class="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <i data-lucide="clock" class="w-6 h-6 text-purple-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-600">Última Atividade</p>
+                    <p id="detalhe-aluno-ultima-atividade" class="text-sm font-medium text-[#3c6a99]"></p>
+                </div>
+                <div class="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <i data-lucide="coins" class="w-6 h-6 text-yellow-500 mx-auto mb-2"></i>
+                    <p class="text-sm text-gray-600">Moedas</p>
+                    <p id="detalhe-aluno-moedas" class="text-lg font-semibold text-yellow-600"></p>
                 </div>
             </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" id="link-perfil-completo-aluno" 
+                   class="inline-flex items-center justify-center gap-3 bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                    <i data-lucide="external-link" class="w-5 h-5"></i>
+                    Ver Perfil Completo
+                </a>
+                <button id="btn-fechar-detalhes" 
+                        class="inline-flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all duration-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                    Fechar Detalhes
+                </button>
+            </div>
         </div>
-    </main>
+    </div>
+</main>
+
+
 <footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
     <div class="container mx-auto py-2 px-4 text-center text-sm">
         <div class="flex items-center justify-center gap-2">
@@ -352,86 +411,207 @@
     });
 
 
-        // Lógica da Página de Pesquisa de Aluno
-        const campoPesquisa = document.getElementById('campo-pesquisa-aluno');
-        const resultadosContainer = document.getElementById('resultados-pesquisa-container');
-        const avisoPesquisaEl = document.getElementById('aviso-pesquisa');
-        const detalhesCard = document.getElementById('detalhes-aluno-card');
+      // Lógica Aprimorada da Página de Pesquisa de Aluno
+document.addEventListener('DOMContentLoaded', function() {
+    const campoPesquisa = document.getElementById('campo-pesquisa-aluno');
+    const resultadosContainer = document.getElementById('resultados-pesquisa-container');
+    const contadorResultados = document.getElementById('contador-resultados');
+    const numeroResultados = document.getElementById('numero-resultados');
+    const detalhesCard = document.getElementById('detalhes-aluno-card');
+    const btnFecharDetalhes = document.getElementById('btn-fechar-detalhes');
 
-        // Elementos do card de detalhes
-        const detalheFoto = document.getElementById('detalhe-aluno-foto');
-        const detalheNome = document.getElementById('detalhe-aluno-nome');
-        const detalheTurma = document.getElementById('detalhe-aluno-turma');
-        const detalheNivel = document.getElementById('detalhe-aluno-nivel');
-        const detalheMedia = document.getElementById('detalhe-aluno-media');
-        const detalheUltimaAtividade = document.getElementById('detalhe-aluno-ultima-atividade');
-        const detalheMoedas = document.getElementById('detalhe-aluno-moedas');
-        const linkPerfilCompleto = document.getElementById('link-perfil-completo-aluno');
+    // Elementos de estado
+    const estadoVazio = document.getElementById('estado-vazio');
+    const estadoCarregando = document.getElementById('estado-carregando');
+    const estadoSemResultados = document.getElementById('estado-sem-resultados');
+    const listaResultados = document.getElementById('lista-resultados');
 
+    // Elementos do card de detalhes
+    const detalheFoto = document.getElementById('detalhe-aluno-foto');
+    const detalheNome = document.getElementById('detalhe-aluno-nome');
+    const detalheTurma = document.getElementById('detalhe-aluno-turma');
+    const detalheNivel = document.getElementById('detalhe-aluno-nivel');
+    const detalheMedia = document.getElementById('detalhe-aluno-media');
+    const detalheUltimaAtividade = document.getElementById('detalhe-aluno-ultima-atividade');
+    const detalheMoedas = document.getElementById('detalhe-aluno-moedas');
+    const badgeNivel = document.getElementById('badge-nivel');
+    const badgeMedia = document.getElementById('badge-media');
+    const linkPerfilCompleto = document.getElementById('link-perfil-completo-aluno');
 
-        // Dados de Alunos  viria do backend via API
-        const todosAlunos = [
-            { id: 1, nome: "Aline Silva", turma: "1º A EM", nivel: "Iniciante 3", media: "88%", ultimaAtividade: "Verbos Regulares", moedas: 1250, foto: "../static/img/aluna.jpg" },
-            { id: 2, nome: "Bruno Costa", turma: "1º B EM", nivel: "Intermediário 1", media: "75%", ultimaAtividade: "Acentuação", moedas: 980, foto: "https://via.placeholder.com/40" },
-            { id: 3, nome: "Carla Dias", turma: "1º A EM", nivel: "Avançado 2", media: "92%", ultimaAtividade: "Concordância Verbal", moedas: 2100, foto: "https://via.placeholder.com/40" },
-            { id: 4, nome: "Daniel Faria", turma: "2º A EM", nivel: "Intermediário 3", media: "81%", ultimaAtividade: "Uso da Crase", moedas: 1500, foto: "https://via.placeholder.com/40" },
-            { id: 5, nome: "Aline Santos", turma: "2º A EM", nivel: "Iniciante 2", media: "70%", ultimaAtividade: "Ortografia Básica", moedas: 800, foto: "https://via.placeholder.com/40" }
-        ];
+    // Dados de exemplo (substituir por API real)
+    const todosAlunos = [
+        { 
+            id: 1, 
+            nome: "Aline Silva", 
+            turma: "1º A EM", 
+            nivel: "Iniciante 3", 
+            media: "88%", 
+            ultimaAtividade: "Verbos Regulares", 
+            moedas: 1250, 
+            foto: "../static/img/aluna.jpg",
+            status: "online"
+        },
+        { 
+            id: 2, 
+            nome: "Bruno Costa", 
+            turma: "1º B EM", 
+            nivel: "Intermediário 1", 
+            media: "75%", 
+            ultimaAtividade: "Acentuação", 
+            moedas: 980, 
+            foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+            status: "offline"
+        },
+        { 
+            id: 3, 
+            nome: "Carla Dias", 
+            turma: "1º A EM", 
+            nivel: "Avançado 2", 
+            media: "92%", 
+            ultimaAtividade: "Concordância Verbal", 
+            moedas: 2100, 
+            foto: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+            status: "online"
+        }
+    ];
 
-        function exibirDetalhesAluno(aluno) {
-            detalheFoto.src = aluno.foto || "https://via.placeholder.com/100";
-            detalheNome.textContent = aluno.nome;
-            detalheTurma.textContent = aluno.turma;
-            detalheNivel.textContent = aluno.nivel;
-            detalheMedia.textContent = aluno.media;
-            detalheUltimaAtividade.textContent = aluno.ultimaAtividade;
-            detalheMoedas.textContent = aluno.moedas;
-            linkPerfilCompleto.href = `../aluno/perfil.html?id=${aluno.id}`; 
-            
-            detalhesCard.classList.remove('hidden');
-            resultadosContainer.innerHTML = ''; 
-            avisoPesquisaEl.classList.add('hidden');
+    function mostrarEstado(estado) {
+        // Oculta todos os estados
+        estadoVazio.classList.add('hidden');
+        estadoCarregando.classList.add('hidden');
+        estadoSemResultados.classList.add('hidden');
+        listaResultados.classList.add('hidden');
+        contadorResultados.classList.add('hidden');
+
+        // Mostra o estado especificado
+        switch(estado) {
+            case 'vazio':
+                estadoVazio.classList.remove('hidden');
+                break;
+            case 'carregando':
+                estadoCarregando.classList.remove('hidden');
+                break;
+            case 'sem-resultados':
+                estadoSemResultados.classList.remove('hidden');
+                break;
+            case 'com-resultados':
+                listaResultados.classList.remove('hidden');
+                contadorResultados.classList.remove('hidden');
+                break;
+        }
+    }
+
+    function exibirResultados(alunos) {
+        listaResultados.innerHTML = '';
+        
+        alunos.forEach(aluno => {
+            const item = document.createElement('div');
+            item.className = 'p-4 hover:bg-blue-50 cursor-pointer border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md';
+            item.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="${aluno.foto}" alt="${aluno.nome}" class="w-12 h-12 rounded-full object-cover">
+                        <div class="absolute bottom-0 right-0 w-3 h-3 ${aluno.status === 'online' ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white"></div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-[#3c6a99]">${aluno.nome}</h3>
+                        <p class="text-sm text-gray-600">${aluno.turma} • ${aluno.nivel}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-green-600">${aluno.media}</p>
+                        <p class="text-xs text-gray-500">${aluno.moedas} moedas</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                </div>
+            `;
+            item.addEventListener('click', () => exibirDetalhesAluno(aluno));
+            listaResultados.appendChild(item);
+        });
+
+        numeroResultados.textContent = alunos.length;
+        mostrarEstado('com-resultados');
+    }
+
+    function exibirDetalhesAluno(aluno) {
+        // Atualiza os dados
+        detalheFoto.src = aluno.foto;
+        detalheNome.textContent = aluno.nome;
+        detalheTurma.textContent = aluno.turma;
+        detalheNivel.textContent = aluno.nivel;
+        detalheMedia.textContent = aluno.media;
+        detalheUltimaAtividade.textContent = aluno.ultimaAtividade;
+        detalheMoedas.textContent = aluno.moedas.toLocaleString();
+        
+        // Atualiza badges
+        badgeNivel.textContent = aluno.nivel;
+        badgeMedia.textContent = aluno.media;
+        
+        // Atualiza status
+        const statusElement = document.getElementById('status-aluno');
+        statusElement.className = `absolute bottom-2 right-2 w-4 h-4 rounded-full border-2 border-white ${aluno.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`;
+        
+        // Atualiza link do perfil
+        linkPerfilCompleto.href = `../aluno/perfil.html?id=${aluno.id}`;
+        
+        // Mostra o card de detalhes com animação
+        detalhesCard.classList.remove('hidden');
+        setTimeout(() => {
+            detalhesCard.style.opacity = '1';
+            detalhesCard.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Rolagem suave para o card de detalhes
+        detalhesCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Event Listeners
+    campoPesquisa.addEventListener('input', function() {
+        const termo = this.value.toLowerCase().trim();
+        
+        if (termo.length === 0) {
+            mostrarEstado('vazio');
+            detalhesCard.classList.add('hidden');
+            return;
         }
 
-        campoPesquisa.addEventListener('input', function() {
-            const termoPesquisa = this.value.toLowerCase().trim();
-            detalhesCard.classList.add('hidden');
+        if (termo.length < 2) {
+            mostrarEstado('vazio');
+            return;
+        }
 
-            if (termoPesquisa.length < 2) { // Só pesquisa com pelo menos 2 caracteres
-                resultadosContainer.innerHTML = '';
-                avisoPesquisaEl.textContent = "Digite pelo menos 2 caracteres para buscar.";
-                avisoPesquisaEl.classList.remove('hidden');
-                return;
-            }
-
-            const alunosFiltrados = todosAlunos.filter(aluno => 
-                aluno.nome.toLowerCase().includes(termoPesquisa)
+        // Simula carregamento
+        mostrarEstado('carregando');
+        
+        setTimeout(() => {
+            const resultados = todosAlunos.filter(aluno => 
+                aluno.nome.toLowerCase().includes(termo)
             );
-
-            resultadosContainer.innerHTML = ''; // Limpa resultados anteriores
-            if (alunosFiltrados.length > 0) {
-                avisoPesquisaEl.classList.add('hidden');
-                const ul = document.createElement('ul');
-                ul.className = 'space-y-2 bg-white border border-gray-200 rounded-lg shadow';
-                alunosFiltrados.forEach(aluno => {
-                    const li = document.createElement('li');
-                    li.className = 'p-3 hover:bg-[#e3ebf2]/70 cursor-pointer border-b last:border-b-0 flex items-center gap-3';
-                    li.innerHTML = `
-                        <img src="${aluno.foto || 'https://via.placeholder.com/40'}" alt="Foto de ${aluno.nome}" class="profile-pic-search rounded-full">
-                        <div>
-                            <span class="font-medium text-[#3c6a99]">${aluno.nome}</span>
-                            <span class="text-xs text-gray-500 block">Turma: ${aluno.turma}</span>
-                        </div>
-                    `;
-                    li.onclick = () => exibirDetalhesAluno(aluno);
-                    ul.appendChild(li);
-                });
-                resultadosContainer.appendChild(ul);
+            
+            if (resultados.length > 0) {
+                exibirResultados(resultados);
             } else {
-                avisoPesquisaEl.textContent = "Nenhum aluno encontrado com este nome.";
-                avisoPesquisaEl.classList.remove('hidden');
+                mostrarEstado('sem-resultados');
             }
-        });
+        }, 500);
+    });
+
+    btnFecharDetalhes.addEventListener('click', function() {
+        detalhesCard.style.opacity = '0';
+        detalhesCard.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            detalhesCard.classList.add('hidden');
+        }, 300);
+        
+        // Foca no campo de pesquisa novamente
+        campoPesquisa.focus();
+    });
+
+    // Foca no campo de pesquisa ao carregar a página
+    campoPesquisa.focus();
+});
+
+// Atualiza ícones do Lucide
+lucide.createIcons();
 
     </script>
 </body>
