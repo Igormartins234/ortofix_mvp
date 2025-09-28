@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -28,6 +26,18 @@
             color: #3c6a99;
             margin-top: 2rem;
             margin-bottom: 1rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .terms-content h2:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            height: 1.5rem;
+            width: 0.35rem;
+            background: linear-gradient(to bottom, #3c6a99, #5689b9);
+            border-radius: 0.25rem;
         }
         .terms-content p {
             margin-bottom: 1rem;
@@ -38,6 +48,103 @@
             list-style-type: disc;
             margin-bottom: 1rem;
             padding-left: 1.5rem;
+        }
+        .terms-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        .highlight-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #3c6a99;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .section-navigation {
+            position: sticky;
+            top: 6rem;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        .section-navigation h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #3c6a99;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .section-navigation ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .section-navigation li {
+            margin-bottom: 0.75rem;
+        }
+        .section-navigation a {
+            color: #4a5568;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-size: 0.9rem;
+        }
+        .section-navigation a:hover {
+            color: #3c6a99;
+        }
+        .section-navigation a.active {
+            color: #3c6a99;
+            font-weight: 500;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #3c6a99;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 40;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        .back-to-top:hover {
+            background: #5689b9;
+        }
+        .terms-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .terms-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        .terms-content th, .terms-content td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .terms-content th {
+            background-color: #f7fafc;
+            font-weight: 600;
+        }
+        .terms-content tr:nth-child(even) {
+            background-color: #f7fafc;
         }
     </style>
 </head>
@@ -59,52 +166,166 @@
     </header>
 
     <main>
-        <section class="py-20 md:py-24 px-6">
-            <div class="container mx-auto max-w-4xl">
-                <div class="text-center mb-12" data-aos="fade-up">
+        <section class="py-12 md:py-16 px-6">
+            <div class="container mx-auto max-w-6xl">
+                <div class="text-center mb-8" data-aos="fade-up">
                     <h1 class="text-4xl md:text-5xl font-bold">Termos de <span class="text-gradient">Uso</span></h1>
-                    <p class="text-lg text-slate-500 mt-2">Última atualização: 07 de agosto de 2025</p>
+                    <p class="text-lg text-slate-500 mt-2">Última atualização: 27 de setembro de 2025</p>
                 </div>
 
-                <div class="bg-white p-8 md:p-12 rounded-xl shadow-lg terms-content" data-aos="fade-up" data-aos-delay="200">
-                    <p>Bem-vindo ao OrtoFix! Estes Termos de Uso governam seu acesso e uso da plataforma OrtoFix, incluindo nosso site, aplicativos e serviços. Ao acessar ou usar a Plataforma, você concorda em cumprir estes Termos.</p>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Navegação lateral -->
+                    <div class="lg:w-1/4" data-aos="fade-right">
+                        <div class="section-navigation">
+                            <h3>Navegação</h3>
+                            <ul>
+                                <li><a href="#aceitacao" class="active">1. Aceitação dos Termos</a></li>
+                                <li><a href="#uso-plataforma">2. Uso da Plataforma</a></li>
+                                <li><a href="#contas-usuario">3. Contas de Usuário</a></li>
+                                <li><a href="#conduta-usuario">4. Conduta do Usuário</a></li>
+                                <li><a href="#propriedade-intelectual">5. Propriedade Intelectual</a></li>
+                                <li><a href="#privacidade">6. Política de Privacidade</a></li>
+                                <li><a href="#responsabilidade">7. Limitação de Responsabilidade</a></li>
+                                <li><a href="#modificacoes">8. Modificações dos Termos</a></li>
+                                <li><a href="#rescisao">9. Rescisão</a></li>
+                                <li><a href="#disposicoes">10. Disposições Gerais</a></li>
+                                <li><a href="#contato">11. Contato</a></li>
+                            </ul>
+                        </div>
+                    </div>
 
-                    <h2>1. Aceitação dos Termos</h2>
-                    <p>Ao criar uma conta, acessar ou usar nossa Plataforma, você confirma que leu, entendeu e concorda em ficar vinculado a estes Termos. Se você não concordar com estes Termos, não deverá usar a Plataforma.</p>
+                    <!-- Conteúdo dos Termos -->
+                    <div class="lg:w-3/4">
+                        <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg terms-content" data-aos="fade-up" data-aos-delay="200">
+                            <div class="highlight-box">
+                                <p class="font-semibold text-[#3c6a99]">Bem-vindo ao OrtoFix!</p>
+                                <p>Estes Termos de Uso governam seu acesso e uso da plataforma OrtoFix, incluindo nosso site, aplicativos e serviços. Ao acessar ou usar a Plataforma, você concorda em cumprir estes Termos.</p>
+                            </div>
 
-                    <h2>2. Uso da Plataforma</h2>
-                    <p>O OrtoFix concede a você uma licença limitada, não exclusiva, intransferível e revogável para usar a Plataforma para fins educacionais pessoais e não comerciais, em conformidade com estes Termos.</p>
-                    <ul>
-                        <li><strong>Alunos:</strong> Podem usar a plataforma para realizar exercícios, acompanhar seu progresso e melhorar suas habilidades de ortografia.</li>
-                        <li><strong>Professores:</strong> Podem usar a plataforma para criar e gerenciar turmas, atribuir atividades e monitorar o desempenho dos alunos.</li>
-                    </ul>
+                            <h2 id="aceitacao">1. Aceitação dos Termos</h2>
+                            <p>Ao criar uma conta, acessar ou usar nossa Plataforma, você confirma que leu, entendeu e concorda em ficar vinculado a estes Termos. Se você não concordar com estes Termos, não deverá usar a Plataforma.</p>
 
-                    <h2>3. Contas de Usuário</h2>
-                    <p>Para acessar certas funcionalidades, você deve criar uma conta. Você concorda em fornecer informações precisas e completas ao criar sua conta e em mantê-las atualizadas. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrem em sua conta.</p>
+                            <h2 id="uso-plataforma">2. Uso da Plataforma</h2>
+                            <p>O OrtoFix concede a você uma licença limitada, não exclusiva, intransferível e revogável para usar a Plataforma para fins educacionais pessoais e não comerciais, em conformidade com estes Termos.</p>
+                            
+                            <h3>2.1. Permissões de Uso</h3>
+                            <ul>
+                                <li><strong>Alunos:</strong> Podem usar a plataforma para realizar exercícios, acompanhar seu progresso e melhorar suas habilidades de ortografia.</li>
+                                <li><strong>Professores:</strong> Podem usar a plataforma para criar e gerenciar turmas, atribuir atividades e monitorar o desempenho dos alunos.</li>
+                                <li><strong>Escolas:</strong> Podem adquirir licenças institucionais para uso da plataforma por seus alunos e professores.</li>
+                            </ul>
+                            
+                            <h3>2.2. Restrições de Uso</h3>
+                            <p>Você concorda em não:</p>
+                            <ul>
+                                <li>Utilizar a Plataforma para qualquer finalidade ilegal ou não autorizada;</li>
+                                <li>Modificar, adaptar, hackear ou tentar acessar áreas não públicas da Plataforma;</li>
+                                <li>Reproduzir, duplicar, copiar, vender ou explorar comercialmente qualquer parte da Plataforma sem autorização expressa.</li>
+                            </ul>
 
-                    <h2>4. Conduta do Usuário</h2>
-                    <p>Você concorda em não usar a Plataforma para:</p>
-                    <ul>
-                        <li>Publicar ou transmitir qualquer conteúdo que seja ilegal, prejudicial, ameaçador, abusivo ou difamatório.</li>
-                        <li>Violar os direitos de propriedade intelectual de terceiros.</li>
-                        <li>Tentar obter acesso não autorizado a outros sistemas de computador através da Plataforma.</li>
-                        <li>Interferir no uso e aproveitamento da Plataforma por parte de outros usuários.</li>
-                    </ul>
+                            <h2 id="contas-usuario">3. Contas de Usuário</h2>
+                            <p>Para acessar certas funcionalidades, você deve criar uma conta. Você concorda em fornecer informações precisas e completas ao criar sua conta e em mantê-las atualizadas. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrem em sua conta.</p>
+                            
+                            <h3>3.1. Tipos de Conta</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de Conta</th>
+                                        <th>Funcionalidades</th>
+                                        <th>Restrições</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Aluno</td>
+                                        <td>Acesso a exercícios, acompanhamento de progresso, participação em turmas</td>
+                                        <td>Não pode criar ou gerenciar turmas</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Professor</td>
+                                        <td>Todas as funcionalidades de aluno, mais criação e gerenciamento de turmas, atribuição de atividades</td>
+                                        <td>Uso limitado ao contexto educacional</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Administrador Institucional</td>
+                                        <td>Gerenciamento de múltiplas turmas e professores, relatórios institucionais</td>
+                                        <td>Uso restrito à instituição de ensino</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                    <h2>5. Propriedade Intelectual</h2>
-                    <p>Todo o conteúdo disponível na Plataforma, incluindo textos, gráficos, logos, ícones, imagens, exercícios e software, é propriedade exclusiva do OrtoFix ou de seus licenciadores e é protegido por leis de direitos autorais e propriedade intelectual.</p>
+                            <h2 id="conduta-usuario">4. Conduta do Usuário</h2>
+                            <p>Você concorda em não usar a Plataforma para:</p>
+                            <ul>
+                                <li>Publicar ou transmitir qualquer conteúdo que seja ilegal, prejudicial, ameaçador, abusivo ou difamatório.</li>
+                                <li>Violar os direitos de propriedade intelectual de terceiros.</li>
+                                <li>Tentar obter acesso não autorizado a outros sistemas de computador através da Plataforma.</li>
+                                <li>Interferir no uso e aproveitamento da Plataforma por parte de outros usuários.</li>
+                                <li>Utilizar a Plataforma de forma a prejudicar menores de idade.</li>
+                                <li>Coletar informações de outros usuários sem seu consentimento expresso.</li>
+                            </ul>
 
-                    <h2>6. Política de Privacidade</h2>
-                    <p>O uso da Plataforma também é regido por nossa <a href="privacidade.html" class="text-[#5689b9] hover:underline">Política de Privacidade</a>, que descreve como coletamos, usamos e protegemos suas informações pessoais.</p>
+                            <h2 id="propriedade-intelectual">5. Propriedade Intelectual</h2>
+                            <p>Todo o conteúdo disponível na Plataforma, incluindo textos, gráficos, logos, ícones, imagens, exercícios e software, é propriedade exclusiva do OrtoFix ou de seus licenciadores e é protegido por leis de direitos autorais e propriedade intelectual.</p>
+                            
+                            <h3>5.1. Direitos Reservados</h3>
+                            <p>O OrtoFix reserva-se todos os direitos não expressamente concedidos nestes Termos. Você reconhece que a Plataforma pode conter informações confidenciais e concorda em tomar todas as medidas razoáveis para proteger a confidencialidade dessas informações.</p>
+                            
+                            <h3>5.2. Conteúdo do Usuário</h3>
+                            <p>Ao enviar conteúdo para a Plataforma, você concede ao OrtoFix uma licença mundial, não exclusiva, livre de royalties para usar, reproduzir, modificar e exibir esse conteúdo apenas para os fins de operação e melhoria da Plataforma.</p>
 
-                    <h2>7. Limitação de Responsabilidade</h2>
-                    <p>A Plataforma é fornecida "como está", sem garantias de qualquer tipo. O OrtoFix não será responsável por quaisquer danos diretos, indiretos, incidentais ou consequentes resultantes do uso ou da incapacidade de usar a Plataforma.</p>
+                            <h2 id="privacidade">6. Política de Privacidade</h2>
+                            <p>O uso da Plataforma também é regido por nossa <a href="privacidade.html" class="text-[#5689b9] hover:underline">Política de Privacidade</a>, que descreve como coletamos, usamos e protegemos suas informações pessoais.</p>
+                            
+                            <div class="highlight-box">
+                                <p><strong>Importante:</strong> Recomendamos que você leia atentamente nossa Política de Privacidade para entender como tratamos seus dados pessoais e quais são seus direitos em relação a esses dados.</p>
+                            </div>
 
-                    <h2>8. Contato</h2>
-                    <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco através da nossa <a href="contato.html" class="text-[#5689b9] hover:underline">página de contato</a>.</p>
+                            <h2 id="responsabilidade">7. Limitação de Responsabilidade</h2>
+                            <p>A Plataforma é fornecida "como está", sem garantias de qualquer tipo. O OrtoFix não será responsável por quaisquer danos diretos, indiretos, incidentais ou consequentes resultantes do uso ou da incapacidade de usar a Plataforma.</p>
+                            
+                            <h3>7.1. Isenção de Garantias</h3>
+                            <p>O OrtoFix não garante que:</p>
+                            <ul>
+                                <li>A Plataforma atenderá a todos os seus requisitos;</li>
+                                <li>A Plataforma será ininterrupta, oportuna, segura ou livre de erros;</li>
+                                <li>Os resultados obtidos pelo uso da Plataforma serão precisos ou confiáveis.</li>
+                            </ul>
+
+                            <h2 id="modificacoes">8. Modificações dos Termos</h2>
+                            <p>O OrtoFix reserva-se o direito de modificar estes Termos a qualquer momento. Notificaremos os usuários sobre mudanças significativas através da Plataforma ou por e-mail. O uso continuado da Plataforma após tais modificações constitui sua aceitação dos novos Termos.</p>
+
+                            <h2 id="rescisao">9. Rescisão</h2>
+                            <p>Estes Termos permanecerão em vigor enquanto você usar a Plataforma. O OrtoFix pode rescindir ou suspender sua conta imediatamente, sem aviso prévio, por qualquer motivo, incluindo, mas não se limitando a, violação dos Termos.</p>
+
+                            <h2 id="disposicoes">10. Disposições Gerais</h2>
+                            <h3>10.1. Lei Aplicável</h3>
+                            <p>Estes Termos serão regidos e interpretados de acordo com as leis do Brasil, sem consideração a seus conflitos de princípios legais.</p>
+                            
+                            <h3>10.2. Foro</h3>
+                            <p>Qualquer disputa relacionada a estes Termos será submetida ao foro da comarca de São Paulo/SP, com exclusão de qualquer outro, por mais privilegiado que seja.</p>
+                            
+                            <h3>10.3. Integralidade do Acordo</h3>
+                            <p>Estes Termos constituem o acordo integral entre você e o OrtoFix em relação ao uso da Plataforma e substituem todos os acordos anteriores.</p>
+
+                            <h2 id="contato">11. Contato</h2>
+                            <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco através da nossa <a href="contato.html" class="text-[#5689b9] hover:underline">página de contato</a>.</p>
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg mt-8">
+                                <p class="text-sm text-blue-800"><strong>Nota:</strong> Estes Termos de Uso foram atualizados pela última vez em 27 de setembro de 2025. Recomendamos que você revise periodicamente esta página para se manter informado sobre quaisquer alterações.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+        
+        <!-- Botão Voltar ao Topo -->
+        <div class="back-to-top" id="backToTop">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+            </svg>
+        </div>
     </main>
 
     <footer class="bg-[#3c6a99] text-white">
@@ -125,6 +346,61 @@
       AOS.init({
         duration: 800,
         once: true,
+      });
+      
+      // Script para o botão "Voltar ao Topo"
+      const backToTopButton = document.getElementById('backToTop');
+      
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          backToTopButton.classList.add('visible');
+        } else {
+          backToTopButton.classList.remove('visible');
+        }
+      });
+      
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+      
+      // Script para navegação suave entre as seções
+      document.querySelectorAll('.section-navigation a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          window.scrollTo({
+            top: targetElement.offsetTop - 100,
+            behavior: 'smooth'
+          });
+        });
+      });
+      
+      // Script para destacar a seção atual na navegação
+      window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('.terms-content h2');
+        const navLinks = document.querySelectorAll('.section-navigation a');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 150;
+          if (window.pageYOffset >= sectionTop) {
+            currentSection = section.getAttribute('id');
+          }
+        });
+        
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${currentSection}`) {
+            link.classList.add('active');
+          }
+        });
       });
     </script>
 

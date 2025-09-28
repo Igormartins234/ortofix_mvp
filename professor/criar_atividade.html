@@ -228,78 +228,175 @@
     </nav>
 </header>
 
-    <!-- Conteúdo Principal - Formulário de Criação de Atividade -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <!-- Botão Voltar -->
-         <div class="mb-6">
-         <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
-                    Voltar ao Painel
-                </a>
-        </div>
+<main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+    <!-- Botão Voltar -->
+    <div class="mb-6 fade-in" style="animation-delay: 100ms;">
+        <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+            Voltar ao Painel
+        </a>
+    </div>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-10 w-full max-w-2xl mx-auto">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99] text-center mb-8">
-                Criar Nova Atividade
-            </h1>
+    <!-- Cabeçalho da Página -->
+    <div class="text-center mb-8 fade-in" style="animation-delay: 200ms;">
+        <h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)] mb-2">Criar Nova Atividade</h1>
+        <p class="text-lg text-[var(--color-text-light)]">Preencha os dados abaixo para criar uma nova atividade para seus alunos</p>
+    </div>
 
-            <form action="#" method="POST"> 
-                <div class="mb-5">
-                    <label for="titulo_atividade" class="block text-[#5689b9] text-sm font-semibold mb-1">Título da Atividade:</label>
+    <!-- Formulário de Criação -->
+    <div class="bg-white shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-3xl mx-auto fade-in" style="animation-delay: 300ms;">
+        <form action="#" method="POST">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Título da Atividade -->
+                <div class="md:col-span-2">
+                    <label for="titulo_atividade" class="block text-sm font-semibold text-[var(--color-text-dark)] mb-2">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="edit-3" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                            Título da Atividade
+                        </span>
+                    </label>
                     <input type="text" id="titulo_atividade" name="titulo_atividade"
-                           class="w-full px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-[var(--color-text-dark)] outline-none transition-all duration-200"
                            placeholder="Ex: Caça-palavras de Verbos" required>
                 </div>
 
-                <div class="mb-5">
-                    <label for="tipo_atividade" class="block text-[#5689b9] text-sm font-semibold mb-1">Tipo de Atividade:</label>
-                    <select id="tipo_atividade" name="tipo_atividade"
-                            class="w-full px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none appearance-none" required>
-                        <option value="" disabled selected>Selecione o tipo</option>
-                        <option value="escolha_erro">Escolher Palavra com Erro</option>
-                        <option value="caca_palavras">Caça-Palavras</option>
-                        <option value="multipla_escolha">Múltipla Escolha</option>
-                        <option value="completar_frases">Completar Frases</option>
-                        <option value="ditado">Ditado Interativo</option>
-                    </select>
+                <!-- Tipo de Atividade -->
+                <div>
+                    <label for="tipo_atividade" class="block text-sm font-semibold text-[var(--color-text-dark)] mb-2">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                            Tipo de Atividade
+                        </span>
+                    </label>
+                    <div class="relative">
+                        <select id="tipo_atividade" name="tipo_atividade"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-[var(--color-text-dark)] bg-white outline-none appearance-none transition-all duration-200" required>
+                            <option value="" disabled selected>Selecione o tipo</option>
+                            <option value="escolha_erro">Escolher Palavra com Erro</option>
+                            <option value="caca_palavras">Caça-Palavras</option>
+                            <option value="multipla_escolha">Múltipla Escolha</option>
+                            <option value="completar_frases">Completar Frases</option>
+                            <option value="ditado">Ditado Interativo</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-5">
-                    <label for="descricao_atividade" class="block text-[#5689b9] text-sm font-semibold mb-1">Instruções/Descrição:</label>
+                <!-- Dificuldade -->
+                <div>
+                    <label for="dificuldade" class="block text-sm font-semibold text-[var(--color-text-dark)] mb-2">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                            Nível de Dificuldade
+                        </span>
+                    </label>
+                    <div class="relative">
+                        <select id="dificuldade" name="dificuldade"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-[var(--color-text-dark)] bg-white outline-none appearance-none transition-all duration-200" required>
+                            <option value="" disabled selected>Selecione a dificuldade</option>
+                            <option value="facil">Fácil</option>
+                            <option value="medio">Médio</option>
+                            <option value="dificil">Difícil</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descrição/Instruções -->
+                <div class="md:col-span-2">
+                    <label for="descricao_atividade" class="block text-sm font-semibold text-[var(--color-text-dark)] mb-2">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                            Instruções/Descrição
+                        </span>
+                    </label>
                     <textarea id="descricao_atividade" name="descricao_atividade" rows="4"
-                              class="w-full px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-[var(--color-text-dark)] outline-none transition-all duration-200"
                               placeholder="Descreva brevemente a atividade e as instruções para o aluno."></textarea>
                 </div>
+            </div>
 
-                <div id="campos-especificos-atividade" class="mb-5 p-4 border border-dashed border-[#9aaec1] rounded-lg min-h-[100px]">
-                    <p class="text-sm text-gray-500">Conteúdo específico da atividade aparecerá aqui (ex: lista de palavras, frases, alternativas).</p>
+            <!-- Conteúdo Específico da Atividade -->
+            <div class="mb-6 fade-in" style="animation-delay: 400ms;">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="block text-sm font-semibold text-[var(--color-text-dark)]">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="list" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                            Conteúdo da Atividade
+                        </span>
+                    </label>
+                    <button type="button" id="gerar-ia" class="flex items-center gap-2 text-sm bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        Gerar com IA
+                    </button>
                 </div>
+                
+                <div id="campos-especificos-atividade" class="p-5 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[150px] transition-all duration-300">
+                    <div class="text-center text-gray-500 py-8">
+                        <i data-lucide="file-question" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                        <p class="font-medium">Selecione um tipo de atividade para começar</p>
+                        <p class="text-sm mt-1">Ou use o botão "Gerar com IA" para criar automaticamente</p>
+                    </div>
+                </div>
+            </div>
 
-                <div class="mb-8">
-                    <label for="turmas_destino" class="block text-[#5689b9] text-sm font-semibold mb-1">Atribuir para Turma(s):</label>
+            <!-- Turmas Destino -->
+            <div class="mb-8 fade-in" style="animation-delay: 500ms;">
+                <label for="turmas_destino" class="block text-sm font-semibold text-[var(--color-text-dark)] mb-3">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4 text-[var(--color-primary)]"></i>
+                        Atribuir para Turma(s)
+                    </span>
+                </label>
+                <div class="bg-gray-50 p-4 rounded-xl">
                     <select id="turmas_destino" name="turmas_destino[]" multiple
-                            class="w-full px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none h-32">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-[var(--color-text-dark)] bg-white outline-none h-32 transition-all duration-200">
                         <option value="turma_a">1º Ano A - EM</option>
                         <option value="turma_b">1º Ano B - EM</option>
                         <option value="turma_c">2º Ano A - EM</option>
-                
+                        <option value="turma_d">2º Ano B - EM</option>
+                        <option value="turma_e">3º Ano A - EM</option>
                     </select>
+                    <p class="text-xs text-gray-500 mt-2">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplas turmas</p>
                 </div>
+            </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-end">
-                    <a href="painel.html"
-                        class="w-full sm:w-auto order-2 sm:order-1 text-center bg-gray-200 hover:bg-gray-300 text-[#3c6a99] font-semibold py-3 px-6 rounded-lg transition-colors">
-                        Cancelar
-                    </a>
-                    <button type="submit"
-                            class="w-full sm:w-auto order-1 sm:order-2 bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-5 h-5"></i>
-                        Salvar Atividade
-                    </button>
-                </div>
-            </form>
+            <!-- Botões de Ação -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-end fade-in" style="animation-delay: 600ms;">
+                <a href="painel.html"
+                    class="w-full sm:w-auto order-2 sm:order-1 text-center bg-gray-100 hover:bg-gray-200 text-[var(--color-text-dark)] font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                    Cancelar
+                </a>
+                <button type="submit"
+                        class="w-full sm:w-auto order-1 sm:order-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Salvar Atividade
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview da Atividade -->
+    <div id="preview-container" class="bg-white shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-3xl mx-auto mt-8 hidden fade-in">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-[var(--color-text-dark)] flex items-center gap-2">
+                <i data-lucide="eye" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                Prévia da Atividade
+            </h3>
+            <button type="button" id="fechar-preview" class="text-gray-500 hover:text-gray-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
         </div>
-    </main>
+        <div id="preview-content" class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <!-- Conteúdo da prévia será inserido aqui -->
+        </div>
+    </div>
+</main>
 
 <footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
     <div class="container mx-auto py-2 px-4 text-center text-sm">

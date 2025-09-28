@@ -228,75 +228,129 @@
     </nav>
 </header>
 
-    <!-- Conteúdo Principal - Dúvidas dos Alunos -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="mb-6">
-         <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
-                    Voltar ao Painel
-                </a>
-        </div>
+<main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
+    <div class="mb-6">
+        <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+            Voltar ao Painel
+        </a>
+    </div>
 
-        <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-4xl mx-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99]">
-                    Dúvidas dos Alunos
-                </h1>
-                <!-- Filtros -->
-                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <select id="filtro-turma-duvida" class="form-input sm:w-48">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 w-full max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-[#e3ebf2] rounded-full">
+                    <i data-lucide="message-circle-question" class="w-6 h-6 text-[#3c6a99]"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-[#3c6a99]">
+                        Dúvidas dos Alunos
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">Gerencie e responda às dúvidas enviadas pelos alunos</p>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div class="relative">
+                    <select id="filtro-turma-duvida" class="w-full sm:w-48 px-4 py-2.5 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none appearance-none pr-10">
                         <option value="todas">Todas as Turmas</option>
                         <option value="1AEM">1º Ano A - EM</option>
                         <option value="1BEM">1º Ano B - EM</option>
-                        <!-- Adicionar mais turmas dinamicamente -->
+                        <option value="2AEM">2º Ano A - EM</option>
                     </select>
-                    <select id="filtro-status-duvida" class="form-input sm:w-48">
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3c6a99] w-4 h-4 pointer-events-none"></i>
+                </div>
+                <div class="relative">
+                    <select id="filtro-status-duvida" class="w-full sm:w-48 px-4 py-2.5 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none appearance-none pr-10">
                         <option value="todas">Todos os Status</option>
                         <option value="pendente">Pendentes</option>
                         <option value="respondida">Respondidas</option>
                     </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#3c6a99] w-4 h-4 pointer-events-none"></i>
                 </div>
             </div>
-
-            <!-- Lista de Dúvidas -->
-            <div id="lista-duvidas-container" class="space-y-4">
-                <!-- Dúvidas serão inseridas aqui -->
-                <p id="aviso-sem-duvidas-prof" class="text-center text-gray-500 py-10">
-                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3 text-gray-400"></i>
-                    Nenhuma dúvida encontrada com os filtros atuais.
-                </p>
-            </div>
-
-            <!-- Modal/Área para Responder Dúvida -->
-            <div id="modal-responder-duvida" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-[70] hidden">
-                <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg relative">
-                    <button id="fechar-modal-duvida" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                        <i data-lucide="x" class="w-6 h-6"></i>
-                    </button>
-                    <h2 class="text-xl font-semibold text-[#3c6a99] mb-4">Responder Dúvida</h2>
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-500">Aluno: <span id="modal-aluno-nome" class="font-medium text-gray-700"></span></p>
-                        <p class="text-sm text-gray-500">Dúvida:</p>
-                        <blockquote id="modal-pergunta-aluno" class="mt-1 p-3 bg-gray-100 border-l-4 border-[#8bb3d5] text-gray-700 rounded-r-md italic"></blockquote>
-                    </div>
-                    <form id="form-resposta-duvida">
-                        <input type="hidden" id="duvida-id-responder">
-                        <div>
-                            <label for="texto-resposta" class="block text-sm font-semibold text-[#5689b9] mb-1">Sua Resposta:</label>
-                            <textarea id="texto-resposta" rows="5" class="form-input" placeholder="Digite sua resposta aqui..." required></textarea>
-                        </div>
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" id="cancelar-resposta" class="bg-gray-200 hover:bg-gray-300 text-[#3c6a99] font-semibold py-2 px-4 rounded-lg">Cancelar</button>
-                            <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2">
-                                <i data-lucide="send" class="w-4 h-4"></i> Enviar Resposta
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
         </div>
-    </main>
+
+        <!-- Cards de Estatísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <i data-lucide="message-circle" class="w-6 h-6 text-blue-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-blue-600 font-medium">Total de Dúvidas</p>
+                    <p class="text-2xl font-bold text-blue-700" id="total-duvidas">4</p>
+                </div>
+            </div>
+            <div class="bg-yellow-50/70 border border-yellow-100 rounded-xl p-4 flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                    <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-yellow-600 font-medium">Pendentes</p>
+                    <p class="text-2xl font-bold text-yellow-700" id="duvidas-pendentes">3</p>
+                </div>
+            </div>
+            <div class="bg-green-50/70 border border-green-100 rounded-xl p-4 flex items-center">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-green-600 font-medium">Respondidas</p>
+                    <p class="text-2xl font-bold text-green-700" id="duvidas-respondidas">1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Dúvidas -->
+        <div id="lista-duvidas-container" class="space-y-4">
+            <!-- Dúvidas serão inseridas aqui -->
+            <p id="aviso-sem-duvidas-prof" class="text-center text-gray-500 py-10 hidden">
+                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3 text-gray-400"></i>
+                Nenhuma dúvida encontrada com os filtros atuais.
+            </p>
+        </div>
+
+        <!-- Modal/Área para Responder Dúvida -->
+        <div id="modal-responder-duvida" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-[70] hidden">
+            <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-2xl relative max-h-[90vh] overflow-y-auto">
+                <button id="fechar-modal-duvida" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-blue-100 rounded-full">
+                        <i data-lucide="message-circle-question" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-[#3c6a99]">Responder Dúvida</h2>
+                </div>
+                
+                <div class="mb-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                    <p class="text-sm text-gray-600 mb-1">Aluno:</p>
+                    <p id="modal-aluno-nome" class="font-medium text-[#3c6a99] mb-3"></p>
+                    
+                    <p class="text-sm text-gray-600 mb-1">Dúvida:</p>
+                    <blockquote id="modal-pergunta-aluno" class="mt-1 p-3 bg-white border-l-4 border-[#8bb3d5] text-gray-700 rounded-r-md italic"></blockquote>
+                </div>
+                
+                <form id="form-resposta-duvida">
+                    <input type="hidden" id="duvida-id-responder">
+                    <div>
+                        <label for="texto-resposta" class="block text-sm font-semibold text-[#5689b9] mb-2">Sua Resposta:</label>
+                        <textarea id="texto-resposta" rows="6" class="w-full px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-gray-700 bg-white outline-none transition-all" placeholder="Digite sua resposta aqui..." required></textarea>
+                    </div>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" id="cancelar-resposta" class="bg-gray-200 hover:bg-gray-300 text-[#3c6a99] font-semibold py-2.5 px-5 rounded-lg transition-colors">Cancelar</button>
+                        <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 transition-colors">
+                            <i data-lucide="send" class="w-4 h-4"></i> Enviar Resposta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
 
 <footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
     <div class="container mx-auto py-2 px-4 text-center text-sm">
@@ -306,8 +360,272 @@
         </div>
     </div>
 </footer>
+<script>
+// JavaScript aprimorado para funcionalidade de envio de respostas
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos da página
+    const filtroTurmaEl = document.getElementById('filtro-turma-duvida');
+    const filtroStatusEl = document.getElementById('filtro-status-duvida');
+    const listaDuvidasContainerEl = document.getElementById('lista-duvidas-container');
+    const avisoSemDuvidasProfEl = document.getElementById('aviso-sem-duvidas-prof');
+    
+    // Elementos de estatísticas
+    const totalDuvidasEl = document.getElementById('total-duvidas');
+    const duvidasPendentesEl = document.getElementById('duvidas-pendentes');
+    const duvidasRespondidasEl = document.getElementById('duvidas-respondidas');
+    
+    // Modal de resposta
+    const modalResponderDuvidaEl = document.getElementById('modal-responder-duvida');
+    const fecharModalBtn = document.getElementById('fechar-modal-duvida');
+    const cancelarRespostaBtn = document.getElementById('cancelar-resposta');
+    const formRespostaDuvida = document.getElementById('form-resposta-duvida');
+    const modalAlunoNomeEl = document.getElementById('modal-aluno-nome');
+    const modalPerguntaAlunoEl = document.getElementById('modal-pergunta-aluno');
+    const duvidaIdResponderEl = document.getElementById('duvida-id-responder');
+    const textoRespostaEl = document.getElementById('texto-resposta');
 
-    <!-- JavaScript -->
+    // Dados Mockados de Dúvidas (em um app real, viria do backend)
+    let todasAsDuvidas = [
+        { 
+            id: 'd101', 
+            alunoNome: "Aline Silva", 
+            alunoTurma: "1AEM", 
+            pergunta: "Professora, não entendi a diferença entre 'mas' e 'mais'. Pode me explicar de novo?", 
+            status: "pendente", 
+            dataEnvio: "23/10/2023", 
+            resposta: null, 
+            dataResposta: null 
+        },
+        { 
+            id: 'd102', 
+            alunoNome: "Bruno Costa", 
+            alunoTurma: "1BEM", 
+            pergunta: "Qual a regra para acentuar proparoxítonas?", 
+            status: "respondida", 
+            dataEnvio: "22/10/2023", 
+            resposta: "Olá Bruno! Todas as proparoxítonas são acentuadas. Lembre-se de identificar corretamente a sílaba tônica.", 
+            dataResposta: "22/10/2023" 
+        },
+        { 
+            id: 'd103', 
+            alunoNome: "Carla Dias", 
+            alunoTurma: "1AEM", 
+            pergunta: "Poderia dar mais exemplos de uso da crase antes de pronomes possessivos femininos?", 
+            status: "pendente", 
+            dataEnvio: "24/10/2023", 
+            resposta: null, 
+            dataResposta: null 
+        },
+        { 
+            id: 'd104', 
+            alunoNome: "Daniel Faria", 
+            alunoTurma: "2AEM", 
+            pergunta: "Tenho dificuldade em saber quando usar 'por que', 'porque', 'por quê' e 'porquê'.", 
+            status: "pendente", 
+            dataEnvio: "24/10/2023", 
+            resposta: null, 
+            dataResposta: null 
+        }
+    ];
+
+    // Função para atualizar estatísticas
+    function atualizarEstatisticas() {
+        const total = todasAsDuvidas.length;
+        const pendentes = todasAsDuvidas.filter(d => d.status === "pendente").length;
+        const respondidas = todasAsDuvidas.filter(d => d.status === "respondida").length;
+        
+        totalDuvidasEl.textContent = total;
+        duvidasPendentesEl.textContent = pendentes;
+        duvidasRespondidasEl.textContent = respondidas;
+    }
+
+    // Função para obter classe de status
+    function getStatusClassDuvida(status) {
+        if (status === "respondida") return "bg-green-100 text-green-700";
+        if (status === "pendente") return "bg-yellow-100 text-yellow-700";
+        return "bg-gray-100 text-gray-700";
+    }
+    
+    // Função para abrir modal de resposta
+    function abrirModalResposta(duvidaId) {
+        const duvida = todasAsDuvidas.find(d => d.id === duvidaId);
+        if (duvida) {
+            duvidaIdResponderEl.value = duvida.id;
+            modalAlunoNomeEl.textContent = duvida.alunoNome;
+            modalPerguntaAlunoEl.textContent = duvida.pergunta;
+            textoRespostaEl.value = '';
+            modalResponderDuvidaEl.classList.remove('hidden');
+            // Focar no campo de resposta
+            setTimeout(() => textoRespostaEl.focus(), 100);
+            lucide.createIcons(); 
+        }
+    }
+
+    // Função para fechar modal
+    function fecharModal() {
+        modalResponderDuvidaEl.classList.add('hidden');
+    }
+
+    // Event listeners para o modal
+    if(fecharModalBtn) fecharModalBtn.addEventListener('click', fecharModal);
+    if(cancelarRespostaBtn) cancelarRespostaBtn.addEventListener('click', fecharModal);
+    
+    // Fechar modal ao clicar fora
+    modalResponderDuvidaEl.addEventListener('click', function(e) {
+        if (e.target === modalResponderDuvidaEl) {
+            fecharModal();
+        }
+    });
+
+    // Envio do formulário de resposta
+    formRespostaDuvida.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const duvidaId = duvidaIdResponderEl.value;
+        const respostaTexto = textoRespostaEl.value.trim();
+
+        if (!respostaTexto) {
+            mostrarNotificacao('Por favor, digite uma resposta válida', 'warning');
+            return;
+        }
+
+        const duvidaIndex = todasAsDuvidas.findIndex(d => d.id === duvidaId);
+        if (duvidaIndex > -1) {
+            // Simular delay de envio
+            const botaoEnviar = formRespostaDuvida.querySelector('button[type="submit"]');
+            const textoOriginal = botaoEnviar.innerHTML;
+            botaoEnviar.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Enviando...';
+            botaoEnviar.disabled = true;
+            
+            setTimeout(() => {
+                todasAsDuvidas[duvidaIndex].resposta = respostaTexto;
+                todasAsDuvidas[duvidaIndex].status = "respondida";
+                todasAsDuvidas[duvidaIndex].dataResposta = new Date().toLocaleDateString('pt-BR');
+                
+                mostrarNotificacao('Resposta enviada com sucesso!', 'success');
+                fecharModal();
+                renderizarListaDuvidas();
+                atualizarEstatisticas();
+                
+                // Restaurar botão
+                botaoEnviar.innerHTML = textoOriginal;
+                botaoEnviar.disabled = false;
+                lucide.createIcons();
+            }, 1000);
+        }
+    });
+
+    // Função para mostrar notificações
+    function mostrarNotificacao(mensagem, tipo) {
+        // Criar elemento de notificação
+        const notificacao = document.createElement('div');
+        notificacao.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform transition-transform duration-300 ${
+            tipo === 'success' ? 'bg-green-500 text-white' : 
+            tipo === 'warning' ? 'bg-yellow-500 text-white' : 
+            'bg-blue-500 text-white'
+        }`;
+        notificacao.innerHTML = `
+            <div class="flex items-center">
+                <i data-lucide="${tipo === 'success' ? 'check-circle' : tipo === 'warning' ? 'alert-triangle' : 'info'}" class="w-5 h-5 mr-2"></i>
+                <span>${mensagem}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notificacao);
+        lucide.createIcons();
+        
+        // Remover após 3 segundos
+        setTimeout(() => {
+            notificacao.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notificacao.parentNode) {
+                    notificacao.parentNode.removeChild(notificacao);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Função para renderizar a lista de dúvidas
+    function renderizarListaDuvidas() {
+        const turmaFiltro = filtroTurmaEl.value;
+        const statusFiltro = filtroStatusEl.value;
+
+        const duvidasFiltradas = todasAsDuvidas.filter(duvida => {
+            const matchTurma = turmaFiltro === "todas" || duvida.alunoTurma === turmaFiltro;
+            const matchStatus = statusFiltro === "todas" || duvida.status === statusFiltro;
+            return matchTurma && matchStatus;
+        });
+
+        listaDuvidasContainerEl.innerHTML = '';
+        if (duvidasFiltradas.length === 0) {
+            avisoSemDuvidasProfEl.classList.remove('hidden');
+        } else {
+            avisoSemDuvidasProfEl.classList.add('hidden');
+            duvidasFiltradas.slice().reverse().forEach(duvida => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white';
+                
+                let respostaHtml = '';
+                if (duvida.status === "respondida" && duvida.resposta) {
+                    respostaHtml = `
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> Resposta enviada (${duvida.dataResposta})
+                            </p>
+                            <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                                <p class="text-sm text-gray-700">${duvida.resposta}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let botaoResponderHtml = '';
+                if (duvida.status === "pendente") {
+                    botaoResponderHtml = `
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="abrirModalResposta('${duvida.id}')" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors">
+                                <i data-lucide="corner-down-right" class="w-4 h-4"></i> Responder
+                            </button>
+                        </div>
+                    `;
+                }
+
+                cardEl.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-[#3c6a99]">${duvida.alunoNome}</p>
+                                <p class="text-xs text-gray-500">${duvida.alunoTurma} • Enviada em: ${duvida.dataEnvio}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs px-3 py-1 rounded-full ${getStatusClassDuvida(duvida.status)} font-medium">
+                            ${duvida.status === 'pendente' ? 'Pendente' : 'Respondida'}
+                        </span>
+                    </div>
+                    <p class="text-gray-800 mb-3 leading-relaxed">${duvida.pergunta}</p>
+                    ${respostaHtml}
+                    ${botaoResponderHtml}
+                `;
+                listaDuvidasContainerEl.appendChild(cardEl);
+            });
+            lucide.createIcons();
+        }
+    }
+
+    // Event Listeners para filtros
+    filtroTurmaEl.addEventListener('change', renderizarListaDuvidas);
+    filtroStatusEl.addEventListener('change', renderizarListaDuvidas);
+
+    // Tornar a função abrirModalResposta global para uso nos botões
+    window.abrirModalResposta = abrirModalResposta;
+
+    // Inicialização
+    atualizarEstatisticas();
+    renderizarListaDuvidas();
+});
+</script>
     <script>
          lucide.createIcons();
 
@@ -346,153 +664,6 @@
             notificationsDropdown.classList.add("hidden");
         }
     });
-
-        // Lógica da Página de Dúvidas dos Alunos
-        const filtroTurmaEl = document.getElementById('filtro-turma-duvida');
-        const filtroStatusEl = document.getElementById('filtro-status-duvida');
-        const listaDuvidasContainerEl = document.getElementById('lista-duvidas-container');
-        const avisoSemDuvidasProfEl = document.getElementById('aviso-sem-duvidas-prof');
-
-        // Modal de Resposta
-        const modalResponderDuvidaEl = document.getElementById('modal-responder-duvida');
-        const fecharModalBtn = document.getElementById('fechar-modal-duvida');
-        const cancelarRespostaBtn = document.getElementById('cancelar-resposta');
-        const formRespostaDuvida = document.getElementById('form-resposta-duvida');
-        const modalAlunoNomeEl = document.getElementById('modal-aluno-nome');
-        const modalPerguntaAlunoEl = document.getElementById('modal-pergunta-aluno');
-        const duvidaIdResponderEl = document.getElementById('duvida-id-responder');
-        const textoRespostaEl = document.getElementById('texto-resposta');
-
-
-        // Dados Mockados de Dúvidas (em um app real, viria do backend)
-        let todasAsDuvidas = [
-            { id: 'd101', alunoNome: "Aline Silva", alunoTurma: "1AEM", pergunta: "Professora, não entendi a diferença entre 'mas' e 'mais'. Pode me explicar de novo?", status: "pendente", dataEnvio: "23/10/2023", resposta: null, dataResposta: null },
-            { id: 'd102', alunoNome: "Bruno Costa", alunoTurma: "1BEM", pergunta: "Qual a regra para acentuar proparoxítonas?", status: "respondida", dataEnvio: "22/10/2023", resposta: "Olá Bruno! Todas as proparoxítonas são acentuadas. Lembre-se de identificar corretamente a sílaba tônica.", dataResposta: "22/10/2023" },
-            { id: 'd103', alunoNome: "Carla Dias", alunoTurma: "1AEM", pergunta: "Poderia dar mais exemplos de uso da crase antes de pronomes possessivos femininos?", status: "pendente", dataEnvio: "24/10/2023", resposta: null, dataResposta: null },
-            { id: 'd104', alunoNome: "Daniel Faria", alunoTurma: "2AEM", pergunta: "Tenho dificuldade em saber quando usar 'por que', 'porque', 'por quê' e 'porquê'.", status: "pendente", dataEnvio: "24/10/2023", resposta: null, dataResposta: null }
-        ];
-
-        function getStatusClassDuvida(status) {
-            if (status === "respondida") return "bg-green-100 text-green-700";
-            if (status === "pendente") return "bg-yellow-100 text-yellow-700";
-            return "bg-gray-100 text-gray-700";
-        }
-        
-        function abrirModalResposta(duvidaId) {
-            const duvida = todasAsDuvidas.find(d => d.id === duvidaId);
-            if (duvida) {
-                duvidaIdResponderEl.value = duvida.id;
-                modalAlunoNomeEl.textContent = duvida.alunoNome;
-                modalPerguntaAlunoEl.textContent = duvida.pergunta;
-                textoRespostaEl.value = '';
-                modalResponderDuvidaEl.classList.remove('hidden');
-                lucide.createIcons(); 
-            }
-        }
-
-        function fecharModal() {
-            modalResponderDuvidaEl.classList.add('hidden');
-        }
-        if(fecharModalBtn) fecharModalBtn.addEventListener('click', fecharModal);
-        if(cancelarRespostaBtn) cancelarRespostaBtn.addEventListener('click', fecharModal);
-
-        formRespostaDuvida.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const duvidaId = duvidaIdResponderEl.value;
-            const respostaTexto = textoRespostaEl.value.trim();
-
-            if (!respostaTexto) {
-                Swal.fire({
-                        icon: 'warning',
-                        title: 'Atenção',
-                        text: 'Por favor, digite uma resposta válida',
-                        confirmButtonColor: '#3c6a99'
-                    });
-                return;
-            }
-
-            const duvidaIndex = todasAsDuvidas.findIndex(d => d.id === duvidaId);
-            if (duvidaIndex > -1) {
-                todasAsDuvidas[duvidaIndex].resposta = respostaTexto;
-                todasAsDuvidas[duvidaIndex].status = "respondida";
-                todasAsDuvidas[duvidaIndex].dataResposta = new Date().toLocaleDateString('pt-BR');
-                
-                Swal.fire({
-                icon: 'success',
-                title: 'Mensagem enviada!',
-                text: 'Sua mensagem foi enviada ao aluno com sucesso.',
-                confirmButtonColor: '#3c6a99'
-                }).then(() => {
-                    fecharModal();
-                    renderizarListaDuvidas();
-                });
-            }
-        });
-
-
-        function renderizarListaDuvidas() {
-            const turmaFiltro = filtroTurmaEl.value;
-            const statusFiltro = filtroStatusEl.value;
-
-            const duvidasFiltradas = todasAsDuvidas.filter(duvida => {
-                const matchTurma = turmaFiltro === "todas" || duvida.alunoTurma === turmaFiltro;
-                const matchStatus = statusFiltro === "todas" || duvida.status === statusFiltro;
-                return matchTurma && matchStatus;
-            });
-
-            listaDuvidasContainerEl.innerHTML = '';
-            if (duvidasFiltradas.length === 0) {
-                avisoSemDuvidasProfEl.classList.remove('hidden');
-            } else {
-                avisoSemDuvidasProfEl.classList.add('hidden');
-                duvidasFiltradas.slice().reverse().forEach(duvida => {
-                    const cardEl = document.createElement('div');
-                    cardEl.className = 'border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow';
-                    
-                    let respostaHtml = '';
-                    if (duvida.status === "respondida" && duvida.resposta) {
-                        respostaHtml = `
-                            <div class="mt-3 pt-3 border-t border-gray-200">
-                                <p class="text-sm font-semibold text-[#5689b9]">Sua Resposta (${duvida.dataResposta}):</p>
-                                <p class="text-sm text-gray-700 italic">"${duvida.resposta}"</p>
-                            </div>
-                        `;
-                    }
-
-                    let botaoResponderHtml = '';
-                    if (duvida.status === "pendente") {
-                        botaoResponderHtml = `
-                            <button onclick="abrirModalResposta('${duvida.id}')" class="mt-3 bg-[#8bb3d5] hover:bg-[#5689b9] text-white text-xs font-semibold py-1 px-3 rounded-md flex items-center gap-1">
-                                <i data-lucide="corner-down-right" class="w-3 h-3"></i> Responder
-                            </button>
-                        `;
-                    }
-
-                    cardEl.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <p class="font-semibold text-[#3c6a99]">${duvida.alunoNome} <span class="text-xs text-gray-500">(${duvida.alunoTurma})</span></p>
-                                <p class="text-xs text-gray-400">Enviada em: ${duvida.dataEnvio}</p>
-                            </div>
-                            <span class="text-xs px-2 py-0.5 rounded-full ${getStatusClassDuvida(duvida.status)}">${duvida.status.charAt(0).toUpperCase() + duvida.status.slice(1)}</span>
-                        </div>
-                        <p class="text-base text-gray-800 mb-2">"${duvida.pergunta}"</p>
-                        ${respostaHtml}
-                        ${botaoResponderHtml}
-                    `;
-                    listaDuvidasContainerEl.appendChild(cardEl);
-                });
-                lucide.createIcons();
-            }
-        }
-
-        // Event Listeners para filtros
-        filtroTurmaEl.addEventListener('change', renderizarListaDuvidas);
-        filtroStatusEl.addEventListener('change', renderizarListaDuvidas);
-
-        // Renderização Inicial
-        document.addEventListener('DOMContentLoaded', renderizarListaDuvidas);
-
     </script>
 </body>
 </html>
