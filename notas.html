@@ -7,13 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="./static/img/favicon.png">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- 1. BIBLIOTECA CHART.JS ADICIONADA -->
+    <!-- Chart.js para os gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- PADRÃO VISUAL UNIFICADO --- */
         :root {
             --color-primary: #4A90E2;
             --color-primary-dark: #357ABD;
@@ -22,218 +23,277 @@
             --color-text-dark: #2c3e50;
             --color-text-light: #8492a6;
             --color-card-bg: #ffffff;
-            --color-border: #E2E8F0;
+            --color-border: #e2e8f0;
             --color-navbar-bg: #3c6a99;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--color-background);
-            color: var(--color-text-dark);
         }
-
-        .navbar-logo {
-            width: 40px;
-            height: auto;
-        }
-
-        /* --- ESTILOS DE COMPONENTES DE TEMA --- */
+        .text-dynamic-dark { color: var(--color-text-dark); }
+        .text-dynamic-light { color: var(--color-text-light); }
         .navbar-theme { background-color: var(--color-navbar-bg); }
-        .menu-theme { background-color: var(--color-card-bg); border: 1px solid var(--color-border); }
-        .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+        .menu-theme { background-color: var(--color-card-bg); }
+        .menu-item-theme { color: var(--color-text-dark); }
         .menu-item-theme:hover { background-color: var(--color-border); }
         .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
-
+        .navbar-logo { width: 40px; height: auto; }
         .notification-badge {
             position: absolute; top: 0; right: 0;
             width: 12px; height: 12px; background-color: #EF4444;
-            border-radius: 50%; border: 2px solid var(--color-navbar-bg);
+            border-radius: 50%; border: 2px solid #3c6a99;
         }
-
-        /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA DE DESEMPENHO --- */
-        .stat-card {
-            background-color: var(--color-card-bg);
-            border: 1px solid var(--color-border);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .stat-card .icon-container {
-            flex-shrink: 0;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
         }
-        /* Cores para os ícones dos cards de estatística */
-        .icon-container.yellow { background-color: #fef3c7; color: #f59e0b; }
-        .icon-container.green { background-color: #dcfce7; color: #22c55e; }
-        .icon-container.red { background-color: #fee2e2; color: #ef4444; }
-        .icon-container.orange { background-color: #ffedd5; color: #f97316; }
-
-        /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
-        #mascote-assistente {
-            position: fixed; bottom: 20px; right: 20px; z-index: 100;
-            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            transform: translateY(200%); opacity: 0;
-        }
-        #mascote-assistente.visible { transform: translateY(0); opacity: 1; }
-        #mascote-assistente .mascote-img { height: 100px; width: auto; animation: bobbing 3s ease-in-out infinite; }
-        #chat-bubble {
-            position: absolute; bottom: 84px; right: 47px;
-            background-color: white; padding: 12px 16px; border-radius: 12px; width: 210px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-size: 14px; font-weight: 500;
-            color: #3c6a99; opacity: 0; transform: scale(0.8);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        #chat-bubble.show { opacity: 1; transform: scale(1); }
-        #chat-bubble::after {
-            content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0;
-            border-left: 10px solid transparent; border-right: 10px solid transparent;
-            border-top: 10px solid white;
-        }
-        @keyframes bobbing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-<!-- 🔹 NAVBAR PADRONIZADA -->
-<header class="header-nav sticky top-0 z-50">
-    <nav class="navbar-theme text-white shadow-lg">
-        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-            <div class="relative">
-                <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50"><i data-lucide="menu"></i></button>
-                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
-                    <a href="inicio.html" class="menu-item-theme flex items-center gap-3 px-4 py-2"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal</a>
-                    <a href="#" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2"><i data-lucide="volume-2" class="w-5 h-5"></i> Som</a>
-                    <a href="notificacoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2"><i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações</a>
-                    <a href="configuracoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2"><i data-lucide="settings" class="w-5 h-5"></i> Configurações</a>
-                    <hr class="my-1" style="border-color: var(--color-border);">
-                    <a href="./index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50"><i data-lucide="log-out" class="w-5 h-5"></i> Sair</a>
-                </div>
-            </div>
-            <a href="./index.html" class="mx-auto md:mx-0"><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo"></a>
-            <div class="flex items-center gap-2">
+    <!-- 🔹 NAVBAR (Estrutura idêntica às outras páginas) -->
+    <header class="header-nav sticky top-0 z-50">
+        <nav class="navbar-theme text-white shadow-lg">
+            <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+                <!-- Menu Principal -->
                 <div class="relative">
-                    <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50"><i data-lucide="bell"></i><span id="notification-indicator" class="notification-badge"></span></button>
-                    <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
-                        <div class="p-3 border-b" style="border-color: var(--color-border);"><h3 class="text-sm font-semibold" style="color: var(--color-text-dark);">Notificações Recentes</h3></div>
-                        <div id="dropdown-notifications-list"></div>
-                        <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">Ver todas</a>
+                    <button id="menu-btn" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
+                        <a href="inicio.html" class="menu-item-active flex items-center gap-3 px-4 py-2">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                        </a>
+                        <a href="#" role="menuitem" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                        </a>
+                        <a href="notificacoes.html" role="menuitem" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                            <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                        </a>
                     </div>
                 </div>
-                <a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50"></a>
+                <!-- Logo -->
+                <a href="./index.html" class="mx-auto md:mx-0">
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+                </a>
+                <!-- Ícones da Direita -->
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                            <i data-lucide="bell"></i>
+                            <span class="notification-badge"></span>
+                        </button>
+                    </div>
+                    <a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                        <!-- Avatar inserido via JS -->
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 🔹 CONTEÚDO PRINCIPAL -->
+    <main class="container mx-auto px-4 py-8 sm:py-12 flex-grow">
+        
+        <!-- Cabeçalho da Página -->
+        <div class="mb-6">
+             <a href="inicio.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                Voltar ao Painel
+            </a>
+        </div>
+        <div class="text-center mb-8 sm:mb-12 fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mb-2 tracking-tight">Meu Desempenho</h1>
+            <p class="text-lg text-dynamic-light max-w-2xl mx-auto">Acompanhe sua evolução, veja suas conquistas e identifique seus pontos de melhoria.</p>
+        </div>
+
+        <!-- Seção 1: Estatísticas Gerais -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 fade-in-up" style="animation-delay: 100ms;">
+            <!-- Card: Pontuação Total -->
+            <div class="p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-dynamic-dark">Pontuação Total</h3>
+                    <div class="p-2 rounded-full" style="background-color: rgba(74, 144, 226, 0.1); color: var(--color-primary);">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <p class="text-4xl font-bold text-dynamic-dark" id="stat-pontuacao-total">1,250</p>
+                <p class="text-sm text-dynamic-light mt-1">Pontos acumulados</p>
+            </div>
+            <!-- Card: Exercícios Concluídos -->
+            <div class="p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-dynamic-dark">Exercícios</h3>
+                    <div class="p-2 rounded-full" style="background-color: rgba(80, 227, 194, 0.1); color: var(--color-accent);">
+                        <i data-lucide="check-square" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <p class="text-4xl font-bold text-dynamic-dark" id="stat-exercicios">32</p>
+                <p class="text-sm text-dynamic-light mt-1">Concluídos</p>
+            </div>
+            <!-- Card: Precisão Média -->
+            <div class="p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-dynamic-dark">Precisão Média</h3>
+                    <div class="p-2 rounded-full" style="background-color: rgba(245, 158, 11, 0.1); color: #D97706;">
+                        <i data-lucide="target" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <p class="text-4xl font-bold text-dynamic-dark" id="stat-precisao">87%</p>
+                <p class="text-sm text-dynamic-light mt-1">de acertos</p>
+            </div>
+            <!-- Card: Série de Dias -->
+            <div class="p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-dynamic-dark">Série de Dias</h3>
+                     <div class="p-2 rounded-full" style="background-color: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                        <i data-lucide="flame" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <p class="text-4xl font-bold text-dynamic-dark" id="stat-serie">5</p>
+                <p class="text-sm text-dynamic-light mt-1">Dias consecutivos</p>
             </div>
         </div>
-    </nav>
-</header>
-<main class="container mx-auto px-4 sm:px-6 py-12 flex-grow">
 
-    <div class="mb-10">
-        <a href="inicio.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group mb-2"><i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1"></i>Voltar ao Painel</a>
-        <div class="flex items-center gap-3"><i data-lucide="trending-up" class="w-8 h-8 text-[var(--color-primary)]"></i><h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)]">Seu Desempenho</h1></div>
-        <p class="text-base text-[var(--color-text-light)] md:ml-11 mt-1">Acompanhe sua evolução, seus pontos fortes e recordes.</p>
-    </div>
+        <!-- Seção 2: Gráficos -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12 fade-in-up" style="animation-delay: 200ms;">
+            <!-- Gráfico de Evolução -->
+            <div class="lg:col-span-3 p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <h3 class="text-lg font-semibold text-dynamic-dark mb-4">Evolução da Pontuação (Últimos 7 dias)</h3>
+                <canvas id="graficoEvolucao"></canvas>
+            </div>
+            <!-- Gráfico de Erros Comuns -->
+            <div class="lg:col-span-2 p-6 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <h3 class="text-lg font-semibold text-dynamic-dark mb-4">Tipos de Erros Comuns</h3>
+                <canvas id="graficoErros"></canvas>
+            </div>
+        </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2">
-            <div class="bg-[var(--color-card-bg)] border border-[var(--color-border)] shadow-lg rounded-xl p-6 md:p-8 w-full">
-                <h2 class="text-xl font-semibold text-[var(--color-text-dark)] mb-6">Desempenho Geral por Tópico</h2>
-                <!-- 2. CANVAS PARA O GRÁFICO (SUBSTITUI A IMAGEM) -->
-                <div>
-                    <canvas id="desempenhoChart"></canvas>
+        <!-- Seção 3: Conquistas -->
+        <div class="fade-in-up" style="animation-delay: 300ms;">
+            <h2 class="text-2xl font-bold text-dynamic-dark mb-6">Suas Conquistas</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center">
+                <!-- Conquista Desbloqueada -->
+                <div class="p-4 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="award" class="w-10 h-10 mx-auto mb-2 text-amber-500"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Iniciante</h4>
+                    <p class="text-xs text-dynamic-light">Completou 1º exercício.</p>
+                </div>
+                 <!-- Conquista Desbloqueada -->
+                <div class="p-4 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="star" class="w-10 h-10 mx-auto mb-2 text-yellow-400"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Nota Dez</h4>
+                    <p class="text-xs text-dynamic-light">Primeira pontuação perfeita.</p>
+                </div>
+                <!-- Conquista Desbloqueada -->
+                <div class="p-4 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="search" class="w-10 h-10 mx-auto mb-2 text-blue-500"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Detetive</h4>
+                    <p class="text-xs text-dynamic-light">Encontrou 50 erros.</p>
+                </div>
+                <!-- Conquista Bloqueada -->
+                <div class="p-4 rounded-lg opacity-40 grayscale" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="lock" class="w-10 h-10 mx-auto mb-2 text-gray-500"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Mestre</h4>
+                    <p class="text-xs text-dynamic-light">10 pontuações perfeitas.</p>
+                </div>
+                 <!-- Conquista Bloqueada -->
+                <div class="p-4 rounded-lg opacity-40 grayscale" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="lock" class="w-10 h-10 mx-auto mb-2 text-gray-500"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Sábio</h4>
+                    <p class="text-xs text-dynamic-light">Acumulou 5.000 pontos.</p>
+                </div>
+                <!-- Conquista Bloqueada -->
+                <div class="p-4 rounded-lg opacity-40 grayscale" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                    <i data-lucide="lock" class="w-10 h-10 mx-auto mb-2 text-gray-500"></i>
+                    <h4 class="font-semibold text-dynamic-dark text-sm">Persistente</h4>
+                    <p class="text-xs text-dynamic-light">Série de 7 dias.</p>
                 </div>
             </div>
         </div>
-        <div class="lg:col-span-1">
-            <h3 class="text-xl font-semibold text-[var(--color-text-dark)] mb-4">Resumo e Recordes</h3>
-            <div class="space-y-4">
-                <div class="stat-card"><div class="icon-container yellow"><i data-lucide="notebook-text" class="w-6 h-6"></i></div><div><p class="text-2xl font-bold">26</p><p class="text-sm text-[var(--color-text-light)]">Atividades Concluídas</p></div></div>
-                <div class="stat-card"><div class="icon-container green"><i data-lucide="check-check" class="w-6 h-6"></i></div><div><p class="text-2xl font-bold">85%</p><p class="text-sm text-[var(--color-text-light)]">Média de Acertos</p></div></div>
-                <div class="stat-card"><div class="icon-container red"><i data-lucide="goal" class="w-6 h-6"></i></div><div><p class="text-2xl font-bold">5</p><p class="text-sm text-[var(--color-text-light)]">Recompensas Desbloqueadas</p></div></div>
-                <div class="stat-card"><div class="icon-container orange"><i data-lucide="flame" class="w-6 h-6"></i></div><div><p class="text-2xl font-bold">12 dias</p><p class="text-sm text-[var(--color-text-light)]">Sequência de Dias Ativo</p></div></div>
+
+    </main>
+
+    <!-- 🔹 RODAPÉ (Estrutura idêntica às outras páginas) -->
+    <footer class="navbar-theme text-[#e3ebf2] border-t border-gray-200 mt-auto">
+        <div class="container mx-auto py-2 px-4 text-center text-sm">
+            <div class="flex items-center justify-center gap-2">
+                <p>&copy; 2025 OrtoFix</p>
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
             </div>
         </div>
-    </div>
-</main>
-
-    <footer class="navbar-theme text-[#e3ebf2] mt-auto">
-        <div class="container mx-auto py-2 px-4 text-center text-sm"><div class="flex items-center justify-center gap-2"><p>&copy; 2025 OrtoFix</p><img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);"></div></div>
     </footer>
-
-<div id="mascote-assistente">
-    <div id="chat-bubble"></div><img src="../static/img/ortofix.png" alt="Assistente OrtoFix" class="mascote-img">
-</div>
-
-    <audio id="click-sound" src="/static/audio/click.wav" preload="auto"></audio>
-
+    
+    <!-- 🔹 SCRIPT DA PÁGINA -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             lucide.createIcons();
-
-            // --- Lógica dos Menus e Som (Unificada) ---
-            const menuBtn = document.getElementById("menu-btn"), dropdownMenu = document.getElementById("dropdown-menu");
-            const notificationsBtn = document.getElementById("notifications-btn"), notificationsDropdown = document.getElementById("notifications-dropdown");
-            const clickSound = document.getElementById("click-sound");
-            let soundEnabled = true;
-            const soundBtn = document.getElementById("sound-btn");
-
-            function setupDropdown(btn, menu) { if (!btn || !menu) return; btn.addEventListener("click", (e) => { e.stopPropagation(); const isHidden = menu.classList.contains("hidden"); document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => { if (m !== menu) m.classList.add('hidden'); }); menu.classList.toggle("hidden"); }); }
-            setupDropdown(menuBtn, dropdownMenu);
-            setupDropdown(notificationsBtn, notificationsDropdown);
-            document.addEventListener("click", () => { document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden')); });
-
-            if (soundBtn) { soundBtn.addEventListener("click", (e) => { e.preventDefault(); soundEnabled = !soundEnabled; const icon = soundBtn.querySelector("i"); icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x"); icon.classList.toggle("text-red-500", !soundEnabled); lucide.createIcons(); }); }
-            document.querySelectorAll("a, button").forEach(el => { el.addEventListener("click", () => { if (soundEnabled && clickSound) { clickSound.currentTime = 0; clickSound.play().catch(() => {}); } }); });
             
-            // --- Lógica do Mascote ---
-            const mascoteAssistente = document.getElementById('mascote-assistente'), chatBubble = document.getElementById('chat-bubble');
-            setTimeout(() => { chatBubble.textContent = "Uau, olhe esses resultados! Seu esforço está valendo a pena."; mascoteAssistente.classList.add('visible'); chatBubble.classList.add('show'); setTimeout(() => { mascoteAssistente.classList.remove('visible'); chatBubble.classList.remove('show'); }, 8000); }, 1500); 
+            // --- DADOS DE EXEMPLO (Substituir por dados reais do backend/localStorage) ---
+            const dadosEvolucao = {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                pontos: [50, 80, 75, 120, 110, 150, 180] // Pontos ganhos por dia
+            };
+            const dadosErros = {
+                labels: ['Acentuação', 'Crase', 'Concordância', 'Vírgula'],
+                ocorrencias: [45, 25, 18, 12]
+            };
 
-            // --- 3. SCRIPT PARA CRIAR O GRÁFICO ---
-            const ctx = document.getElementById('desempenhoChart').getContext('2d');
-            const desempenhoChart = new Chart(ctx, {
-                type: 'bar',
+            // --- LÓGICA DO GRÁFICO DE EVOLUÇÃO ---
+            const ctxEvolucao = document.getElementById('graficoEvolucao').getContext('2d');
+            new Chart(ctxEvolucao, {
+                type: 'line',
                 data: {
-                    labels: ['Acentuação', 'Pontuação', 'Crase', 'Ortografia', 'Uso do Hífen', 'Concordância'],
+                    labels: dadosEvolucao.labels,
                     datasets: [{
-                        label: 'Pontuação Média',
-                        data: [85, 65, 92, 78, 72, 88],
-                        backgroundColor: 'rgba(74, 144, 226, 0.7)', // Cor primária com transparência
-                        borderColor: 'rgba(74, 144, 226, 1)', // Cor primária sólida
-                        borderWidth: 1,
-                        borderRadius: 5, // Arredonda as bordas das barras
-                        hoverBackgroundColor: 'rgba(53, 122, 189, 0.9)'
+                        label: 'Pontos Ganhos',
+                        data: dadosEvolucao.pontos,
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        borderColor: 'rgba(74, 144, 226, 1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                // Adiciona um '%' ao final dos números no eixo Y
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // --- LÓGICA DO GRÁFICO DE ERROS ---
+            const ctxErros = document.getElementById('graficoErros').getContext('2d');
+            new Chart(ctxErros, {
+                type: 'doughnut',
+                data: {
+                    labels: dadosErros.labels,
+                    datasets: [{
+                        label: 'Ocorrências de Erros',
+                        data: dadosErros.ocorrencias,
+                        backgroundColor: [
+                            'rgba(74, 144, 226, 0.8)', // Primary
+                            'rgba(80, 227, 194, 0.8)', // Accent
+                            'rgba(245, 158, 11, 0.8)', // Amber
+                            'rgba(139, 92, 246, 0.8)'  // Violet
+                        ],
+                        borderColor: 'var(--color-card-bg)',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
                     plugins: {
                         legend: {
-                            display: false // Esconde a legenda, pois o título já é claro
-                        },
-                        tooltip: {
-                            // Personaliza o popup que aparece ao passar o mouse
-                            callbacks: {
-                                label: function(context) {
-                                    return ` Desempenho: ${context.raw}%`;
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                boxWidth: 12,
+                                font: {
+                                    family: "'Poppins', sans-serif"
                                 }
                             }
                         }
@@ -243,6 +303,5 @@
         });
     </script>
     <script src="global-init.js"></script>
-
 </body>
 </html>
