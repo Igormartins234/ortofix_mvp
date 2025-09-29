@@ -479,7 +479,8 @@
                 document.getElementById('stat-pontuacao').textContent = pontuacao;
                 document.getElementById('palavrasCorretas').textContent = data.palavras_com_erro.join(", ") || "Nenhuma";
                 document.getElementById('selecaoUsuario').textContent = Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
-                document.getElementById('feedbackGemini').textContent = data.feedback;
+                const feedbackLimpo = (data.feedback || "Feedback indisponível.").replace(/\*\*/g, '');
+                document.getElementById('feedbackGemini').textContent = feedbackLimpo;
 
                 showScreen('results-area');
                 

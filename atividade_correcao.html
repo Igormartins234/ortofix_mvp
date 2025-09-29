@@ -498,7 +498,8 @@ function renderFeedback(data) {
     // Popula o restante das informações
     document.getElementById('palavrasCorretas').textContent = data.correcao_ideal || "Gabarito indisponível.";
     document.getElementById('selecaoUsuario').textContent = data.sua_tentativa || "Nenhuma resposta enviada.";
-    document.getElementById('feedbackGemini').textContent = data.feedback_do_gemini || "Feedback indisponível.";
+    const feedbackLimpo = (data.feedback_do_gemini || "Feedback indisponível.").replace(/\*\*/g, '');
+    document.getElementById('feedbackGemini').textContent = feedbackLimpo;
     
     lucide.createIcons();
 
