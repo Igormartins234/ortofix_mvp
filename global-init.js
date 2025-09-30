@@ -92,6 +92,46 @@ const allItems = [
     { id: 'avatar-glasses', name: 'Avatar: Inteligente', category: 'avatar', icon: 'glasses'},
     { id: 'avatar-robot', name: 'Avatar: Robótico', category: 'avatar', icon: 'bot'},
     { id: 'avatar-rocket', name: 'Avatar: Astronauta', category: 'avatar', icon: 'rocket'},
+    {
+        id: 'avatar-ninja',
+        name: 'Avatar: Ninja Sombrio',
+        cost: 800,
+        category: 'avatar',
+        icon: 'sword', // Ícone de espada, representa agilidade e combate
+        color: 'gray' // Tons de cinza/preto para o avatar
+    },
+    {
+        id: 'avatar-mad-scientist',
+        name: 'Avatar: Cientista Maluco',
+        cost: 750,
+        category: 'avatar',
+        icon: 'dna', // Ícone de DNA, representa ciência
+        color: 'green' // Verde para o visual "maluco"
+    },
+    {
+        id: 'avatar-epic-warrior',
+        name: 'Avatar: Guerreiro Épico',
+        cost: 950,
+        category: 'avatar',
+        icon: 'shield-plus', // Ícone de escudo com um plus, representa defesa e heroísmo
+        color: 'amber' // Cor âmbar para um visual épico/de armadura
+    },
+    {
+        id: 'avatar-creative-artist',
+        name: 'Avatar: Artista Criativo',
+        cost: 700,
+        category: 'avatar',
+        icon: 'palette', // Ícone de paleta de pintor
+        color: 'pink' // Cores vibrantes para um artista
+    },
+    {
+        id: 'avatar-chef-master',
+        name: 'Avatar: Mestre Culinário',
+        cost: 650,
+        category: 'avatar',
+        icon: 'chef-hat', // Ícone de chapéu de chef
+        color: 'red' // Vermelho clássico para o chapéu de chef
+    },
 ];
 
     function applyTheme(themeId) {
