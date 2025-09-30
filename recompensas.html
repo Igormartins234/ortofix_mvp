@@ -275,7 +275,7 @@
 <main class="container mx-auto px-4 sm:px-6 py-10 flex-grow">
      <a href="inicio.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
                     <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
-                    Voltar ao Painely
+                    Voltar ao Painel
                 </a>
     <!-- Título e Saldo -->
     <div class="text-center mb-10">
@@ -394,7 +394,84 @@ document.addEventListener('DOMContentLoaded', () => {
         // Adesivos
         { id: 'sticker-mascot', name: 'Adesivo: Mascote', cost: 300, category: 'adesivo', icon: 'sticker', color: 'green' },
         { id: 'sticker-trophy', name: 'Adesivo: Campeão', cost: 450, category: 'adesivo', icon: 'trophy', color: 'amber' },
-        { id: 'sticker-brain', name: 'Adesivo: Cérebro', cost: 400, category: 'adesivo', icon: 'brain-circuit', color: 'pink' }
+        { id: 'sticker-brain', name: 'Adesivo: Cérebro', cost: 400, category: 'adesivo', icon: 'brain-circuit', color: 'pink' },
+
+    // Tema: Lendas Antigas
+    {
+        id: 'theme-ancient-legends',
+        name: 'Tema: Lendas Antigas',
+        cost: 900,
+        category: 'tema',
+        icon: 'scroll', // Ícone de um pavilhão antigo
+        color: 'amber', // Cor âmbar para o ícone
+        themeData: {
+            '--color-primary': '#b45309',       // Ouro envelhecido/bronze
+            '--color-primary-dark': '#92400e',   // Bronze mais escuro
+            '--color-background': '#fdf8f4',   // Bege/creme de pergaminho
+            '--color-text-dark': '#4a2904',     // Marrom escuro profundo
+            '--color-text-light': '#78350f',    // Marrom mais claro
+            '--color-card-bg': '#fff8e7',      // Fundo de cartão claro como pergaminho
+            '--color-border': '#fcd34d',       // Amarelo dourado para bordas
+            '--color-navbar-bg': '#92400e'     // Bronze escuro para a barra de navegação
+        }
+    },
+    // Tema: Jardim Encantado
+    {
+        id: 'theme-enchanted-garden',
+        name: 'Tema: Jardim Encantado',
+        cost: 950,
+        category: 'tema',
+        icon: 'flower', // Ícone de flor preenchida
+        color: 'pink', // Cor rosa para o ícone
+        themeData: {
+            '--color-primary': '#d946ef',       // Rosa mágico/lilás
+            '--color-primary-dark': '#c026d3',   // Rosa mais vibrante
+            '--color-background': '#fbf7ff',   // Branco levemente lilás/rosado
+            '--color-text-dark': '#3b074d',     // Roxo escuro profundo
+            '--color-text-light': '#7e22cb',    // Roxo mágico
+            '--color-card-bg': '#f5ecff',      // Fundo de cartão claro e suave
+            '--color-border': '#e9d5ff',       // Lilás claro para bordas
+            '--color-navbar-bg': '#7e22cb'     // Roxo mágico para a barra de navegação
+        }
+    },
+    // Tema: Cyberpunk Urbano
+    {
+        id: 'theme-cyberpunk',
+        name: 'Tema: Cyberpunk Urbano',
+        cost: 1100, // Um pouco mais caro pela complexidade visual
+        category: 'tema',
+        icon: 'circuit-board', // Ícone genérico de circuito
+        color: 'cyan', // Cor ciano para o ícone
+        themeData: {
+            '--color-primary': '#0891b2',       // Ciano neon
+            '--color-primary-dark': '#06b6d4',   // Ciano mais brilhante
+            '--color-background': '#0a101a',   // Preto tecnológico escuro
+            '--color-text-dark': '#cffafe',     // Azul claro/ciano pálido (neon)
+            '--color-text-light': '#a5b4fc',    // Azul lavanda suave
+            '--color-card-bg': '#1e293b',      // Cinza escuro com reflexos
+            '--color-border': '#3b82f6',       // Azul elétrico para bordas
+            '--color-navbar-bg': '#0891b2'     // Ciano neon para a barra de navegação
+        }
+    },
+    // Tema: Alquimia Mística
+    {
+        id: 'theme-alchemy',
+        name: 'Tema: Alquimia Mística',
+        cost: 950,
+        category: 'tema',
+        icon: 'flask-round', 
+        color: 'violet', // Cor violeta para o ícone
+        themeData: {
+            '--color-primary': '#a78bfa',       // Violeta profundo
+            '--color-primary-dark': '#8b5cf6',   // Violeta mais intenso
+            '--color-background': '#1e172a',   // Preto roxo escuro
+            '--color-text-dark': '#d8b4fe',     // Lilás claro
+            '--color-text-light': '#a78bfa',    // Violeta suave
+            '--color-card-bg': '#2c213a',      // Roxo escuro para cartões
+            '--color-border': '#8b5cf6',       // Violeta para bordas
+            '--color-navbar-bg': '#8b5cf6'     // Violeta para a barra de navegação
+        }
+    },
     ];
 
     // O estado da aplicação que será salvo e carregado
