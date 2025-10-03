@@ -412,204 +412,157 @@
     });
 
 
-      // Lógica Aprimorada da Página de Pesquisa de Aluno
-document.addEventListener('DOMContentLoaded', function() {
-    const campoPesquisa = document.getElementById('campo-pesquisa-aluno');
-    const resultadosContainer = document.getElementById('resultados-pesquisa-container');
-    const contadorResultados = document.getElementById('contador-resultados');
-    const numeroResultados = document.getElementById('numero-resultados');
-    const detalhesCard = document.getElementById('detalhes-aluno-card');
-    const btnFecharDetalhes = document.getElementById('btn-fechar-detalhes');
+      // --- LÓGICA DA PÁGINA DE PESQUISA ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const campoPesquisa = document.getElementById('campo-pesquisa-aluno');
+        const contadorResultados = document.getElementById('contador-resultados');
+        const numeroResultados = document.getElementById('numero-resultados');
+        const detalhesCard = document.getElementById('detalhes-aluno-card');
+        const btnFecharDetalhes = document.getElementById('btn-fechar-detalhes');
 
-    // Elementos de estado
-    const estadoVazio = document.getElementById('estado-vazio');
-    const estadoCarregando = document.getElementById('estado-carregando');
-    const estadoSemResultados = document.getElementById('estado-sem-resultados');
-    const listaResultados = document.getElementById('lista-resultados');
+        // Estados da UI
+        const estadoVazio = document.getElementById('estado-vazio');
+        const estadoCarregando = document.getElementById('estado-carregando');
+        const estadoSemResultados = document.getElementById('estado-sem-resultados');
+        const listaResultados = document.getElementById('lista-resultados');
 
-    // Elementos do card de detalhes
-    const detalheFoto = document.getElementById('detalhe-aluno-foto');
-    const detalheNome = document.getElementById('detalhe-aluno-nome');
-    const detalheTurma = document.getElementById('detalhe-aluno-turma');
-    const detalheNivel = document.getElementById('detalhe-aluno-nivel');
-    const detalheMedia = document.getElementById('detalhe-aluno-media');
-    const detalheUltimaAtividade = document.getElementById('detalhe-aluno-ultima-atividade');
-    const detalheMoedas = document.getElementById('detalhe-aluno-moedas');
-    const badgeNivel = document.getElementById('badge-nivel');
-    const badgeMedia = document.getElementById('badge-media');
-    const linkPerfilCompleto = document.getElementById('link-perfil-completo-aluno');
+        // Elementos do card de detalhes
+        const detalheFoto = document.getElementById('detalhe-aluno-foto');
+        const detalheNome = document.getElementById('detalhe-aluno-nome');
+        const detalheTurma = document.getElementById('detalhe-aluno-turma');
+        const detalheNivel = document.getElementById('detalhe-aluno-nivel');
+        const detalheMedia = document.getElementById('detalhe-aluno-media');
+        const detalheUltimaAtividade = document.getElementById('detalhe-aluno-ultima-atividade');
+        const detalheMoedas = document.getElementById('detalhe-aluno-moedas');
+        const badgeNivel = document.getElementById('badge-nivel');
+        const badgeMedia = document.getElementById('badge-media');
+        const linkPerfilCompleto = document.getElementById('link-perfil-completo-aluno');
+        
+        let debounceTimer;
 
-    // Dados de exemplo (substituir por API real)
-    const todosAlunos = [
-        { 
-            id: 1, 
-            nome: "Aline Silva", 
-            turma: "1º A EM", 
-            nivel: "Iniciante 3", 
-            media: "88%", 
-            ultimaAtividade: "Verbos Regulares", 
-            moedas: 1250, 
-            foto: "../static/img/aluna.jpg",
-            status: "online"
-        },
-        { 
-            id: 2, 
-            nome: "Bruno Costa", 
-            turma: "1º B EM", 
-            nivel: "Intermediário 1", 
-            media: "75%", 
-            ultimaAtividade: "Acentuação", 
-            moedas: 980, 
-            foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-            status: "offline"
-        },
-        { 
-            id: 3, 
-            nome: "Carla Dias", 
-            turma: "1º A EM", 
-            nivel: "Avançado 2", 
-            media: "92%", 
-            ultimaAtividade: "Concordância Verbal", 
-            moedas: 2100, 
-            foto: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
-            status: "online"
-        }
-    ];
+        function mostrarEstado(estado) {
+            estadoVazio.classList.add('hidden');
+            estadoCarregando.classList.add('hidden');
+            estadoSemResultados.classList.add('hidden');
+            listaResultados.classList.add('hidden');
+            contadorResultados.classList.add('hidden');
 
-    function mostrarEstado(estado) {
-        // Oculta todos os estados
-        estadoVazio.classList.add('hidden');
-        estadoCarregando.classList.add('hidden');
-        estadoSemResultados.classList.add('hidden');
-        listaResultados.classList.add('hidden');
-        contadorResultados.classList.add('hidden');
-
-        // Mostra o estado especificado
-        switch(estado) {
-            case 'vazio':
-                estadoVazio.classList.remove('hidden');
-                break;
-            case 'carregando':
-                estadoCarregando.classList.remove('hidden');
-                break;
-            case 'sem-resultados':
-                estadoSemResultados.classList.remove('hidden');
-                break;
-            case 'com-resultados':
+            const elementoAtivo = document.getElementById(`estado-${estado}`);
+            if (elementoAtivo) {
+                elementoAtivo.classList.remove('hidden');
+            } else if (estado === 'com-resultados') {
                 listaResultados.classList.remove('hidden');
                 contadorResultados.classList.remove('hidden');
-                break;
-        }
-    }
-
-    function exibirResultados(alunos) {
-        listaResultados.innerHTML = '';
-        
-        alunos.forEach(aluno => {
-            const item = document.createElement('div');
-            item.className = 'p-4 hover:bg-blue-50 cursor-pointer border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md';
-            item.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <img src="${aluno.foto}" alt="${aluno.nome}" class="w-12 h-12 rounded-full object-cover">
-                        <div class="absolute bottom-0 right-0 w-3 h-3 ${aluno.status === 'online' ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white"></div>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-[#3c6a99]">${aluno.nome}</h3>
-                        <p class="text-sm text-gray-600">${aluno.turma} • ${aluno.nivel}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-medium text-green-600">${aluno.media}</p>
-                        <p class="text-xs text-gray-500">${aluno.moedas} moedas</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
-                </div>
-            `;
-            item.addEventListener('click', () => exibirDetalhesAluno(aluno));
-            listaResultados.appendChild(item);
-        });
-
-        numeroResultados.textContent = alunos.length;
-        mostrarEstado('com-resultados');
-    }
-
-    function exibirDetalhesAluno(aluno) {
-        // Atualiza os dados
-        detalheFoto.src = aluno.foto;
-        detalheNome.textContent = aluno.nome;
-        detalheTurma.textContent = aluno.turma;
-        detalheNivel.textContent = aluno.nivel;
-        detalheMedia.textContent = aluno.media;
-        detalheUltimaAtividade.textContent = aluno.ultimaAtividade;
-        detalheMoedas.textContent = aluno.moedas.toLocaleString();
-        
-        // Atualiza badges
-        badgeNivel.textContent = aluno.nivel;
-        badgeMedia.textContent = aluno.media;
-        
-        // Atualiza status
-        const statusElement = document.getElementById('status-aluno');
-        statusElement.className = `absolute bottom-2 right-2 w-4 h-4 rounded-full border-2 border-white ${aluno.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`;
-        
-        // Atualiza link do perfil
-        linkPerfilCompleto.href = `../aluno/perfil.html?id=${aluno.id}`;
-        
-        // Mostra o card de detalhes com animação
-        detalhesCard.classList.remove('hidden');
-        setTimeout(() => {
-            detalhesCard.style.opacity = '1';
-            detalhesCard.style.transform = 'translateY(0)';
-        }, 10);
-        
-        // Rolagem suave para o card de detalhes
-        detalhesCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // Event Listeners
-    campoPesquisa.addEventListener('input', function() {
-        const termo = this.value.toLowerCase().trim();
-        
-        if (termo.length === 0) {
-            mostrarEstado('vazio');
-            detalhesCard.classList.add('hidden');
-            return;
+            }
         }
 
-        if (termo.length < 2) {
-            mostrarEstado('vazio');
-            return;
-        }
-
-        // Simula carregamento
-        mostrarEstado('carregando');
-        
-        setTimeout(() => {
-            const resultados = todosAlunos.filter(aluno => 
-                aluno.nome.toLowerCase().includes(termo)
-            );
+        function exibirResultados(alunos) {
+            listaResultados.innerHTML = '';
             
-            if (resultados.length > 0) {
-                exibirResultados(resultados);
-            } else {
+            alunos.forEach(aluno => {
+                const item = document.createElement('div');
+                item.className = 'p-4 hover:bg-blue-50 cursor-pointer border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md';
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img src="../static/img/aluna.jpg" alt="${aluno.nomealuno}" class="w-12 h-12 rounded-full object-cover">
+                            <div class="absolute bottom-0 right-0 w-3 h-3 ${aluno.status === 'ativo' ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white"></div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-[#3c6a99]">${aluno.nomealuno}</h3>
+                            <p class="text-sm text-gray-600">${aluno.anoaluno || 'Sem turma'} • ${aluno.nivel}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">${aluno.moedas} moedas</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                `;
+                item.addEventListener('click', () => exibirDetalhesAluno(aluno));
+                listaResultados.appendChild(item);
+            });
+
+            numeroResultados.textContent = alunos.length;
+            mostrarEstado('com-resultados');
+            lucide.createIcons();
+        }
+
+        function exibirDetalhesAluno(aluno) {
+            // Mapeia os dados da API para os elementos do card de detalhes
+            detalheFoto.src = "../static/img/aluna.jpg"; // Usando foto placeholder
+            detalheNome.textContent = aluno.nomealuno;
+            detalheTurma.textContent = aluno.anoaluno || 'Não informada';
+            detalheNivel.textContent = aluno.nivel;
+            detalheMedia.textContent = "N/A"; // Dado não vem da API, preencher futuramente
+            detalheUltimaAtividade.textContent = "N/A"; // Dado não vem da API, preencher futuramente
+            detalheMoedas.textContent = aluno.moedas.toLocaleString();
+            
+            badgeNivel.textContent = aluno.nivel;
+            badgeMedia.textContent = "Média: N/A";
+            
+            const statusElement = document.getElementById('status-aluno');
+            statusElement.className = `absolute bottom-2 right-2 w-4 h-4 rounded-full border-2 border-white ${aluno.status === 'ativo' ? 'bg-green-500' : 'bg-gray-400'}`;
+            
+            linkPerfilCompleto.href = `#`; // Ajustar para o perfil detalhado do aluno futuramente
+            
+            detalhesCard.classList.remove('hidden');
+            detalhesCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        async function buscarAlunos(termo) {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                mostrarEstado('vazio');
+                alert("Sessão expirada. Faça login novamente.");
+                return;
+            }
+
+            mostrarEstado('carregando');
+            detalhesCard.classList.add('hidden');
+
+            try {
+                const response = await fetch(`https://back-end-mvp-tcc.vercel.app/api/professor/alunos/buscar?nome=${encodeURIComponent(termo)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const resultados = await response.json();
+                if (!response.ok) throw new Error(resultados.msg || 'Erro na busca.');
+
+                if (resultados.length > 0) {
+                    exibirResultados(resultados);
+                } else {
+                    mostrarEstado('sem-resultados');
+                }
+            } catch (error) {
+                console.error("Erro ao buscar alunos:", error);
                 mostrarEstado('sem-resultados');
             }
-        }, 500);
-    });
+        }
 
-    btnFecharDetalhes.addEventListener('click', function() {
-        detalhesCard.style.opacity = '0';
-        detalhesCard.style.transform = 'translateY(20px)';
-        setTimeout(() => {
+        campoPesquisa.addEventListener('input', function() {
+            const termo = this.value.trim();
+            clearTimeout(debounceTimer);
+
+            if (termo.length === 0) {
+                mostrarEstado('vazio');
+                detalhesCard.classList.add('hidden');
+                return;
+            }
+
+            if (termo.length >= 2) {
+                // Debounce: espera 300ms após o usuário parar de digitar para fazer a busca
+                debounceTimer = setTimeout(() => {
+                    buscarAlunos(termo);
+                }, 300);
+            }
+        });
+
+        btnFecharDetalhes.addEventListener('click', () => {
             detalhesCard.classList.add('hidden');
-        }, 300);
-        
-        // Foca no campo de pesquisa novamente
+            campoPesquisa.focus();
+        });
+
         campoPesquisa.focus();
     });
-
-    // Foca no campo de pesquisa ao carregar a página
-    campoPesquisa.focus();
-});
 
 // Atualiza ícones do Lucide
 lucide.createIcons();
