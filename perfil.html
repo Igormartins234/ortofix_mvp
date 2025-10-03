@@ -371,26 +371,106 @@
                 });
             });
 
-            // --- Lógica para Preview da Imagem de Perfil ---
-            const imageUpload = document.getElementById('profile-image-upload');
-            const imagePreview = document.getElementById('profile-image-preview');
+            document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('authToken');
 
-            if (imageUpload && imagePreview) {
-                imageUpload.addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            imagePreview.src = e.target.result;
-                        }
-                        reader.readAsDataURL(file);
-                    }
-                });
+        // --- Elementos da UI ---
+        const profileImagePreview = document.getElementById('profile-image-preview');
+        const imageUpload = document.getElementById('profile-image-upload');
+        const profileName = document.querySelector('.content-card h2');
+        const profileLevel = document.querySelector('.content-card p');
+        
+        // Elementos da seção "Minhas Informações"
+        const infoSerie = document.querySelector('.info-row:nth-child(1) span');
+        const infoProfessor = document.querySelector('.info-row:nth-child(2) span');
+        const infoEscola = document.querySelector('.info-row:nth-child(3) span');
+        
+        // Elementos da seção "Meu Progresso Geral"
+        const progressoAtividades = document.querySelector('.grid .bg-\\[var\\(--color-background\\)\\]:nth-child(1) p.text-2xl');
+        const progressoMedia = document.querySelector('.grid .bg-\\[var\\(--color-background\\)\\]:nth-child(2) p.text-2xl');
+        const progressoMoedas = document.querySelector('.grid .bg-\\[var\\(--color-background\\)\\]:nth-child(3) p.text-2xl');
+
+        // --- Função para carregar os dados do perfil ---
+        async function carregarPerfil() {
+            if (!token) {
+                alert("Sessão inválida. Faça login novamente.");
+                window.location.href = 'aluno.html';
+                return;
             }
+
+            try {
+                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/aluno/perfil', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.msg || "Erro ao carregar perfil.");
+
+                // Preenche os dados na página
+                profileName.textContent = data.nomealuno;
+                profileLevel.textContent = `Nível: ${data.nivel}`;
+                
+                if (data.urlfotoperfil) {
+                    profileImagePreview.src = data.urlfotoperfil;
+                }
+                
+                // Preenche a seção "Minhas Informações"
+                infoSerie.textContent = data.anoaluno || 'Não Informado';
+                infoProfessor.textContent = data.nomeprofessor || 'Não Vinculado';
+                infoEscola.textContent = "SESI de Itapeva"; // Mantido estático como no seu HTML
+                
+                // Preenche a seção "Meu Progresso Geral"
+                progressoMoedas.textContent = data.moedas;
+                // Os outros dados (atividades concluídas, média) precisam ser calculados no backend no futuro.
+                progressoAtividades.textContent = "N/A";
+                progressoMedia.textContent = "N/A";
+
+            } catch (error) {
+                console.error("Erro ao carregar perfil:", error);
+                alert(error.message);
+            }
+        }
+
+        // --- Lógica de Upload e Salvamento da Foto ---
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                profileImagePreview.src = base64Image; // Mostra o preview imediatamente
+
+                // Envia a imagem em base64 para o backend
+                try {
+                    const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/aluno/perfil/foto', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ urlFoto: base64Image })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.msg);
+                    
+                    alert(result.msg);
+
+                } catch (error) {
+                    alert(`Erro ao salvar a foto: ${error.message}`);
+                    carregarPerfil(); // Recarrega a foto original se o upload falhar
+                }
+            };
+            reader.readAsDataURL(file);
         });
-    </script>
+        
+            // Carrega os dados iniciais
+            carregarPerfil();
+        }); // <-- Fecha o segundo DOMContentLoaded
     
-    <script src="global-init.js"></script>
+    }); // <-- Fecha o primeiro DOMContentLoaded
+        </script>
+        
+        <script src="global-init.js"></script>
 
 </body>
 </html>
