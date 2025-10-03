@@ -231,13 +231,13 @@
 
     <!-- Conteúdo Principal -->
     <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl sm:text-3xl font-bold">Meus Alunos</h1>
             <span id="contador-alunos" class="bg-[#5689b9] text-white text-sm font-semibold px-3 py-1 rounded-full hidden"></span>
         </div>
         
-        <!-- Lista de alunos -->
-        <div id="lista-alunos" class="space-y-4">
+        <!-- O ID foi alterado para refletir a nova estrutura -->
+        <div id="container-turmas" class="space-y-10">
             <!-- Loading Skeleton: aparece enquanto os dados são carregados -->
             <div class="bg-white rounded-xl shadow-lg p-5 animate-pulse">
                 <div class="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
@@ -299,43 +299,63 @@
     });
 
 
-        const listaAlunosDiv = document.getElementById('lista-alunos');
+        const containerTurmas = document.getElementById('container-turmas');
         const contadorAlunosSpan = document.getElementById('contador-alunos');
 
         async function carregarAlunos() {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                listaAlunosDiv.innerHTML = '<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"><p class="font-bold">Acesso Negado</p><p>Você precisa fazer login como professor para ver esta página.</p></div>';
-                return;
-            }
+            containerTurmas.innerHTML = '<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"><p class="font-bold">Acesso Negado</p><p>Você precisa fazer login como professor para ver esta página.</p></div>';
+            return;
+        }
 
             try {
                 const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/alunos', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
 
-                // Tenta ler a resposta como JSON, mesmo se for um erro
-                const data = await response.json();
+                const turmas = await response.json();
 
                 if (!response.ok) {
-                    // Usa a mensagem de erro específica da API
-                    throw new Error(data.msg || 'Não foi possível carregar a lista de alunos.');
-                }
+                throw new Error(turmas.msg || 'Não foi possível carregar a lista de alunos.');
+            }
 
-                listaAlunosDiv.innerHTML = ''; // Limpa o loading skeleton
+                containerTurmas.innerHTML = ''; // Limpa o loading skeleton
+                let totalAlunos = 0;
+            
+            // Pega as chaves do objeto (nomes das turmas) e as ordena
+                const nomesDasTurmas = Object.keys(turmas).sort();
 
-                if (data.length === 0) {
-                    listaAlunosDiv.innerHTML = '<div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md"><p>Você ainda não tem nenhum aluno vinculado. Peça para seus alunos se cadastrarem selecionando seu nome.</p></div>';
-                    return;
-                }
+                if (nomesDasTurmas.length === 0) {
+                containerTurmas.innerHTML = '<div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md"><p>Você ainda não tem nenhum aluno vinculado.</p></div>';
+                return;
+            }
 
-                // Atualiza o contador de alunos
-                contadorAlunosSpan.textContent = `${data.length} alunos`;
-                contadorAlunosSpan.classList.remove('hidden');
+            // Itera sobre cada turma para criar uma seção
+                nomesDasTurmas.forEach(nomeTurma => {
+                    const alunosDaTurma = turmas[nomeTurma];
+                    totalAlunos += alunosDaTurma.length;
 
-                data.forEach(aluno => {
+                // Cria o elemento da seção da turma
+                    const secaoTurma = document.createElement('section');
+                    secaoTurma.className = "fade-in"; // Adiciona a animação de fade-in
+                
+                // Cria o título da turma
+                    const tituloTurma = document.createElement('h2');
+                        tituloTurma.className = "text-xl font-semibold text-[#3c6a99] border-b-2 border-gray-300 pb-2 mb-4";
+                        tituloTurma.innerHTML = `${nomeTurma} <span class="text-base font-medium text-gray-500">(${alunosDaTurma.length} alunos)</span>`;
+                
+                    secaoTurma.appendChild(tituloTurma);
+
+                // Cria o contêiner para os cards dos alunos desta turma
+                    const listaAlunosDiv = document.createElement('div');
+                    listaAlunosDiv.className = "space-y-4";
+
+                // Itera sobre os alunos da turma atual para criar seus cards
+                alunosDaTurma.forEach(aluno => {
                     const statusClass = aluno.status === 'ativo' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100';
                     const card = document.createElement('div');
+                    // Usa EXATAMENTE as mesmas classes CSS que você já tinha para os cards
                     card.className = "bg-white rounded-xl shadow-md p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:shadow-lg transition-shadow";
                     
                     card.innerHTML = `
@@ -353,16 +373,23 @@
                     `;
                     listaAlunosDiv.appendChild(card);
                 });
+                
+                secaoTurma.appendChild(listaAlunosDiv);
+                containerTurmas.appendChild(secaoTurma);
+            });
 
-                lucide.createIcons(); // Re-renderiza os ícones
+            // Atualiza o contador total de alunos
+            contadorAlunosSpan.textContent = `${totalAlunos} alunos`;
+            contadorAlunosSpan.classList.remove('hidden');
+            
+            lucide.createIcons(); // Re-renderiza todos os ícones após adicionar os cards
 
-            } catch (error) {
-                // Exibe a mensagem de erro detalhada
-                listaAlunosDiv.innerHTML = `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"><p class="font-bold">Ocorreu um Erro</p><p>${error.message}</p></div>`;
-            }
+        } catch (error) {
+            containerTurmas.innerHTML = `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"><p class="font-bold">Ocorreu um Erro</p><p>${error.message}</p></div>`;
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', carregarAlunos);
+    document.addEventListener('DOMContentLoaded', carregarAlunos);
 
         // --- Lógica da Navbar do Professor ---
         const menuBtnProf = document.getElementById('menu-btn-prof');
