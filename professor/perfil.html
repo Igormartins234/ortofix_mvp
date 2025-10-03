@@ -317,38 +317,104 @@
         if(notificationsDropdown) notificationsDropdown.classList.add("hidden");
     });
 
-    // --- LÓGICA PARA PREVIEW DA IMAGEM DE PERFIL ---
-    const imageUpload = document.getElementById('profile-image-upload');
-    const imagePreview = document.getElementById('profile-image-preview');
+    // --- LÓGICA DA PÁGINA DE PERFIL ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('authToken');
 
-    if (imageUpload && imagePreview) {
+        // Elementos da UI
+        const profileImagePreview = document.getElementById('profile-image-preview');
+        const profileName = document.getElementById('profile-name');
+        const nomeCompletoInput = document.getElementById('nome_completo');
+        const emailInput = document.getElementById('email');
+        const listaTurmasDiv = document.getElementById('lista_turmas');
+        const form = document.getElementById('perfil-professor-form');
+        const imageUpload = document.getElementById('profile-image-upload');
+
+        async function carregarPerfil() {
+            if (!token) {
+                alert("Sessão inválida. Faça login novamente.");
+                window.location.href = 'login.html'; // Ajuste para a página de login do professor
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/perfil', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.msg || "Erro ao carregar perfil.");
+
+                // Preenche os dados na página
+                profileName.textContent = data.nomeprofessor;
+                nomeCompletoInput.value = data.nomeprofessor;
+                emailInput.value = data.emailprofessor;
+                
+                if (data.urlfotoperfil) {
+                    profileImagePreview.src = data.urlfotoperfil;
+                }
+                
+                if (data.turmas && data.turmas.length > 0) {
+                    listaTurmasDiv.textContent = data.turmas.join(', ');
+                } else {
+                    listaTurmasDiv.textContent = "Nenhuma turma atribuída.";
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar perfil:", error);
+                alert(error.message);
+            }
+        }
+        
+        // --- LÓGICA PARA ATUALIZAR PERFIL ---
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const novoNome = nomeCompletoInput.value;
+
+            try {
+                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/perfil', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ nome: novoNome })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.msg || "Erro ao salvar.");
+                
+                // Atualiza o nome na UI e no localStorage
+                profileName.textContent = data.novoNome;
+                localStorage.setItem('userName', data.novoNome); // Mantém o nome atualizado entre páginas
+                alert(data.msg);
+
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // --- LÓGICA PARA UPLOAD DE FOTO (Simplificado) ---
+        // NOTA: Esta é uma implementação SIMPLIFICADA. Em produção, você usaria um serviço
+        // de armazenamento como AWS S3, Google Cloud Storage ou Cloudinary.
         imageUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
+                    profileImagePreview.src = e.target.result;
+                    // Aqui você faria a chamada à API para enviar a imagem.
+                    alert("A pré-visualização da imagem foi atualizada. A funcionalidade de upload permanente requer um serviço de armazenamento externo.");
+                    // Exemplo de como a chamada seria:
+                    // uploadFoto(file);
                 }
                 reader.readAsDataURL(file);
             }
         });
-    }
-    
-    // --- LÓGICA DO FORMULÁRIO ---
-     const perfilForm = document.getElementById('perfil-professor-form');
-     const profileName = document.getElementById('profile-name');
-     const nomeCompletoInput = document.getElementById('nome_completo');
-     
-     if (perfilForm) {
-        perfilForm.addEventListener('submit', function(event) {
-            event.preventDefault(); 
-            // Atualiza o nome no card de perfil ao salvar
-            if (profileName && nomeCompletoInput) {
-                profileName.textContent = nomeCompletoInput.value;
-            }
-            alert('Perfil atualizado com sucesso!');
-        });
-    }
+        
+        // Carrega os dados do perfil quando a página abre
+        carregarPerfil();
+    });
 </script>
 
 </body>
