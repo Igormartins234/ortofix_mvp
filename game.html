@@ -429,6 +429,33 @@ document.addEventListener("DOMContentLoaded", function() {
     lucide.createIcons();
     preFetchWordForTimeAttack(); // Agora pode ser chamada com segurança
 
+    // NOVA FUNÇÃO: Registra conclusão e ganha moedas (ID fixo para Acentuação = 1)
+    const ID_ATIVIDADE = 1;
+    async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            console.error('Token de auth não encontrado.');
+            return;
+        }
+
+        try {
+            const res = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ idAtividade: ID_ATIVIDADE, pontuacao, feedback })
+            });
+
+            if (!res.ok) throw new Error('Falha ao registrar atividade.');
+            const data = await res.json();
+            showRewardToast(data.moedasGanhas);
+        } catch (error) {
+            console.error('Erro ao registrar moedas:', error);
+        }
+    }
+
     // --- ELEMENTOS GERAIS ---
     const mainMenu = document.getElementById('main-menu');
     const normalModeArea = document.getElementById('normal-mode-area');
@@ -569,6 +596,7 @@ function renderInputsNormal(palavras) {
         feedbackCardsNormal.innerHTML = ''; 
         const acertos = cards.filter(c => c.resultado && c.resultado.includes('Correto')).length;
         const total = cards.length;
+        const pontuacao = Math.round((acertos / total) * 100); // Pontuação para moedas
         
         if (total > 0) {
             const percentual = (acertos / total) * 100;
@@ -608,6 +636,9 @@ function renderInputsNormal(palavras) {
         feedbackAreaNormal.classList.add('fade-in-up');
         lucide.createIcons();
         showMascote();
+
+        // NOVA CHAMADA: Registra moedas após mostrar feedback
+        registrarAtividadeConcluida(pontuacao, feedbackRaw);
     }
 
     // CORREÇÃO: Removido o bloco 'form.addEventListener' desnecessário que causava erro
@@ -811,6 +842,10 @@ let lives, score, timer, timerInterval, currentWord, currentTimeLimit;
         questionArea.classList.add('hidden');
         gameOverArea.classList.remove('hidden');
         changeBubbleText(`Fim de jogo! Você fez ${score} pontos. Que tal tentar de novo?`);
+
+        // NOVA CHAMADA: Registra moedas no fim do jogo (pontuacao = score final, feedback simples)
+        registrarAtividadeConcluida(score, 'Modo Contra o Tempo concluído');
+
         changeMascoteImage("/static/img/ortofix.png");
         showMascote();
     }
