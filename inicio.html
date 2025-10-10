@@ -6,11 +6,16 @@
     <title>OrtoFix - Painel do Aluno</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="./static/img/favicon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script> <!-- Lucide Icons -->
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chatcss.css">
+    <script src="chatbot.js" defer></script>
     <style>
         :root {
             --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
@@ -190,7 +195,9 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
+
     </style>
+
 </head>
 <body class="min-h-screen flex flex-col">
 <header class="header-nav sticky top-0 z-50">
@@ -482,7 +489,7 @@ if (soundBtn) {
             icon.setAttribute("data-lucide", "volume-x");
             icon.classList.remove("text-[#e3ebf2]");
             icon.classList.add("text-red-500");
-        }
+x}
 
         lucide.createIcons();
     });
@@ -522,6 +529,32 @@ setTimeout(() => {
 }, 2000); 
 </script>
 <script src="global-init.js"></script>
+
+
+
+<button id="chat-button">
+    <i class="fas fa-comment-dots"></i> <!-- Ícone de balão de fala com pontos -->
+</button>
+
+<div id="chatbot-popup">
+    <div class="chatbot-header">
+        <img src="static/img/ortofix.png" alt="Mascote OrtoFix" class="mascot-icon">
+        
+        <h3>OrtoFix</h3>
+        <button id="close-button" class="text-2xl font-bold p-1 leading-none">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="messages-container">
+        <div class="message bot-message">Olá! Sou o OrtoFix, seu assistente de ortografia. No que posso ajudar?</div>
+        <div class="loading-dots"></div>
+    </div>
+    <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+        <button id="send-button">
+            <i class="fas fa-paper-plane"></i> Enviar
+        </button>
+    </div>
+</div>
+
 
 </body>
 </html>
