@@ -305,11 +305,7 @@
                     Voltar
                 </a>
 </div>
-<!-- Cabeçalho da Página -->
-<div class="text-center mb-8 fade-in-up">
-    <h1 class="text-4xl md:text-5xl font-bold text-dynamic-dark mb-2 tracking-tight">Desafio de Acentuação</h1>
-    <p class="text-lg text-dynamic-light max-w-2xl mx-auto">Escolha um modo de jogo e teste seus conhecimentos!</p>
-</div>
+<!-- Cabeçalho da Página --><!-- CORREÇÃO: Removido duplicação do cabeçalho -->
              
             <button id="btnIniciarNormal" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Começar a Jogar</button>
         </div>
@@ -412,23 +408,26 @@
 <!-- 🔹 SCRIPT UNIFICADO -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    // CORREÇÃO: Declaração da variável global para pré-carregamento
+    let preFetchedWord = null;
+
+    // CORREÇÃO: Definição da função ANTES da chamada
+    async function preFetchWordForTimeAttack() {
+        try {
+            const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras?limite=1`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                preFetchedWord = data.palavras[0]; // Armazena a palavra na variável global
+            }
+        } catch (error) {
+            console.error("Falha ao pré-carregar palavra:", error);
+            preFetchedWord = null; // Garante que a variável esteja limpa em caso de erro
+        }
+    }
+
     // Inicializa todos os ícones da página
     lucide.createIcons();
-    preFetchWordForTimeAttack(); // Pré-busca a primeira palavra para o modo contra o tempo
-
-    // ADICIONE ESTA NOVA FUNÇÃO (pode ser em qualquer lugar do script)
-async function preFetchWordForTimeAttack() {
-    try {
-        const res = await fetch(`${API_URL}/api/ortofix/gerar_palavras?limite=1`, { method: 'POST' });
-        if (res.ok) {
-            const data = await res.json();
-            preFetchedWord = data.palavras[0]; // Armazena a palavra na variável global
-        }
-    } catch (error) {
-        console.error("Falha ao pré-carregar palavra:", error);
-        preFetchedWord = null; // Garante que a variável esteja limpa em caso de erro
-    }
-}
+    preFetchWordForTimeAttack(); // Agora pode ser chamada com segurança
 
     // --- ELEMENTOS GERAIS ---
     const mainMenu = document.getElementById('main-menu');
@@ -610,21 +609,8 @@ function renderInputsNormal(palavras) {
         lucide.createIcons();
         showMascote();
     }
-    // --- LÓGICA DE EVENTOS ---
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        // ... (código que monta o array de respostas) ...
 
-        const res = await fetch(`${API_URL_GEMINI}/api/ortofix/verificar`, { /* ... */ });
-        const data = await res.json();
-        renderFeedback(data.feedback);
-        feedbackArea.classList.remove('hidden');
-
-        // CALCULA PONTUAÇÃO E CHAMA A RECOMPENSA
-        const acertos = (data.feedback.match(/Resultado: Correto!/g) || []).length;
-        const pontuacao = Math.round((acertos / palavrasAtuais.length) * 100);
-        await registrarAtividadeConcluida(pontuacao, data.feedback);
-    });
+    // CORREÇÃO: Removido o bloco 'form.addEventListener' desnecessário que causava erro
 
     formNormal.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -675,7 +661,6 @@ function renderInputsNormal(palavras) {
     const backToMenuBtn = document.getElementById('back-to-menu');
     
 let lives, score, timer, timerInterval, currentWord, currentTimeLimit;
-let preFetchWord = null;
     const INITIAL_TIME = 10;
 
     function startGameTimeAttack() {
@@ -832,7 +817,7 @@ let preFetchWord = null;
 
     function updateTimerDisplay() {
         timerDisplay.textContent = timer;
-        const percentage = (timer / INITIAL_TIME) * 100;
+        const percentage = (timer / currentTimeLimit) * 100; // CORREÇÃO: Usa currentTimeLimit para cálculos precisos
         
         // Atualização da cor da barra de tempo
         if(percentage < 25) {
