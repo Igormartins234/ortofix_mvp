@@ -345,6 +345,33 @@ document.addEventListener("DOMContentLoaded", function() {
     
     let textoOriginalGlobal = "", textoCorrigidoIdealGlobal = "";
 
+    function showRewardToast(coins) {
+    // Cria o elemento do toast
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
+    toast.style.transform = 'translateX(120%)';
+    toast.style.transition = 'transform 0.5s ease-in-out';
+    
+    toast.innerHTML = `
+        <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
+        <div>
+            <p class="font-bold text-lg">Recompensa Recebida!</p>
+            <p class="text-base">Você ganhou +${coins} moedas!</p>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    lucide.createIcons();
+    
+    // Animação de entrada
+    setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
+
+    // Animação de saída
+    setTimeout(() => {
+        toast.style.transform = 'translateX(120%)';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000); // O toast some após 4 segundos
+}
+
     function showLoading(isLoading, message = "Carregando...") {
         loadingP.textContent = message;
         loadingP.style.display = isLoading ? 'block' : 'none';
