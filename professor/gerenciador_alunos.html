@@ -13,95 +13,86 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+            --color-primary: #4A90E2;
             --color-primary-dark: #357ABD;
-            --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
-            --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
-            --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
-            --color-text-light: #8492a6;  /* Cinza para textos secundários */
+            --color-accent: #50E3C2;
+            --color-background: #F4F7FA;
+            --color-text-dark: #2c3e50;
+            --color-text-light: #8492a6;
             --color-card-bg: #ffffff;
+            --color-border: #EAEFF5; /* Nova cor para bordas sutis */
         }
 
-        body { font-family: 'Poppins', sans-serif; background-color: var(--color-background); color: var(--color-text-dark); background-image: radial-gradient(circle at top, #ffffff 0%, var(--color-background) 80%); }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--color-background); 
+            color: var(--color-text-dark); 
+            background-image: linear-gradient(180deg, #FDFEFE 0%, var(--color-background) 100%);
+        }
+
         .navbar-logo { width: 40px; height: auto; }
-        .nav-card { background-color: var(--color-card-bg); border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
-        .nav-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04); }
-        .nav-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--color-accent), var(--color-primary)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease-in-out; }
-        .nav-card:hover::after { transform: scaleX(1); }
 
-         /* --- ESTILOS DO MASCOTE FLUTUANTE --- */
-        #mascote-assistente {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            z-index: 100;
-            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            transform: translateY(200%);
-            opacity: 0;
+        /* --- ESTILOS DOS NOVOS CARDS DE TURMA --- */
+        .class-card { 
+            background-color: var(--color-card-bg); 
+            border-radius: 1rem; 
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        #mascote-assistente.visible {
-            transform: translateY(0);
+        .class-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.1), 0 10px 10px -5px rgba(44, 62, 80, 0.04);
+        }
+        
+        /* Barra de gradiente inferior */
+        .class-card::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 4px; 
+            background: linear-gradient(90deg, var(--color-accent), var(--color-primary)); 
+            transform: scaleX(0); 
+            transform-origin: left; 
+            transition: transform 0.4s ease-in-out; 
+        }
+        .class-card:hover::after { transform: scaleX(1); }
+        
+        /* Seta que aparece no hover */
+        .class-card .view-arrow {
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .class-card:hover .view-arrow {
             opacity: 1;
+            transform: translateX(4px);
         }
-        #mascote-assistente .mascote-img {
-            height: 100px;
-            width: auto;
-            animation: bobbing 3s ease-in-out infinite;
-        }
-        #mascote-assistente.hiding {
-            transform: translateY(200%);
-            opacity: 0;
-        }
-        #chat-bubble {
-            position: absolute;
-            bottom: 84px;
-            right: 47px;
-            background-color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            width: 200px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-size: 14px;
-            font-weight: 500;
-            color: #3c6a99;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        #chat-bubble.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-        /* "Calda" do balão de diálogo */
-        #chat-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            right: 20px;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 10px solid white;
-        }
-        @keyframes bobbing {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+
+        /* Animação de entrada */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <header class="header-nav sticky top-0 z-50">
     <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
         <!-- Menu Principal -->
             <div class="relative">
-                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                <button id="menu-btn" type="button" aria-label="Abrir menu principal" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
                     <i data-lucide="menu"></i>
                 </button>
-                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
-                    <!-- Itens do menu -->
+                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
                     <a href="painel.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
                         <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
                     </a>
@@ -129,36 +120,18 @@
             <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
                 <!-- Ícone de Notificações -->
-                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
+                <div class="relative">
+                    <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
                         <i data-lucide="bell" class="text-white"></i>
-                        <span class="notification-badge" id="notification-indicator"></span>
                     </button>
                     <!-- Dropdown de Notificações -->
-                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
-                        <div class="p-3 border-b border-gray-200">
-                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
-                        </div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Aluno 'João Silva' completou uma atividade!</p>
-                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 5 minutos</p>
-                            </a>
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Nova dúvida enviada.</p>
-                                <p class="text-xs text-gray-500">Por 'Mariana Costa' sobre Crase.</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 30 minutos</p>
-                            </a>
-                        </div>
-                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
-                            Ver todas as notificações
-                        </a>
+                    <div id="notifications-dropdown" class="absolute right-0 mt-3 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <!-- Conteúdo do dropdown -->
                     </div>
                 </div>
 
                 <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                <a href="perfil.html" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
                     <i data-lucide="user-circle" class="text-white"></i>
                 </a>
             </div>
@@ -166,88 +139,111 @@
     </nav>
 </header>
 
-    <!-- Conteúdo Principal -->
-    <main class="container mx-auto px-4 sm:px-6 py-8 flex-grow">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-bold text-[var(--color-primary-dark)]">Gerenciar Alunos</h1>
-            <p class="text-lg text-[var(--color-text-light)] mt-2">Selecione uma turma para ver os detalhes</p>
+    <!-- Conteúdo Principal Aprimorado -->
+    <main class="container mx-auto px-4 sm:px-6 py-12 flex-grow">
+        <div class="mb-10">
+             <a href="painel.html" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors group mb-4">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+                Voltar ao painel
+            </a>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">Gerenciar Turmas</h1>
+            <p class="text-lg text-gray-500 mt-1">Selecione uma turma para ver os detalhes dos alunos.</p>
         </div>
         
         <!-- Grid para os cards das turmas -->
-        <div id="container-turmas-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="container-turmas-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Loading Skeletons para os cards de turma -->
-            <div class="nav-card p-6 animate-pulse">
-                <div class="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="class-card p-6 animate-pulse">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-200 rounded-lg"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-6 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="mt-6 h-6 bg-gray-200 rounded w-1/3"></div>
             </div>
-            <div class="nav-card p-6 animate-pulse">
-                <div class="h-8 bg-gray-200 rounded w-2/3 mb-4"></div>
-                <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+            <div class="class-card p-6 animate-pulse">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-200 rounded-lg"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-6 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="mt-6 h-6 bg-gray-200 rounded w-1/3"></div>
+            </div>
+             <div class="class-card p-6 animate-pulse">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gray-200 rounded-lg"></div>
+                    <div class="space-y-2 flex-1">
+                        <div class="h-6 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="mt-6 h-6 bg-gray-200 rounded w-1/3"></div>
             </div>
         </div>
     </main>
 
 <footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
-    <div class="container mx-auto py-2 px-4 text-center text-sm">
+    <div class="container mx-auto py-4 px-4 text-center text-sm">
         <div class="flex items-center justify-center gap-2">
-            <p>&copy; 2025 OrtoFix</p>
+            <p class="opacity-80">&copy; 2025 OrtoFix</p>
             <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
         </div>
     </div>
 </footer>
 
     <script>
-          lucide.createIcons();
+        lucide.createIcons();
 
-    // --- LÓGICA DO MENU DROPDOWN E NOTIFICAÇÕES ---
-    const menuBtn = document.getElementById("menu-btn");
-    const dropdownMenu = document.getElementById("dropdown-menu");
-    const notificationsBtn = document.getElementById("notifications-btn");
-    const notificationsDropdown = document.getElementById("notifications-dropdown");
+        // --- LÓGICA DO MENU DROPDOWN E NOTIFICAÇÕES ---
+        const menuBtn = document.getElementById("menu-btn");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const notificationsBtn = document.getElementById("notifications-btn");
+        const notificationsDropdown = document.getElementById("notifications-dropdown");
 
-    if (menuBtn && dropdownMenu) {
-        menuBtn.addEventListener("click", () => {
-            dropdownMenu.classList.toggle("hidden");
-            // Fecha o dropdown de notificações se estiver aberto
-            if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
+        if (menuBtn && dropdownMenu) {
+            menuBtn.addEventListener("click", () => {
+                dropdownMenu.classList.toggle("hidden");
+                if (notificationsDropdown && !notificationsDropdown.classList.contains("hidden")) {
+                    notificationsDropdown.classList.add("hidden");
+                }
+            });
+        }
+
+        if (notificationsBtn && notificationsDropdown) {
+            notificationsBtn.addEventListener("click", () => {
+                notificationsDropdown.classList.toggle("hidden");
+                if (dropdownMenu && !dropdownMenu.classList.contains("hidden")) {
+                    dropdownMenu.classList.add("hidden");
+                }
+            });
+        }
+        
+        document.addEventListener("click", (e) => {
+            if (menuBtn && !menuBtn.contains(e.target) && dropdownMenu && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add("hidden");
+            }
+            if (notificationsBtn && !notificationsBtn.contains(e.target) && notificationsDropdown && !notificationsDropdown.contains(e.target)) {
                 notificationsDropdown.classList.add("hidden");
             }
         });
-    }
-
-    if (notificationsBtn && notificationsDropdown) {
-        notificationsBtn.addEventListener("click", () => {
-            notificationsDropdown.classList.toggle("hidden");
-            // Fecha o menu principal se estiver aberto
-            if (dropdownMenu && !dropdownMenu.classList.contains("hidden")) {
-                dropdownMenu.classList.add("hidden");
-            }
-        });
-    }
-    
-    // Fecha os dropdowns se clicar fora deles
-    document.addEventListener("click", (e) => {
-        if (menuBtn && !menuBtn.contains(e.target) && dropdownMenu && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.add("hidden");
-        }
-        if (notificationsBtn && !notificationsBtn.contains(e.target) && notificationsDropdown && !notificationsDropdown.contains(e.target)) {
-            notificationsDropdown.classList.add("hidden");
-        }
-    });
-
 
         const containerTurmas = document.getElementById('container-turmas-cards');
 
         async function carregarTurmas() {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                containerTurmas.innerHTML = '<p class="text-red-500 text-center">Acesso negado.</p>';
-                // Opcional: redirecionar para o login
-                // window.location.href = 'login.html';
+                containerTurmas.innerHTML = '<p class="text-red-500 text-center col-span-full">Acesso negado. Por favor, faça login.</p>';
                 return;
             }
 
             try {
+                // Simula um delay para ver o skeleton
+                await new Promise(resolve => setTimeout(resolve, 500));
+
                 const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/alunos', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -259,26 +255,32 @@
                 const nomesDasTurmas = Object.keys(turmas).sort();
 
                 if (nomesDasTurmas.length === 0) {
-                    containerTurmas.innerHTML = '<p class="text-center text-[var(--color-text-light)]">Nenhuma turma com alunos encontrada.</p>';
+                    containerTurmas.innerHTML = '<div class="text-center text-gray-500 col-span-full bg-white p-10 rounded-lg border border-dashed"><p>Nenhuma turma com alunos foi encontrada.</p><p class="text-sm mt-2">Adicione alunos a uma turma para que ela apareça aqui.</p></div>';
                     return;
                 }
 
-                nomesDasTurmas.forEach(nomeTurma => {
+                nomesDasTurmas.forEach((nomeTurma, index) => {
                     const alunosDaTurma = turmas[nomeTurma];
                     const cardLink = document.createElement('a');
-                    cardLink.className = "nav-card p-6 flex flex-col justify-between fade-in";
-                    // Passa o nome da turma na URL para a próxima página
+                    cardLink.className = "class-card p-6 fade-in";
+                    cardLink.style.animationDelay = `${index * 100}ms`;
                     cardLink.href = `turma_alunos.html?turma=${encodeURIComponent(nomeTurma)}`;
 
                     cardLink.innerHTML = `
                         <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <i data-lucide="users" class="w-8 h-8 text-[var(--color-primary)]"></i>
-                                <h2 class="text-2xl font-bold text-[var(--color-text-dark)]">${nomeTurma}</h2>
+                            <div class="flex items-center gap-4">
+                                <div class="p-3 bg-blue-100 rounded-xl">
+                                    <i data-lucide="users" class="w-8 h-8 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800">${nomeTurma}</h2>
+                                    <p class="text-sm text-gray-500">${alunosDaTurma.length} ${alunosDaTurma.length === 1 ? 'aluno' : 'alunos'}</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <p class="text-lg font-semibold text-[var(--color-text-light)]">${alunosDaTurma.length} aluno(s)</p>
+                        <div class="mt-6 flex justify-between items-center text-sm font-semibold text-blue-600">
+                            <span>Ver detalhes da turma</span>
+                            <i data-lucide="arrow-right" class="view-arrow transition-transform"></i>
                         </div>
                     `;
                     containerTurmas.appendChild(cardLink);
@@ -287,30 +289,10 @@
                 lucide.createIcons();
 
             } catch (error) {
-                containerTurmas.innerHTML = `<p class="text-red-500 text-center">${error.message}</p>`;
+                containerTurmas.innerHTML = `<p class="text-red-500 text-center col-span-full">${error.message}</p>`;
             }
         }
         document.addEventListener('DOMContentLoaded', carregarTurmas);
-
-        // --- Lógica da Navbar do Professor ---
-        const menuBtnProf = document.getElementById('menu-btn-prof');
-        const dropdownMenuProf = document.getElementById('dropdown-menu-prof');
-        if (menuBtnProf && dropdownMenuProf) {
-            menuBtnProf.addEventListener('click', () => dropdownMenuProf.classList.toggle('hidden'));
-            document.addEventListener('click', (e) => {
-                if (!menuBtnProf.contains(e.target) && !dropdownMenuProf.contains(e.target)) {
-                    dropdownMenuProf.classList.add('hidden');
-                }
-            });
-        }
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('authToken');
-                window.location.href = 'login.html'; // Redireciona para o login do professor
-            });
-        }
     </script>
 </body>
 </html>
