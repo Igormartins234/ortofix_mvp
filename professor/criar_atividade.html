@@ -246,7 +246,7 @@
 
     <!-- Formulário de Criação -->
     <div class="bg-white shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-3xl mx-auto fade-in" style="animation-delay: 300ms;">
-        <form action="#" method="POST">
+        <form id="create-activity-form" action="#" method="POST">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <!-- Título da Atividade -->
                 <div class="md:col-span-2">
@@ -449,85 +449,119 @@
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
-  const tituloEl = document.getElementById('titulo_atividade');
-  const tipoEl = document.getElementById('tipo_atividade');
-  const descricaoEl = document.getElementById('descricao_atividade');
-  const camposEspecificos = document.getElementById('campos-especificos-atividade');
+            const form = document.getElementById('create-activity-form');
+            const btnGerarIA = document.getElementById('gerar-ia');
+            const camposEspecificosDiv = document.getElementById('campos-especificos-atividade');
+            
+            let conteudoGeradoPelaIA = null; // Armazena o JSON gerado
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+            // --- Lógica para Gerar Conteúdo com IA ---
+            btnGerarIA.addEventListener('click', async () => {
+                const titulo = document.getElementById('titulo_atividade').value;
+                const tipo = document.getElementById('tipo_atividade').value;
+                const descricao = document.getElementById('descricao_atividade').value;
 
-    const instrucoes = descricaoEl.value || (tituloEl.value ? `Crie atividade: ${tituloEl.value}` : '');
-    const tipo_preferido = tipoEl.value || '';
+                if (!titulo || !tipo || !descricao) {
+                    alert('Por favor, preencha o Título, Tipo e Descrição para guiar a IA.');
+                    return;
+                }
+                
+                btnGerarIA.disabled = true;
+                btnGerarIA.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Gerando...';
+                lucide.createIcons();
+                camposEspecificosDiv.innerHTML = '<p class="text-center text-gray-500">Aguarde, a IA está criando o conteúdo...</p>';
 
-    if (!instrucoes) {
-      alert('Insira as instruções da atividade.');
-      return;
-    }
+                try {
+                    const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_atividade_professor', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            instrucoes: descricao,
+                            tipo_preferido: tipo
+                        })
+                    });
 
-    // 1) Chama IA para gerar conteúdo
-    try {
-      const aiResp = await fetch('https://api-tcc-alpha.vercel.app//api/gerar_atividade_professor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instrucoes, tipo_preferido })
-      });
-      if (!aiResp.ok) {
-        const err = await aiResp.json();
-        console.error('Erro IA:', err);
-        alert('Falha ao gerar atividade pela IA.');
-        return;
-      }
-      const atividadeGerada = await aiResp.json();
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.error || 'A IA não conseguiu gerar o conteúdo.');
+                    
+                    // Armazena o conteúdo gerado e exibe uma prévia
+                    conteudoGeradoPelaIA = data.conteudo_especifico;
+                    camposEspecificosDiv.innerHTML = `
+                        <p class="font-semibold text-sm text-gray-600 mb-2">Conteúdo gerado pela IA (prévia):</p>
+                        <pre class="bg-gray-100 p-3 rounded-md text-xs whitespace-pre-wrap">${JSON.stringify(conteudoGeradoPelaIA, null, 2)}</pre>
+                        <p class="text-xs text-gray-500 mt-2">Você pode editar os campos do formulário antes de salvar.</p>
+                    `;
+                    // Preenche campos do formulário com sugestões da IA
+                    if(data.titulo) document.getElementById('titulo_atividade').value = data.titulo;
+                    if(data.tipo) document.getElementById('tipo_atividade').value = data.tipo;
+                    
+                } catch (error) {
+                    camposEspecificosDiv.innerHTML = `<p class="text-center text-red-500">${error.message}</p>`;
+                } finally {
+                    btnGerarIA.disabled = false;
+                    btnGerarIA.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar com IA';
+                    lucide.createIcons();
+                }
+            });
 
-      // mostra preview simples dentro do formulário
-      camposEspecificos.innerHTML = `<pre class="text-sm bg-gray-50 p-3 rounded">${JSON.stringify(atividadeGerada, null, 2)}</pre>`;
+            // --- Lógica para Salvar a Atividade Completa ---
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btnSalvar = document.getElementById('save-activity-btn');
+                
+                if (!conteudoGeradoPelaIA) {
+                    alert('Por favor, gere o conteúdo da atividade com a IA antes de salvar.');
+                    return;
+                }
 
-      // Pergunta para professor confirmar envio
-      if (!confirm('Geramos a atividade. Deseja salvar e publicar para os alunos?')) return;
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Sessão expirada. Faça login novamente.');
+                    return;
+                }
+                
+                btnSalvar.disabled = true;
+                btnSalvar.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Salvando...';
+                lucide.createIcons();
 
-      // 2) Envia para o backend principal para salvar (usa token JWT do storage)
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        alert('Sessão expirada. Faça login novamente.');
-        window.location.href = 'login.html';
-        return;
-      }
+                // Coleta todos os dados do formulário
+                const turmasSelect = document.getElementById('turmas_destino');
+                const turmasSelecionadas = [...turmasSelect.options].filter(option => option.selected).map(option => option.value);
 
-      const salvarResp = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/atividades', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          titulo: atividadeGerada.titulo || tituloEl.value || 'Atividade gerada',
-          tipo: atividadeGerada.tipo || tipo_preferido || 'multipla_escolha',
-          descricao: atividadeGerada.descricao || descricaoEl.value || '',
-          conteudo_especifico: atividadeGerada.conteudo_especifico || {},
-          icon: atividadeGerada.icon || 'file-text',
-          turmas: atividadeGerada.turmas || []
-        })
-      });
+                const atividadeParaSalvar = {
+                    titulo: document.getElementById('titulo_atividade').value,
+                    tipo: document.getElementById('tipo_atividade').value,
+                    descricao: document.getElementById('descricao_atividade').value,
+                    conteudo_especifico: conteudoGeradoPelaIA, // Usa o JSON que a IA gerou
+                    icon: 'file-text', // Ícone padrão, pode ser dinâmico no futuro
+                    turmas: turmasSelecionadas
+                };
+                
+                try {
+                    const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/atividades', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(atividadeParaSalvar)
+                    });
 
-      if (!salvarResp.ok) {
-        const err = await salvarResp.json();
-        console.error('Erro salvar atividade:', err);
-        alert('Falha ao salvar atividade no backend.');
-        return;
-      }
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.msg || 'Erro ao salvar a atividade.');
 
-      const result = await salvarResp.json();
-      alert('Atividade criada com sucesso! ID: ' + (result.idAtividade || result.idAtividade));
-      window.location.href = 'painel.html';
-    } catch (err) {
-      console.error('Erro geral criar atividade:', err);
-      alert('Ocorreu um erro ao criar atividade.');
-    }
+                    alert('Atividade criada e publicada com sucesso!');
+                    window.location.href = 'painel.html';
 
-  });
-});
+                } catch (error) {
+                    alert(`Erro: ${error.message}`);
+                } finally {
+                    btnSalvar.disabled = false;
+                    btnSalvar.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Salvar Atividade';
+                    lucide.createIcons();
+                }
+            });
+        });
 </script>
 
 </body>
