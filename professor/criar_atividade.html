@@ -330,19 +330,18 @@
                             Conteúdo da Atividade
                         </span>
                     </label>
-                    <button type="button" id="gerar-ia" class="flex items-center gap-2 text-sm bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        Gerar com IA
-                    </button>
-                </div>
-                
-                <div id="campos-especificos-atividade" class="p-5 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[150px] transition-all duration-300">
-                    <div class="text-center text-gray-500 py-8">
-                        <i data-lucide="file-question" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                        <p class="font-medium">Selecione um tipo de atividade para começar</p>
-                        <p class="text-sm mt-1">Ou use o botão "Gerar com IA" para criar automaticamente</p>
-                    </div>
-                </div>
+                    <div class="flex gap-2">
+        <!-- BOTÃO MODELO BÁSICO QUE ESTAVA FALTANDO -->
+        <button type="button" id="gerar-modelo" class="flex items-center gap-2 text-sm bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Modelo Básico
+        </button>
+        <!-- BOTÃO GERAR COM IA QUE JÁ EXISTE -->
+        <button type="button" id="gerar-ia" class="flex items-center gap-2 text-sm bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            Gerar com IA
+        </button>
+    </div>
             </div>
 
             <!-- Turmas Destino -->
@@ -516,20 +515,37 @@ getConteudoManualPorTipo(tipo) {
     }
 
     setupEventListeners() {
-        // Botão Gerar com IA
-        this.gerarIaBtn?.addEventListener('click', () => this.gerarAtividadeComIA());
-        
-        // Mudança no tipo de atividade
-        this.tipoEl?.addEventListener('change', () => this.atualizarCamposEspecificos());
-        
-        // Submit do formulário
-        this.form?.addEventListener('submit', (e) => this.salvarAtividade(e));
-        
-        // Fechar preview
-        document.getElementById('fechar-preview')?.addEventListener('click', () => {
-            this.previewContainer.classList.add('hidden');
+    // Botão Gerar com IA
+    this.gerarIaBtn?.addEventListener('click', () => this.gerarAtividadeComIA());
+    
+    // Botão Modelo Básico (o que você já tem)
+    document.getElementById('gerar-modelo')?.addEventListener('click', () => {
+        const tipo = this.tipoEl.value;
+        if (!tipo) {
+            alert('Selecione um tipo de atividade primeiro.');
+            return;
+        }
+        const conteudo = this.getConteudoManualPorTipo(tipo);
+        this.atualizarCamposEspecificos(conteudo);
+        this.mostrarPreview({
+            titulo: this.tituloEl.value || 'Atividade com Modelo Básico',
+            tipo: tipo,
+            descricao: this.descricaoEl.value || 'Complete a atividade seguindo as instruções.',
+            conteudo_especifico: conteudo
         });
-    }
+    });
+    
+    // Mudança no tipo de atividade - ESSENCIAL
+    this.tipoEl?.addEventListener('change', () => this.atualizarCamposEspecificos());
+    
+    // Submit do formulário - ESSENCIAL
+    this.form?.addEventListener('submit', (e) => this.salvarAtividade(e));
+    
+    // Fechar preview - ESSENCIAL
+    document.getElementById('fechar-preview')?.addEventListener('click', () => {
+        this.previewContainer.classList.add('hidden');
+    });
+}
 
     async carregarTurmasDisponiveis() {
         try {
@@ -785,6 +801,51 @@ getConteudoManualPorTipo(tipo) {
         this.previewContainer.classList.remove('hidden');
     }
 
+    capturarDadosCamposDinamicos() {
+    const tipo = this.tipoEl.value;
+    const conteudo = {};
+    
+    // Tenta capturar dados dos campos dinâmicos se existirem
+    const textareas = this.camposEspecificos.querySelectorAll('textarea');
+    const inputs = this.camposEspecificos.querySelectorAll('input[type="text"]');
+    const selects = this.camposEspecificos.querySelectorAll('select');
+    
+    switch(tipo) {
+        case 'multipla_escolha':
+            if (textareas[0]) conteudo.pergunta = textareas[0].value;
+            if (inputs.length >= 4) {
+                conteudo.alternativas = Array.from(inputs).map(input => input.value).filter(val => val);
+            }
+            if (selects[0]) conteudo.correta_index = parseInt(selects[0].value);
+            break;
+            
+        case 'escolha_erro':
+            if (textareas[0]) conteudo.texto_com_erros = textareas[0].value;
+            break;
+            
+        case 'caca_palavras':
+            if (textareas[0]) {
+                conteudo.palavras = textareas[0].value.split(',').map(p => p.trim()).filter(p => p);
+            }
+            if (selects[0]) conteudo.tamanho = selects[0].value;
+            break;
+            
+        case 'completar_frases':
+            if (textareas[0]) {
+                conteudo.frases = textareas[0].value.split('\n').filter(f => f.trim());
+            }
+            break;
+            
+        case 'ditado':
+            if (textareas[0]) {
+                conteudo.frases = textareas[0].value.split('\n').filter(f => f.trim());
+            }
+            break;
+    }
+    
+    return conteudo;
+}
+
     async salvarAtividade(e) {
     e.preventDefault();
 
@@ -805,20 +866,23 @@ getConteudoManualPorTipo(tipo) {
         turmas: this.obterTurmasSelecionadas()
     };
 
+    console.log('Dados a serem enviados:', formData); // Para debug
+
     // Validação básica
     if (!formData.titulo || !formData.tipo || !formData.descricao) {
         alert('Preencha todos os campos obrigatórios: título, tipo e descrição.');
         return;
     }
 
-    // Validação do conteúdo específico
+    // Validação do conteúdo específico - MAIS FLEXÍVEL
     if (!formData.conteudo_especifico || Object.keys(formData.conteudo_especifico).length === 0) {
-        if (!confirm('O conteúdo da atividade está vazio. Deseja continuar mesmo assim?')) {
-            return;
-        }
+        console.log('Conteúdo específico vazio, usando padrão');
+        // Usa conteúdo padrão baseado no tipo
+        formData.conteudo_especifico = this.getConteudoManualPorTipo(formData.tipo);
     }
 
     try {
+        console.log('Enviando para API:', formData);
         const response = await fetch(`${API_BASE}/api/professor/atividades`, {
             method: 'POST',
             headers: {
@@ -829,6 +893,7 @@ getConteudoManualPorTipo(tipo) {
         });
 
         const result = await response.json();
+        console.log('Resposta da API:', result);
 
         if (response.ok) {
             alert('Atividade criada com sucesso!');
@@ -844,10 +909,34 @@ getConteudoManualPorTipo(tipo) {
 }
 
     obterConteudoEspecifico() {
-        // Implemente a lógica para extrair dados dos campos específicos
-        // Por enquanto, retorna um objeto vazio
-        return {};
+    const tipo = this.tipoEl.value;
+    if (!tipo) return {};
+
+    // Primeiro tenta capturar dados dos campos dinâmicos
+    const dadosCampos = this.capturarDadosCamposDinamicos();
+    if (Object.keys(dadosCampos).length > 0) {
+        return dadosCampos;
     }
+
+    // Depois tenta extrair do preview da IA
+    try {
+        const previewText = this.previewContent.textContent;
+        if (previewText) {
+            const jsonMatch = previewText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const parsed = JSON.parse(jsonMatch[0]);
+                if (parsed.conteudo_especifico) {
+                    return parsed.conteudo_especifico;
+                }
+            }
+        }
+    } catch (e) {
+        console.log('Não foi possível extrair conteúdo do preview');
+    }
+
+    // Finalmente, usa conteúdo padrão
+    return this.getConteudoManualPorTipo(tipo);
+}
 
     obterTurmasSelecionadas() {
         const turmasSelect = document.getElementById('turmas_destino');
