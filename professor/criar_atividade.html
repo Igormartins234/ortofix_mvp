@@ -465,6 +465,51 @@ class CriarAtividadeManager {
         this.init();
     }
 
+    criarAtividadeManual() {
+    const tipo = this.tipoEl.value;
+    if (!tipo) {
+        alert('Selecione um tipo de atividade primeiro.');
+        return;
+    }
+
+    const atividadeManual = {
+        titulo: this.tituloEl.value || 'Atividade Personalizada',
+        tipo: tipo,
+        descricao: this.descricaoEl.value || 'Complete a atividade seguindo as instruções.',
+        conteudo_especifico: this.getConteudoManualPorTipo(tipo),
+        icon: 'file-text',
+        turmas: this.obterTurmasSelecionadas()
+    };
+
+    this.mostrarPreview(atividadeManual);
+}
+
+getConteudoManualPorTipo(tipo) {
+    const conteudos = {
+        'multipla_escolha': {
+            pergunta: "Qual é a alternativa correta?",
+            alternativas: ["Alternativa A", "Alternativa B", "Alternativa C", "Alternativa D"],
+            correta_index: 0
+        },
+        'escolha_erro': {
+            texto_com_erros: "Escreva aqui um texto contendo erros ortográficos para os alunos identificarem."
+        },
+        'caca_palavras': {
+            palavras: ["palavra1", "palavra2", "palavra3"],
+            tamanho: "medio"
+        },
+        'completar_frases': {
+            frases: ["Complete a frase com a palavra correta: O gato ___ no telhado.", "A menina ___ para a escola."],
+            respostas: ["pulou", "foi"]
+        },
+        'ditado': {
+            frases: ["Escreva a primeira frase para ditado.", "Escreva a segunda frase para ditado."]
+        }
+    };
+    
+    return conteudos[tipo] || {};
+}
+
     init() {
         this.setupEventListeners();
         this.carregarTurmasDisponiveis();
@@ -525,44 +570,63 @@ class CriarAtividadeManager {
     }
 
     async gerarAtividadeComIA() {
-        const instrucoes = this.descricaoEl.value.trim();
-        const tipoPreferido = this.tipoEl.value;
+    const instrucoes = this.descricaoEl.value.trim();
+    const tipoPreferido = this.tipoEl.value;
 
-        if (!instrucoes) {
-            alert('Por favor, descreva a atividade que deseja criar nas instruções.');
-            return;
-        }
-
-        this.gerarIaBtn.disabled = true;
-        this.gerarIaBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Gerando...';
-
-        try {
-            const response = await fetch(`${API_IA}/api/gerar_atividade_professor`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    instrucoes: instrucoes,
-                    tipo_preferido: tipoPreferido
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Erro ao gerar atividade com IA');
-            }
-
-            const atividadeGerada = await response.json();
-            this.preencherFormularioComIA(atividadeGerada);
-            this.mostrarPreview(atividadeGerada);
-
-        } catch (error) {
-            console.error('Erro ao gerar atividade com IA:', error);
-            alert('Erro ao gerar atividade com IA. Tente novamente.');
-        } finally {
-            this.gerarIaBtn.disabled = false;
-            this.gerarIaBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar com IA';
-            lucide.createIcons();
-        }
+    if (!instrucoes) {
+        alert('Por favor, descreva a atividade que deseja criar nas instruções.');
+        return;
     }
+
+    this.gerarIaBtn.disabled = true;
+    this.gerarIaBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Gerando...';
+
+    try {
+        console.log('Enviando solicitação para IA...');
+        const response = await fetch(`${API_IA}/api/gerar_atividade_professor`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                instrucoes: instrucoes,
+                tipo_preferido: tipoPreferido
+            })
+        });
+
+        console.log('Resposta recebida:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
+        }
+
+        const atividadeGerada = await response.json();
+        console.log('Atividade gerada:', atividadeGerada);
+        
+        this.preencherFormularioComIA(atividadeGerada);
+        this.mostrarPreview(atividadeGerada);
+
+    } catch (error) {
+        console.error('Erro detalhado ao gerar atividade com IA:', error);
+        
+        let mensagemErro = 'Erro ao gerar atividade com IA. ';
+        
+        if (error.message.includes('JSON')) {
+            mensagemErro += 'A IA retornou uma resposta inválida. ';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            mensagemErro += 'Problema de conexão. Verifique sua internet.';
+        } else {
+            mensagemErro += error.message;
+        }
+        
+        mensagemErro += '\n\nDica: Tente reformular suas instruções para serem mais específicas.';
+        
+        alert(mensagemErro);
+    } finally {
+        this.gerarIaBtn.disabled = false;
+        this.gerarIaBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar com IA';
+        lucide.createIcons();
+    }
+}
 
     preencherFormularioComIA(atividade) {
         if (atividade.titulo) {
@@ -722,55 +786,62 @@ class CriarAtividadeManager {
     }
 
     async salvarAtividade(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            alert('Sessão expirada. Faça login novamente.');
-            window.location.href = 'login.html';
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert('Sessão expirada. Faça login novamente.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Coleta dados do formulário
+    const formData = {
+        titulo: this.tituloEl.value,
+        tipo: this.tipoEl.value,
+        descricao: this.descricaoEl.value,
+        conteudo_especifico: this.obterConteudoEspecifico(),
+        icon: 'file-text',
+        turmas: this.obterTurmasSelecionadas()
+    };
+
+    // Validação básica
+    if (!formData.titulo || !formData.tipo || !formData.descricao) {
+        alert('Preencha todos os campos obrigatórios: título, tipo e descrição.');
+        return;
+    }
+
+    // Validação do conteúdo específico
+    if (!formData.conteudo_especifico || Object.keys(formData.conteudo_especifico).length === 0) {
+        if (!confirm('O conteúdo da atividade está vazio. Deseja continuar mesmo assim?')) {
             return;
-        }
-
-        // Coleta dados do formulário
-        const formData = {
-            titulo: this.tituloEl.value,
-            tipo: this.tipoEl.value,
-            descricao: this.descricaoEl.value,
-            conteudo_especifico: this.obterConteudoEspecifico(),
-            icon: 'file-text',
-            turmas: this.obterTurmasSelecionadas()
-        };
-
-        // Validação básica
-        if (!formData.titulo || !formData.tipo || !formData.descricao) {
-            alert('Preencha todos os campos obrigatórios: título, tipo e descrição.');
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE}/api/professor/atividades`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Atividade criada com sucesso!');
-                window.location.href = 'painel.html';
-            } else {
-                alert(`Erro ao criar atividade: ${result.msg}`);
-            }
-
-        } catch (error) {
-            console.error('Erro ao salvar atividade:', error);
-            alert('Erro de conexão ao salvar atividade.');
         }
     }
+
+    try {
+        const response = await fetch(`${API_BASE}/api/professor/atividades`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Atividade criada com sucesso!');
+            window.location.href = 'painel.html';
+        } else {
+            alert(`Erro ao criar atividade: ${result.msg}`);
+        }
+
+    } catch (error) {
+        console.error('Erro ao salvar atividade:', error);
+        alert('Erro de conexão ao salvar atividade. Verifique sua internet.');
+    }
+}
 
     obterConteudoEspecifico() {
         // Implemente a lógica para extrair dados dos campos específicos
