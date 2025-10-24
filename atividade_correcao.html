@@ -480,20 +480,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    /**
-     * Converte markdown simples para HTML.
-     * Suporta: negrito (**text**), itálico (*text*), títulos (#, ##, ###), listas não ordenadas (- ou *), listas ordenadas (1. ...)
-     */
     function convertMarkdownToHtml(markdownText) {
         if (!markdownText) return '';
         let htmlText = String(markdownText);
 
         // Normaliza line endings
         htmlText = htmlText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-        // Escapa primeiro tags HTML já presentes para evitar dupla interpretação (se necessário)
-        // (Aqui assumimos que o conteúdo vindo da API pode ter markdown e/ou HTML simples,
-        //  então não escapamos para permitir HTML já formatado - ajuste conforme necessário.)
 
         // 1. Negrito **
         htmlText = htmlText.replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>');
@@ -563,9 +555,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return htmlText;
     }
 
-    /**
-     * Compara duas strings de texto e retorna um Set com as palavras que são diferentes.
-     */
     function calcularDiferencas(textoOriginal, textoModificado) {
         textoOriginal = String(textoOriginal || '').trim();
         textoModificado = String(textoModificado || '').trim();
