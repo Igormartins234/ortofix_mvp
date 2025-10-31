@@ -492,101 +492,68 @@
 
     async function concluirSelecao() {
     if (palavrasSelecionadas.size === 0) {
-        showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
+        showError("Por favor, selecione ao menos uma palavra com erro.");
         setTimeout(() => errorDiv.classList.add('hidden'), 3000);
         return;
     }
 
     showLoading(true, "Avaliando sua seleção...");
-    
-    // normalizador usado também no front (sempre igual ao backend)
-    const normalize = (tok) => {
-        if (!tok) return "";
-        let t = String(tok).trim();
-        t = t.replace(/^[^A-Za-zÀ-ÖØ-öø-ÿ0-9]+|[^A-Za-zÀ-ÖØ-öø-ÿ0-9]+$/g, ""); // remove pontuação nas bordas
-        return t.toLowerCase();
+
+    const normalize = (txt) => {
+        if (!txt) return "";
+        return txt.trim().replace(/^[^A-Za-zÀ-ÖØ-öø-ÿ]+|[^A-Za-zÀ-ÖØ-öø-ÿ]+$/g, "").toLowerCase();
     };
 
     try {
-        const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("https://api-tcc-alpha.vercel.app/api/typerun/verificar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 texto_original: textoOriginalGlobal,
                 selecao_usuario: Array.from(palavrasSelecionadas)
             })
         });
 
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
-            throw new Error(errData.error || `Erro HTTP ${response.status}`);
-        }
-
         const data = await response.json();
-        console.log("Resposta /typerun/verificar:", data);
+        console.log("Resposta:", data);
 
-        // segurança: garante array mesmo que o server retorne undefined
-        const palavrasComErroArr = Array.isArray(data && data.palavras_com_erro) ? data.palavras_com_erro : [];
-        // normaliza gabarito e seleção para comparar
-        const gabaritoNorm = palavrasComErroArr.map(normalize);
+        const gabarito = (data.palavras_com_erro || []).map(normalize);
+        const selecao = Array.from(palavrasSelecionadas).map(normalize);
 
-        const selecionadasArr = Array.from(palavrasSelecionadas);
-        const selecionadasNorm = selecionadasArr.map(normalize);
+        const acertos = selecao.filter(p => gabarito.includes(p));
+        const erros = selecao.filter(p => !gabarito.includes(p));
+        const omissoes = gabarito.filter(p => !selecao.includes(p));
 
-        const gabaritoSet = new Set(gabaritoNorm.filter(Boolean));
-        const selecionadasSet = new Set(selecionadasNorm.filter(Boolean));
-
-        const acertos = selecionadasNorm.filter(p => gabaritoSet.has(p));
-        const erros = selecionadasNorm.filter(p => !gabaritoSet.has(p));
-        const omissoes = gabaritoNorm.filter(p => !selecionadasSet.has(p));
-
-        // Nova fórmula mais permissiva e sem negativos:
-        // +10 por acerto, -3 por erro, -2 por omissão, mínimo 0
-        const pontuacaoRaw = (acertos.length * 10) - (erros.length * 3) - (omissoes.length * 2);
+        // ✅ Novo cálculo mais justo
+        const pontuacaoRaw = (acertos.length * 15) - (erros.length * 5) - (omissoes.length * 3);
         const pontuacao = Math.max(0, pontuacaoRaw);
 
-        document.getElementById('stat-acertos').textContent = acertos.length;
-        document.getElementById('stat-erros').textContent = erros.length;
-        document.getElementById('stat-omissoes').textContent = omissoes.length;
-        document.getElementById('stat-pontuacao').textContent = pontuacao;
+        document.getElementById("stat-acertos").textContent = acertos.length;
+        document.getElementById("stat-erros").textContent = erros.length;
+        document.getElementById("stat-omissoes").textContent = omissoes.length;
+        document.getElementById("stat-pontuacao").textContent = pontuacao;
 
-        // show gabarito e seleção com segurança (join só em arrays)
-        document.getElementById('palavrasCorretas').textContent = palavrasComErroArr.length ? palavrasComErroArr.join(", ") : "Nenhuma";
-        document.getElementById('selecaoUsuario').textContent = selecionadasArr.length ? selecionadasArr.join(", ") : "Nenhuma";
+        document.getElementById("palavrasCorretas").textContent = gabarito.join(", ") || "Nenhuma";
+        document.getElementById("selecaoUsuario").textContent = selecao.join(", ") || "Nenhuma";
 
-        // feedback: aceita data.feedback (string) ou campo alternativo
-        let feedbackRaw = "";
-        if (data && typeof data.feedback === 'string' && data.feedback.trim() !== "") {
-            feedbackRaw = data.feedback;
-        } else if (data && typeof data.feedback_do_gemini === 'string' && data.feedback_do_gemini.trim() !== "") {
-            // caso backend use outro nome (compatibilidade)
-            feedbackRaw = data.feedback_do_gemini;
-        } else {
-            feedbackRaw = "";
-        }
+        const feedback = data.feedback || data.feedback_do_gemini || "Feedback indisponível.";
+        document.getElementById("feedbackGemini").textContent = feedback;
 
-        const feedbackLimpo = feedbackRaw ? feedbackRaw.replace(/\*\*/g, '') : "Feedback indisponível.";
-        document.getElementById('feedbackGemini').textContent = feedbackLimpo;
+        await registrarAtividadeConcluida(pontuacao, feedback);
 
-        showScreen('results-area');
-
-        // registra atividade (se houver token válido, a função já trata isso)
-        await registrarAtividadeConcluida(pontuacao, feedbackRaw || "");
-
-        // Mensagem amigável no mascote
-        if (pontuacao >= (gabaritoNorm.length * 7)) {
-            changeBubbleText("Excelente trabalho! Você tem um ótimo olho para detalhes.");
-        } else if (pontuacao > 0) {
-            changeBubbleText("Mandou bem! Continue praticando para não deixar nenhum erro passar.");
-        } else {
-            changeBubbleText("Não desanime! A revisão é a parte mais importante do aprendizado.");
-        }
+        showScreen("results-area");
         showMascote();
 
+        if (pontuacao >= gabarito.length * 10)
+            changeBubbleText("Excelente! Você encontrou quase todos os erros!");
+        else if (pontuacao > 0)
+            changeBubbleText("Bom trabalho! Continue praticando!");
+        else
+            changeBubbleText("Não desanime! Refaça e tente novamente!");
+
     } catch (err) {
-        console.error('Erro ao avaliar seleção:', err);
-        showError(err.message || String(err));
-        showScreen('game-area');
+        console.error("Erro:", err);
+        showError("Falha ao avaliar: " + err.message);
     } finally {
         showLoading(false);
     }
