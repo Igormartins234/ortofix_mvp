@@ -284,9 +284,7 @@
 <audio id="submit-sound" src="/static/audio/confirm.wav" preload="auto"></audio>
 <audio id="success-sound" src="/static/audio/success.wav" preload="auto"></audio>
 
-<!-- 🔹 SCRIPT UNIFICADO -->
 <script>
-    // ...existing code...
 document.addEventListener("DOMContentLoaded", function() {
     lucide.createIcons();
 
@@ -335,13 +333,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnIniciar = document.getElementById('btnIniciar');
     const btnGerarExercicio = document.getElementById('btnGerarExercicio');
     const btnVerificar = document.getElementById('btnVerificar');
-    const btnJogarNovamente = document.getElementById('btnJogarNovamente');
-
+    
     const startArea = document.getElementById('startArea');
     const gameArea = document.getElementById('gameArea');
     const areaExercicioDiv = document.getElementById('areaExercicio');
     const areaResultadoDiv = document.getElementById('areaResultado');
-    const feedbackContainer = document.getElementById('feedbackContainer');
 
     const textoComErrosDiv = document.getElementById('textoComErros');
     const textoUsuarioTextarea = document.getElementById('textoUsuario');
@@ -471,7 +467,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
             renderFeedback(data);
 
-            await registrarAtividadeConcluida(data.pontuacao || 0, data.feedback_do_gemini || 'Atividade concluída');
+            const pontuacaoFinal = parseInt(document.getElementById('stat-pontuacao')?.textContent || '0');
+            await registrarAtividadeConcluida(pontuacaoFinal, data.feedback_do_gemini || 'Atividade concluída');
 
         } catch (err) {
             showError(err.message);
@@ -482,288 +479,207 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function convertMarkdownToHtml(markdownText) {
         if (!markdownText) return '';
-        let htmlText = String(markdownText);
+        let htmlText = String(markdownText)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
 
-        // Normaliza line endings
-        htmlText = htmlText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        htmlText = htmlText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        htmlText = htmlText.replace(/\n/g, '<br>');
 
-        // 1. Negrito **
-        htmlText = htmlText.replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>');
-
-        // 2. Itálico * (não conflitar com negrito)
-        htmlText = htmlText.replace(/(^|[^*])\*([^*\n][^*]*?)\*(?!\*)/gs, '$1<em>$2</em>');
-
-        // 3. Cabeçalhos
-        htmlText = htmlText.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
-        htmlText = htmlText.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
-        htmlText = htmlText.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
-
-        // 4. Listas (processa linha a linha)
-        const lines = htmlText.split('\n');
-        let inList = null; // 'ul' | 'ol' | null
-        const out = [];
-
-        lines.forEach((rawLine) => {
-            const line = rawLine.replace(/\t/g, '    ').trim();
-
-            if (/^(\*|-)\s+/.test(line)) {
-                if (inList !== 'ul') {
-                    if (inList) out.push(inList === 'ul' ? '</ul>' : '</ol>');
-                    out.push('<ul>');
-                    inList = 'ul';
-                }
-                const item = line.replace(/^(\*|-)\s+/, '');
-                out.push(`<li>${item}</li>`);
-                return;
-            }
-
-            if (/^\d+\.\s+/.test(line)) {
-                if (inList !== 'ol') {
-                    if (inList) out.push(inList === 'ul' ? '</ul>' : '</ol>');
-                    out.push('<ol>');
-                    inList = 'ol';
-                }
-                const item = line.replace(/^\d+\.\s+/, '');
-                out.push(`<li>${item}</li>`);
-                return;
-            }
-
-            if (inList) {
-                out.push(inList === 'ul' ? '</ul>' : '</ol>');
-                inList = null;
-            }
-
-            if (line === '') {
-                // pular linhas em branco
-                return;
-            }
-
-            // Se já é um HTML block (h1..h6, p, div, ul, ol, pre, blockquote), não embrulhar
-            if (/^<h[1-6]>/.test(line) || /^<\/?(div|p|ul|ol|li|pre|blockquote|img|table|tr|td|th)/.test(line)) {
-                out.push(rawLine);
-            } else {
-                out.push(`<p>${line}</p>`);
-            }
-        });
-
-        if (inList) out.push(inList === 'ul' ? '</ul>' : '</ol>');
-
-        htmlText = out.join('\n');
-
-        // Limpeza final
-        htmlText = htmlText.replace(/<p>\s*<\/p>/g, '');
         return htmlText;
     }
+    
+    /**
+     * NOVA FUNÇÃO CORRIGIDA
+     * Renderiza o feedback e calcula a pontuação com base em uma comparação precisa de palavras.
+     */
+    function renderFeedback(data) {
+        if (!areaResultadoDiv) return;
 
-    function calcularDiferencas(textoOriginal, textoModificado) {
-        textoOriginal = String(textoOriginal || '').trim();
-        textoModificado = String(textoModificado || '').trim();
-        if (!textoOriginal || !textoModificado) return new Set();
+        // Recria a estrutura HTML da área de resultado
+        areaResultadoDiv.innerHTML = `
+            <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+            <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+                <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+                <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+                <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><div id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></div></div>
+                <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><div id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></div></div>
+            </div>
+            <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise Detalhada</h3></div><div id="feedbackGemini" class="text-dynamic-dark leading-relaxed"></div></div>
+            <div class="text-center mt-8">
+                <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+                </button>
+            </div>
+        `;
 
-        const palavrasOriginais = textoOriginal.split(/\s+/);
-        const palavrasModificadas = textoModificado.split(/\s+/);
-        const diferencas = new Set();
+        // Reanexa o listener de evento ao novo botão
+        const btnRe = document.getElementById('btnJogarNovamente');
+        if (btnRe) btnRe.addEventListener('click', gerarExercicio);
 
-        const tamanhoMinimo = Math.min(palavrasOriginais.length, palavrasModificadas.length);
-        for (let i = 0; i < tamanhoMinimo; i++) {
-            const palavraOriginalLimpa = palavrasOriginais[i].replace(/^[\W_]+|[\W_]+$/g, '');
-            const palavraModificadaLimpa = palavrasModificadas[i].replace(/^[\W_]+|[\W_]+$/g, '');
+        // Garante que os dados essenciais existam
+        const correcaoIdeal = data.correcao_ideal || textoCorrigidoIdealGlobal || "";
+        const tentativaUsuario = data.sua_tentativa || (textoUsuarioTextarea ? textoUsuarioTextarea.value : "") || "";
 
-            if (palavraOriginalLimpa !== palavraModificadaLimpa) {
-                diferencas.add(palavraOriginalLimpa || palavrasOriginais[i]);
+        // 1. LÓGICA DE COMPARAÇÃO PRECISA
+        const tokenize = (text) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(/[\w'-]+/g) || [];
+
+        const idealTokens = tokenize(correcaoIdeal);
+        const userTokens = tokenize(tentativaUsuario);
+
+        const idealFreq = idealTokens.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+        const userFreq = userTokens.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+        
+        let acertosCount = 0;
+        let acertosPalavras = [];
+        Object.keys(idealFreq).forEach(word => {
+            const matched = Math.min(idealFreq[word], userFreq[word] || 0);
+            if (matched > 0) {
+                acertosCount += matched;
+                for (let i = 0; i < matched; i++) {
+                    acertosPalavras.push(word);
+                }
             }
+        });
+        
+        const omissoesCount = Math.max(0, idealTokens.length - acertosCount);
+        const errosCount = Math.max(0, userTokens.length - acertosCount);
+        const pontuacao = Math.max(0, (acertosCount * 10) - (errosCount * 5) - (omissoesCount * 3));
+
+        // 2. GERA LISTA DE PALAVRAS PARA FEEDBACK DETALHADO
+        const errosPalavras = [];
+        const tempUserFreq = {...userFreq};
+        acertosPalavras.forEach(word => {
+            if(tempUserFreq[word]) tempUserFreq[word]--;
+        });
+        Object.keys(tempUserFreq).forEach(word => {
+            for (let i = 0; i < tempUserFreq[word]; i++) {
+                errosPalavras.push(word);
+            }
+        });
+
+        const omissoesPalavras = [];
+        const tempIdealFreq = {...idealFreq};
+        acertosPalavras.forEach(word => {
+            if(tempIdealFreq[word]) tempIdealFreq[word]--;
+        });
+        Object.keys(tempIdealFreq).forEach(word => {
+            for (let i = 0; i < tempIdealFreq[word]; i++) {
+                omissoesPalavras.push(word);
+            }
+        });
+        
+        // 3. ATUALIZA A INTERFACE
+        document.getElementById('stat-acertos').textContent = String(acertosCount);
+        document.getElementById('stat-erros').textContent = String(errosCount);
+        document.getElementById('stat-omissoes').textContent = String(omissoesCount);
+        document.getElementById('stat-pontuacao').textContent = String(pontuacao);
+
+        document.getElementById('palavrasCorretas').innerHTML = convertMarkdownToHtml(correcaoIdeal || "Gabarito indisponível.");
+        document.getElementById('selecaoUsuario').innerHTML = convertMarkdownToHtml(tentativaUsuario || "Nenhuma resposta enviada.");
+
+        // Gera o feedback com a nova lógica
+        const feedbackCustomizado = gerarFeedbackCustomizado(
+            acertosPalavras,
+            errosPalavras,
+            omissoesPalavras,
+            idealTokens.length,
+            data.feedback_do_gemini
+        );
+        
+        document.getElementById('feedbackGemini').innerHTML = feedbackCustomizado;
+
+        lucide.createIcons();
+
+        const isPerfect = (errosCount === 0 && omissoesCount === 0 && idealTokens.length > 0);
+
+        if (isPerfect) {
+            playSound(successSound);
+            launchConfetti();
+            changeBubbleText("Incrível! Correção perfeita. Parabéns!");
+            changeMascoteImage("/static/img/success.webp");
+        } else {
+            changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
+            changeMascoteImage("/static/img/ortofix.png");
+        }
+        showMascote();
+    }
+
+    /**
+     * NOVA FUNÇÃO CORRIGIDA
+     * Gera feedback personalizado baseado no desempenho do usuário
+     */
+    function gerarFeedbackCustomizado(acertos, erros, omissoes, totalPalavrasCorretas, feedbackOriginal) {
+        const taxaAcerto = totalPalavrasCorretas > 0 ? (acertos.length / totalPalavrasCorretas) * 100 : 100;
+        
+        let feedbackHTML = '<div class="space-y-4">';
+        
+        // Cabeçalho com avaliação geral
+        if (erros.length === 0 && omissoes.length === 0 && totalPalavrasCorretas > 0) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-green-50 border border-green-200"><div class="flex items-center gap-2"><i data-lucide="trophy" class="w-5 h-5 text-green-600"></i><span class="font-semibold text-green-800">Excelente! Perfeito!</span></div><p class="text-green-700 mt-1">Você corrigiu o texto com 100% de precisão. Parabéns!</p></div>';
+        } else if (taxaAcerto >= 70) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-blue-50 border border-blue-200"><div class="flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-blue-600"></i><span class="font-semibold text-blue-800">Bom trabalho!</span></div><p class="text-blue-700 mt-1">Você acertou a maior parte, mas ainda há alguns pontos para melhorar.</p></div>';
+        } else if (taxaAcerto >= 50) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-amber-50 border border-amber-200"><div class="flex items-center gap-2"><i data-lucide="lightbulb" class="w-5 h-5 text-amber-600"></i><span class="font-semibold text-amber-800">Continue praticando!</span></div><p class="text-amber-700 mt-1">Você identificou alguns erros, mas precisa de mais atenção aos detalhes.</p></div>';
+        } else {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-red-50 border border-red-200"><div class="flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-red-600"></i><span class="font-semibold text-red-800">Precisa de mais atenção</span></div><p class="text-red-700 mt-1">Parece que muitos erros passaram. Revise as regras gramaticais e tente novamente.</p></div>';
+        }
+    
+        // Seção de erros (palavras incorretas ou desnecessárias na resposta)
+        if (erros.length > 0) {
+            feedbackHTML += `<div class="p-3 rounded-lg bg-red-50 border border-red-200">
+                <div class="flex items-center gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i><span class="font-semibold text-red-800">Palavras incorretas em sua resposta:</span></div>
+                <p class="text-red-700 text-sm mt-1">Estas palavras não pertencem ao texto corrigido:</p>
+                <div class="flex flex-wrap gap-2 mt-2">`;
+            erros.forEach(erro => {
+                feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm border border-red-200">
+                    <i data-lucide="x" class="w-3 h-3"></i>${erro}
+                </span>`;
+            });
+            feedbackHTML += '</div></div>';
         }
 
-        // Se houver palavras adicionais na versão original (omissões do usuário), adiciona como diferenças
-        if (palavrasOriginais.length > palavrasModificadas.length) {
-            for (let j = tamanhoMinimo; j < palavrasOriginais.length; j++) {
-                diferencas.add(palavrasOriginais[j].replace(/^[\W_]+|[\W_]+$/g, '') || palavrasOriginais[j]);
-            }
+        // Seção de omissões (palavras que faltaram na sua resposta)
+        if (omissoes.length > 0) {
+            feedbackHTML += `<div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div class="flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i><span class="font-semibold text-amber-800">Palavras que faltaram:</span></div>
+                <p class="text-amber-700 text-sm mt-1">Você esqueceu de incluir estas palavras do gabarito:</p>
+                <div class="flex flex-wrap gap-2 mt-2">`;
+            omissoes.forEach(omissao => {
+                feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-sm border border-amber-200">
+                    <i data-lucide="eye-off" class="w-3 h-3"></i>${omissao}
+                </span>`;
+            });
+            feedbackHTML += '</div></div>';
         }
 
-        return diferencas;
-    }
-
- /**
- * Renderiza o feedback e calcula a pontuação.
- */
-function renderFeedback(data) {
-    if (!areaResultadoDiv) return;
-
-    areaResultadoDiv.innerHTML = `
-        <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
-        <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
-            <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
-            <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
-            <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
-            <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><div id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></div></div>
-            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><div id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></div></div>
-        </div>
-        <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise Detalhada</h3></div><div id="feedbackGemini" class="text-dynamic-dark leading-relaxed"></div></div>
-        <div class="text-center mt-8">
-            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
-            </button>
-        </div>
-    `;
-
-    const btnRe = document.getElementById('btnJogarNovamente');
-    if (btnRe) btnRe.addEventListener('click', gerarExercicio);
-
-    // Dados garantidos
-    const correcaoIdeal = data.correcao_ideal || textoCorrigidoIdealGlobal || "";
-    const tentativaUsuario = data.sua_tentativa || textoUsuarioTextarea.value || "";
-
-    // 1. Identifica erros no gabarito (original -> ideal)
-    const gabaritoErros = calcularDiferencas(textoOriginalGlobal, correcaoIdeal);
-
-    // 2. Identifica o que o usuário alterou (original -> sua tentativa)
-    const usuarioCorrecoes = calcularDiferencas(textoOriginalGlobal, tentativaUsuario);
-
-    // 3. Calcula métricas
-    const acertos = [...usuarioCorrecoes].filter(palavra => gabaritoErros.has(palavra));
-    const erros = [...usuarioCorrecoes].filter(palavra => !gabaritoErros.has(palavra));
-    const omissoes = [...gabaritoErros].filter(palavra => !usuarioCorrecoes.has(palavra));
-    const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
-
-    // 4. Popula placar
-    const statAcertos = document.getElementById('stat-acertos');
-    const statErros = document.getElementById('stat-erros');
-    const statOmissoes = document.getElementById('stat-omissoes');
-    const statPontuacao = document.getElementById('stat-pontuacao');
-
-    if (statAcertos) statAcertos.textContent = String(acertos.length);
-    if (statErros) statErros.textContent = String(erros.length);
-    if (statOmissoes) statOmissoes.textContent = String(omissoes.length);
-    if (statPontuacao) statPontuacao.textContent = String(pontuacao < 0 ? 0 : pontuacao);
-
-    // Usa conversão Markdown->HTML para campos que podem conter formatação
-    const palavrasCorretasDiv = document.getElementById('palavrasCorretas');
-    const selecaoUsuarioDiv = document.getElementById('selecaoUsuario');
-    const feedbackDiv = document.getElementById('feedbackGemini');
-
-    if (palavrasCorretasDiv) palavrasCorretasDiv.innerHTML = convertMarkdownToHtml(correcaoIdeal || "Gabarito indisponível.");
-    if (selecaoUsuarioDiv) selecaoUsuarioDiv.innerHTML = convertMarkdownToHtml(tentativaUsuario || "Nenhuma resposta enviada.");
-
-    // MELHORIA: Gera feedback detalhado baseado nas métricas
-    const feedbackCustomizado = gerarFeedbackCustomizado(acertos, erros, omissoes, gabaritoErros, data.feedback_do_gemini);
-    
-    if (feedbackDiv) feedbackDiv.innerHTML = feedbackCustomizado;
-
-    lucide.createIcons();
-
-    const isPerfect = (acertos.length === gabaritoErros.size && erros.length === 0 && omissoes.length === 0);
-
-    if (isPerfect) {
-        playSound(successSound);
-        launchConfetti();
-        changeBubbleText("Incrível! Correção perfeita. Parabéns!");
-        changeMascoteImage("/static/img/success.webp");
-    } else {
-        changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
-        changeMascoteImage("/static/img/ortofix.png");
-    }
-    showMascote();
-}
-
-/**
- * Gera feedback personalizado baseado no desempenho do usuário
- */
-function gerarFeedbackCustomizado(acertos, erros, omissoes, gabaritoErros, feedbackOriginal) {
-    const totalErros = gabaritoErros.size;
-    const taxaAcerto = totalErros > 0 ? (acertos.length / totalErros) * 100 : 100;
-    
-    let feedbackHTML = '<div class="space-y-4">';
-    
-    // Cabeçalho com avaliação geral
-    if (taxaAcerto >= 90) {
-        feedbackHTML += '<div class="p-3 rounded-lg bg-green-50 border border-green-200"><div class="flex items-center gap-2"><i data-lucide="trophy" class="w-5 h-5 text-green-600"></i><span class="font-semibold text-green-800">Excelente!</span></div><p class="text-green-700 mt-1">Você identificou e corrigiu a maioria dos erros com precisão.</p></div>';
-    } else if (taxaAcerto >= 70) {
-        feedbackHTML += '<div class="p-3 rounded-lg bg-blue-50 border border-blue-200"><div class="flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-blue-600"></i><span class="font-semibold text-blue-800">Bom trabalho!</span></div><p class="text-blue-700 mt-1">Você acertou a maior parte, mas ainda há alguns pontos para melhorar.</p></div>';
-    } else if (taxaAcerto >= 50) {
-        feedbackHTML += '<div class="p-3 rounded-lg bg-amber-50 border border-amber-200"><div class="flex items-center gap-2"><i data-lucide="lightbulb" class="w-5 h-5 text-amber-600"></i><span class="font-semibold text-amber-800">Continue praticando!</span></div><p class="text-amber-700 mt-1">Você identificou alguns erros, mas precisa de mais atenção aos detalhes.</p></div>';
-    } else {
-        feedbackHTML += '<div class="p-3 rounded-lg bg-red-50 border border-red-200"><div class="flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-red-600"></i><span class="font-semibold text-red-800">Precisa de mais atenção</span></div><p class="text-red-700 mt-1">Recomendo revisar as regras gramaticais antes de continuar.</p></div>';
-    }
-
- 
-    if (acertos.length > 0) {
-        feedbackHTML += `<div class="p-3 rounded-lg bg-green-50 border border-green-200">
-            <div class="flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i><span class="font-semibold text-green-800">Você acertou:</span></div>
-            <div class="flex flex-wrap gap-2">`;
-        acertos.forEach(acerto => {
-            feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm border border-green-200">
-                <i data-lucide="check" class="w-3 h-3"></i>${acerto}
-            </span>`;
-        });
-        feedbackHTML += '</div></div>';
-    }
-
-    // Seção de erros (correções incorretas) - mantém em lista por ser mais importante
-    if (erros.length > 0) {
-        feedbackHTML += `<div class="p-3 rounded-lg bg-red-50 border border-red-200">
-            <div class="flex items-center gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i><span class="font-semibold text-red-800">Correções desnecessárias:</span></div>
-            <p class="text-red-700 text-sm mt-1">Você alterou palavras que já estavam corretas:</p>
-            <ul class="flex flex-wrap gap-2">`;
-        erros.forEach(erro => {
-            feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm border border-red-200">
-                <i data-lucide="x" class="w-3 h-3"></i>${erro}
-            </span>`;
-        });
-        feedbackHTML += '</ul></div>';
-    }
-
-    // Seção de omissões (erros não corrigidos) - mantém em lista por ser mais importante
-    if (omissoes.length > 0) {
-        feedbackHTML += `<div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
-            <div class="flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i><span class="font-semibold text-amber-800">Erros que passaram despercebidos:</span></div>
-            <p class="text-amber-700 text-sm mt-1">Estas palavras precisavam de correção:</p>
-            <ul class="mt-2 space-y-1">`;
-        omissoes.forEach(omissao => {
-            feedbackHTML += `<li class="text-amber-700 flex items-center gap-2"><i data-lucide="eye-off" class="w-3 h-3"></i> "${omissao}"</li>`;
-        });
-        feedbackHTML += '</ul></div>';
-    }
-
-    // Feedback original da IA (se disponível e relevante)
-    if (feedbackOriginal && feedbackOriginal.trim() !== '') {
-        const feedbackLimpo = feedbackOriginal.replace(/\*\*/g, '').trim();
-        if (feedbackLimpo.length > 50) {
+        // Feedback original da IA
+        if (feedbackOriginal && feedbackOriginal.trim() !== '' && feedbackOriginal.trim().length > 10) {
             feedbackHTML += `<div class="p-3 rounded-lg bg-indigo-50 border border-indigo-200">
                 <div class="flex items-center gap-2"><i data-lucide="brain" class="w-4 h-4 text-indigo-600"></i><span class="font-semibold text-indigo-800">Análise da IA:</span></div>
-                <p class="text-indigo-700 mt-2">${convertMarkdownToHtml(feedbackLimpo)}</p>
+                <div class="text-indigo-700 mt-2">${convertMarkdownToHtml(feedbackOriginal)}</div>
             </div>`;
         }
+        
+        feedbackHTML += '</div>';
+
+        return feedbackHTML;
     }
 
-    // Dicas gerais baseadas no desempenho
-    feedbackHTML += '<div class="p-3 rounded-lg bg-blue-50 border border-blue-200">';
-    feedbackHTML += '<div class="flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4 text-blue-600"></i><span class="font-semibold text-blue-800">Dica para melhorar:</span></div>';
-    
-    if (erros.length > omissoes.length) {
-        feedbackHTML += '<p class="text-blue-700 mt-1">Foque em identificar apenas os erros reais. Não altere palavras que já estão corretas.</p>';
-    } else if (omissoes.length > erros.length) {
-        feedbackHTML += '<p class="text-blue-700 mt-1">Leia com mais atenção e revise cada palavra cuidadosamente.</p>';
-    } else if (acertos.length === 0) {
-        feedbackHTML += '<p class="text-blue-700 mt-1">Estude as regras gramaticais básicas antes de continuar com os exercícios.</p>';
-    } else {
-        feedbackHTML += '<p class="text-blue-700 mt-1">Continue praticando! A consistência é a chave para o aprendizado.</p>';
-    }
-    
-    feedbackHTML += '</div></div>';
-
-    return feedbackHTML;
-}
 
     btnIniciar && btnIniciar.addEventListener('click', () => {
         startArea && startArea.classList.add('hidden');
         gerarExercicio();
     });
     btnGerarExercicio && btnGerarExercicio.addEventListener('click', gerarExercicio);
-    btnJogarNovamente && btnJogarNovamente.addEventListener('click', gerarExercicio);
     btnVerificar && btnVerificar.addEventListener('click', verificarExercicio);
 
     // --- LÓGICA DO MASCOTE ---
