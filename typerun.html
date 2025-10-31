@@ -491,69 +491,78 @@
     }
 
     async function concluirSelecao() {
-        if (palavrasSelecionadas.size === 0) {
-            showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
-            setTimeout(() => errorDiv.classList.add('hidden'), 3000);
-            return;
-        }
-
-        showLoading(true, "Avaliando sua seleção...");
-        
-        try {
-            const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    texto_original: textoOriginalGlobal,
-                    selecao_usuario: Array.from(palavrasSelecionadas)
-                })
-            });
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
-                throw new Error(errData.error);
-            }
-
-            const data = await response.json();
-            
-            const gabaritoSet = new Set(data.palavras_com_erro);
-            const acertos = [...palavrasSelecionadas].filter(p => gabaritoSet.has(p));
-            const erros = [...palavrasSelecionadas].filter(p => !gabaritoSet.has(p));
-            const omissoes = [...gabaritoSet].filter(p => !palavrasSelecionadas.has(p));
-            const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
-
-            document.getElementById('stat-acertos').textContent = acertos.length;
-            document.getElementById('stat-erros').textContent = erros.length;
-            document.getElementById('stat-omissoes').textContent = omissoes.length;
-            document.getElementById('stat-pontuacao').textContent = pontuacao;
-            document.getElementById('palavrasCorretas').textContent = data.palavras_com_erro.join(", ") || "Nenhuma";
-            document.getElementById('selecaoUsuario').textContent = Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
-            const feedbackLimpo = (data.feedback || "Feedback indisponível.").replace(/\*\*/g, '');
-            document.getElementById('feedbackGemini').textContent = feedbackLimpo;
-
-            showScreen('results-area');
-
-            // NOVA CHAMADA: Registra moedas após mostrar resultados
-            await registrarAtividadeConcluida(pontuacao, feedbackLimpo);
-            
-            if (pontuacao >= (data.palavras_com_erro.length * 7)) {
-                changeBubbleText("Excelente trabalho! Você tem um ótimo olho para detalhes.");
-            } else if (pontuacao > 0) {
-                changeBubbleText("Mandou bem! Continue praticando para não deixar nenhum erro passar.");
-            } else {
-                changeBubbleText("Não desanime! A revisão é a parte mais importante do aprendizado.");
-            }
-            showMascote();
-
-        } catch (err) {
-            console.error('Erro ao avaliar seleção:', err);
-            showError(err.message);
-            showScreen('game-area');
-        } finally {
-            showLoading(false);
-        }
+    if (palavrasSelecionadas.size === 0) {
+        showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
+        setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+        return;
     }
 
+    showLoading(true, "Avaliando sua seleção...");
+    
+    try {
+        const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                texto_original: textoOriginalGlobal,
+                selecao_usuario: Array.from(palavrasSelecionadas)
+            })
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
+            throw new Error(errData.error || `Erro HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // DEBUG: imprime o objeto retornado pela API (ajuda a ver se a chave existe/casing)
+        console.log("Resposta /typerun/verificar:", data);
+
+        // Usa valores seguros (fallbacks) e checa se são arrays antes de usar join
+        const palavrasComErroArr = Array.isArray(data && data.palavras_com_erro) ? data.palavras_com_erro : [];
+        const feedbackRaw = (data && typeof data.feedback === 'string') ? data.feedback : (data && data.feedback ? String(data.feedback) : '');
+
+        const gabaritoSet = new Set(palavrasComErroArr.map(p => p.toString()));
+        const acertos = [...palavrasSelecionadas].filter(p => gabaritoSet.has(p));
+        const erros = [...palavrasSelecionadas].filter(p => !gabaritoSet.has(p));
+        const omissoes = [...gabaritoSet].filter(p => !palavrasSelecionadas.has(p));
+        const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+
+        document.getElementById('stat-acertos').textContent = acertos.length;
+        document.getElementById('stat-erros').textContent = erros.length;
+        document.getElementById('stat-omissoes').textContent = omissoes.length;
+        document.getElementById('stat-pontuacao').textContent = pontuacao;
+
+        // Protegido: só chama join se for array
+        document.getElementById('palavrasCorretas').textContent = palavrasComErroArr.length ? palavrasComErroArr.join(", ") : "Nenhuma";
+        document.getElementById('selecaoUsuario').textContent = Array.from(palavrasSelecionadas).length ? Array.from(palavrasSelecionadas).join(", ") : "Nenhuma";
+
+        const feedbackLimpo = feedbackRaw.replace ? feedbackRaw.replace(/\*\*/g, '') : feedbackRaw;
+        document.getElementById('feedbackGemini').textContent = feedbackLimpo || "Feedback indisponível.";
+
+        showScreen('results-area');
+
+        // Registra moedas (se houver token)
+        await registrarAtividadeConcluida(pontuacao, feedbackLimpo);
+
+        if (pontuacao >= (palavrasComErroArr.length * 7)) {
+            changeBubbleText("Excelente trabalho! Você tem um ótimo olho para detalhes.");
+        } else if (pontuacao > 0) {
+            changeBubbleText("Mandou bem! Continue praticando para não deixar nenhum erro passar.");
+        } else {
+            changeBubbleText("Não desanime! A revisão é a parte mais importante do aprendizado.");
+        }
+        showMascote();
+
+    } catch (err) {
+        console.error('Erro ao avaliar seleção:', err);
+        showError(err.message || String(err));
+        showScreen('game-area');
+    } finally {
+        showLoading(false);
+    }
+}
     // --- 4. EVENT LISTENERS ---
     startGameBtn.addEventListener('click', generateNewText);
     btnGerarTexto.addEventListener('click', generateNewText);
