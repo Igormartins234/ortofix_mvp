@@ -499,11 +499,6 @@
 
     showLoading(true, "Avaliando sua seleção...");
 
-    const normalize = (txt) => {
-        if (!txt) return "";
-        return txt.trim().replace(/^[^A-Za-zÀ-ÖØ-öø-ÿ]+|[^A-Za-zÀ-ÖØ-öø-ÿ]+$/g, "").toLowerCase();
-    };
-
     try {
         const response = await fetch("https://api-tcc-alpha.vercel.app/api/typerun/verificar", {
             method: "POST",
@@ -515,16 +510,13 @@
         });
 
         const data = await response.json();
-        console.log("Resposta:", data);
+        console.log("📊 Resposta do servidor:", data);
 
-        const gabarito = (data.palavras_com_erro || []).map(normalize);
-        const selecao = Array.from(palavrasSelecionadas).map(normalize);
+        // Lê diretamente os dados enviados pelo backend
+        const acertos = data.acertos || [];
+        const erros = data.erros || [];
+        const omissoes = data.nao_selecionadas || [];
 
-        const acertos = selecao.filter(p => gabarito.includes(p));
-        const erros = selecao.filter(p => !gabarito.includes(p));
-        const omissoes = gabarito.filter(p => !selecao.includes(p));
-
-        // ✅ Novo cálculo mais justo
         const pontuacaoRaw = (acertos.length * 15) - (erros.length * 5) - (omissoes.length * 3);
         const pontuacao = Math.max(0, pontuacaoRaw);
 
@@ -533,10 +525,15 @@
         document.getElementById("stat-omissoes").textContent = omissoes.length;
         document.getElementById("stat-pontuacao").textContent = pontuacao;
 
-        document.getElementById("palavrasCorretas").textContent = gabarito.join(", ") || "Nenhuma";
-        document.getElementById("selecaoUsuario").textContent = selecao.join(", ") || "Nenhuma";
+        document.getElementById("palavrasCorretas").textContent =
+            (data.palavras_com_erro && data.palavras_com_erro.length)
+                ? data.palavras_com_erro.join(", ")
+                : "Nenhuma";
 
-        const feedback = data.feedback || data.feedback_do_gemini || "Feedback indisponível.";
+        document.getElementById("selecaoUsuario").textContent =
+            Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
+
+        const feedback = data.feedback || "Feedback indisponível.";
         document.getElementById("feedbackGemini").textContent = feedback;
 
         await registrarAtividadeConcluida(pontuacao, feedback);
@@ -544,13 +541,12 @@
         showScreen("results-area");
         showMascote();
 
-        if (pontuacao >= gabarito.length * 10)
+        if (pontuacao >= (data.palavras_com_erro?.length || 0) * 10)
             changeBubbleText("Excelente! Você encontrou quase todos os erros!");
         else if (pontuacao > 0)
             changeBubbleText("Bom trabalho! Continue praticando!");
         else
-            changeBubbleText("Não desanime! Refaça e tente novamente!");
-
+            changeBubbleText("Não desanime! Tente novamente!");
     } catch (err) {
         console.error("Erro:", err);
         showError("Falha ao avaliar: " + err.message);
@@ -558,6 +554,7 @@
         showLoading(false);
     }
 }
+
 
     // --- 4. EVENT LISTENERS ---
     startGameBtn.addEventListener('click', generateNewText);
