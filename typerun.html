@@ -513,9 +513,10 @@
         console.log("📊 Resposta do servidor:", data);
 
         // Lê diretamente os dados enviados pelo backend
-        const acertos = data.acertos || [];
-        const erros = data.erros || [];
-        const omissoes = data.nao_selecionadas || [];
+        const acertos = data.acertos ?? data.corretas ?? [];
+        const erros = data.erros ?? data.incorretas ?? [];
+        const omissoes = data.nao_selecionadas ?? [];
+
 
         const pontuacaoRaw = (acertos.length * 15) - (erros.length * 5) - (omissoes.length * 3);
         const pontuacao = Math.max(0, pontuacaoRaw);
