@@ -3,272 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Área ADM</title>
+    <title>OrtoFix - Painel de Professores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Removido Bootstrap CSS, pois estamos focando no Tailwind -->
+    <!-- SweetAlert2 para modais e alertas modernos -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #e3ebf2; /* Fundo da página */
-            color: #3c6a99; /* Cor de texto padrão */
+            background-color: #F4F7FA;
         }
-        .header-logo {
-            width: 40px; /* Mesmo tamanho usado anteriormente */
-            height: auto;
+        .sidebar {
+            background-color: #2c3e50;
+            transition: width 0.3s ease-in-out;
         }
-        /* Estilo customizado para select, se necessário, para melhor aparência */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
+        .sidebar-link {
+            color: #bdc3c7;
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #34495e;
+            color: #ffffff;
+        }
+        .sidebar-link.active {
+             border-left: 4px solid #4A90E2;
+        }
+        .sidebar-text {
+            white-space: nowrap;
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="flex min-h-screen">
 
-    <!-- Cabeçalho -->
-    <header class="bg-white shadow-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="header-logo">
-                <h1 class="text-2xl font-bold text-[#3c6a99]">Área ADM</h1>
-                <a href="cadastrar_professor.html"><button class="bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
-                    Cadastrar Professor
-                </button></a>
-            </div>
-            <a href="../aluno.html" class="bg-[#5689b9] hover:bg-[#3c6a99] text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
-                Sair
+    <!-- Sidebar (Menu Lateral Retrátil) -->
+    <aside id="sidebar" class="sidebar w-64 text-white flex-shrink-0 flex flex-col">
+        <div class="h-20 flex items-center justify-center border-b border-gray-700 px-4 overflow-hidden">
+             <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 flex-shrink-0">
+             <span class="sidebar-text ml-3 font-semibold text-xl">OrtoFix Admin</span>
+        </div>
+        <nav class="flex-grow p-4 space-y-2">
+            <a href="cadastrar_professor.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg">
+                <i data-lucide="user-plus" class="w-6 h-6 flex-shrink-0"></i>
+                <span class="sidebar-text">Cadastrar Professor</span>
+            </a>
+            <a href="painel-adm-prof.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg">
+                <i data-lucide="graduation-cap" class="w-6 h-6 flex-shrink-0"></i>
+                <span class="sidebar-text">Painel Professores</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-700">
+            <a href="./index.html" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-900/50">
+                <i data-lucide="log-out" class="w-6 h-6 flex-shrink-0"></i>
+                <span class="sidebar-text">Sair</span>
             </a>
         </div>
-    </header>
+    </aside>
 
-    <!-- Conteúdo Principal ADM -->
-    <main class="container mx-auto px-4 sm:px-6 py-8">
-        <!-- Barra de busca e filtro -->
-        <div class="mb-8 p-6 bg-white rounded-xl shadow-lg flex flex-col sm:flex-row gap-4 items-center">
-            <div class="relative flex-grow w-full sm:w-auto">
-                <input id="busca" type="search" placeholder="Pesquisar nome..."
-                       class="w-full pl-10 pr-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] outline-none">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="w-5 h-5 text-[#9aaec1]"></i>
+    <!-- Conteúdo Principal -->
+    <div class="flex-1 flex flex-col">
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center h-20 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button id="sidebar-toggle" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h1 class="text-2xl font-semibold text-gray-800">Painel de Professores</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-600 hidden sm:block">Olá, Administrador!</span>
+            </div>
+        </header>
+
+        <main class="flex-grow p-8 overflow-y-auto">
+            <!-- Barra de Filtros e Ações -->
+            <div class="mb-6 p-4 bg-white rounded-xl shadow flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    <div class="relative flex-grow">
+                        <input id="busca" type="search" placeholder="Pesquisar por nome..."
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <select id="filtroStatus" class="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none appearance-none" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22currentColor%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%20/%3E%3C/svg%3E'); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;">
+                        <option value="Todos">Todos os Status</option>
+                        <option value="Ativo">Ativo</option>
+                        <option value="Bloqueado">Bloqueado</option>
+                    </select>
                 </div>
+                <a href="cadastrar_professor.html" class="w-full md:w-auto flex-shrink-0 bg-[#2c3e50] hover:bg-[#34495e] text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    Cadastrar Professor
+                </a>
             </div>
 
-            <select id="filtroStatus"
-                    class="w-full sm:w-auto px-4 py-3 border border-[#9aaec1] rounded-lg focus:ring-2 focus:ring-[#5689b9] text-[#3c6a99] bg-white outline-none">
-                <option value="Todos">Todos</option>
-                <option value="Ativo">Ativo</option>
-                <option value="Bloqueado">Bloqueado</option>
-                <!-- Adicionar mais status se necessário -->
-            </select>
-            <!-- O botão filtrar pode ser removido se a filtragem for automática ao mudar o select/input -->
-        </div>
-
-        <!-- Lista de usuários -->
-        <div id="lista-usuarios" class="space-y-4">
-            <!-- Cards serão adicionados dinamicamente aqui -->
-        </div>
-    </main>
+            <!-- Tabela de Usuários -->
+            <div class="bg-white rounded-xl shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Nome</th>
+                                <th scope="col" class="px-6 py-3">E-mail</th>
+                                <th scope="col" class="px-6 py-3">Status</th>
+                                <th scope="col" class="px-6 py-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-usuarios-tbody">
+                            <!-- Linhas da tabela serão injetadas aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- SCRIPT DA SIDEBAR ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarTexts = document.querySelectorAll('.sidebar-text');
 
-    // 1. A lista de usuários mockados foi removida.
-    // Agora teremos uma variável para armazenar os dados vindos do banco.
-    let listaDeUsuarios = [];
-
-    // Elementos do DOM que usaremos várias vezes
-    const container = document.getElementById("lista-usuarios");
-    const buscaInput = document.getElementById("busca");
-    const filtroStatusSelect = document.getElementById("filtroStatus");
-
-    /**
-     * Função principal para buscar os professores do backend.
-     */
-    async function carregarUsuarios() {
-        // Pega o token de autenticação do localStorage
-        const token = localStorage.getItem('authToken'); // Verifique se o nome da chave é 'authToken' ou 'accessToken'
-        
-        if (!token) {
-            container.innerHTML = `<p class="text-center text-red-500 py-4">Erro: Você não está autenticado. Faça o login novamente.</p>`;
-            return;
-        }
-
-        try {
-            container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Carregando usuários...</p>`;
-
-            const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professores', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.msg || 'Falha ao carregar os usuários.');
+        const applySidebarState = (state) => {
+            if (state === 'collapsed') {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-20');
+                sidebarTexts.forEach(text => text.classList.add('hidden'));
+            } else {
+                sidebar.classList.remove('w-20');
+                sidebar.classList.add('w-64');
+                sidebarTexts.forEach(text => text.classList.remove('hidden'));
             }
+        };
 
-            const data = await response.json();
-            
-            // 2. Transforma os dados do backend para o formato que nosso renderizador espera
-            listaDeUsuarios = data.map(professor => ({
-                id: professor.idprofessor,
-                nome: professor.nomeprofessor,
-                email: professor.emailprofessor,
-                status: professor.status,
-                tipo: 'Professor' // Definimos o tipo, já que esta lista é só de professores
-            }));
-            
-            // Após carregar os dados, renderiza a lista na tela
-            renderizarUsuarios();
+        const savedState = localStorage.getItem('sidebarState');
+        applySidebarState(savedState || 'expanded'); 
 
-        } catch (error) {
-            console.error('Erro ao carregar usuários:', error);
-            container.innerHTML = `<p class="text-center text-red-500 py-4">Erro: ${error.message}</p>`;
-        }
-    }
-
-    /**
-     * Função que renderiza os cards de usuário na tela com base nos filtros.
-     */
-    function renderizarUsuarios() {
-        const busca = buscaInput.value.toLowerCase().trim();
-        const filtroStatus = filtroStatusSelect.value;
-
-        container.innerHTML = ""; // Limpa a lista antes de renderizar
-
-        const usuariosFiltrados = listaDeUsuarios.filter(usuario => {
-            const correspondeBusca = usuario.nome.toLowerCase().includes(busca);
-            const correspondeFiltroStatus = filtroStatus === "Todos" || usuario.status === filtroStatus;
-            return correspondeBusca && correspondeFiltroStatus;
+        sidebarToggle.addEventListener('click', () => {
+            const isCollapsed = sidebar.classList.contains('w-20');
+            const newState = isCollapsed ? 'expanded' : 'collapsed';
+            localStorage.setItem('sidebarState', newState);
+            applySidebarState(newState);
         });
 
-        if (usuariosFiltrados.length === 0) {
-            container.innerHTML = `<p class="text-center text-[#5689b9] py-4">Nenhum usuário encontrado com os filtros atuais.</p>`;
-            return;
-        }
+        lucide.createIcons();
 
-        usuariosFiltrados.forEach(usuario => {
-            const card = document.createElement("div");
-            card.className = "bg-white rounded-xl shadow-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:shadow-xl transition-shadow";
+        // --- SCRIPT DO PAINEL DE PROFESSORES ---
+        let listaDeUsuarios = [];
+        const tbody = document.getElementById("lista-usuarios-tbody");
+        const buscaInput = document.getElementById("busca");
+        const filtroStatusSelect = document.getElementById("filtroStatus");
 
-            let statusColorClass = usuario.status.toLowerCase() === "bloqueado" ? "text-red-500" : "text-green-600";
-            let statusDisplay = usuario.status.charAt(0).toUpperCase() + usuario.status.slice(1);
-
-            card.innerHTML = `
-                <div class="flex-grow">
-                    <h3 class="text-lg font-semibold text-[#3c6a99]">${usuario.nome}</h3>
-                    <p class="text-sm text-gray-500">${usuario.email || ''}</p>
-                    <p class="text-sm"><span class="font-medium">Status:</span> <span class="${statusColorClass}">${statusDisplay}</span></p>
-                    <p class="text-sm text-gray-600"><span class="font-medium">Tipo:</span> ${usuario.tipo}</p>
-                </div>
-                <div class="flex items-center space-x-3 mt-3 sm:mt-0">
-                    <a href="editar_usuario.html?id=${usuario.id}" title="Editar" class="text-[#5689b9] hover:text-[#3c6a99] p-2 rounded-full hover:bg-[#e3ebf2]/70">
-                        <i data-lucide="edit" class="w-5 h-5"></i>
-                    </a>
-                    <button onclick="alterarStatusUsuario(${usuario.id})" title="Alterar status" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100">
-                        <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
-                    </button>
-                     <button onclick="excluirUsuario(${usuario.id})" title="Excluir" class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100">
-                        <i data-lucide="trash-2" class="w-5 h-5"></i>
-                    </button>
-                </div>
+        const mostrarLoading = () => {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center p-8">
+                        <div class="flex items-center justify-center gap-3 text-gray-500">
+                            <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Carregando professores...</span>
+                        </div>
+                    </td>
+                </tr>
             `;
-            container.appendChild(card);
-        });
+        };
 
-        lucide.createIcons(); // Re-renderizar ícones Lucide
-    }
+        const mostrarEstadoVazio = () => {
+             tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center p-8">
+                        <div class="flex flex-col items-center justify-center gap-3 text-gray-500">
+                            <i data-lucide="search-x" class="w-12 h-12 text-gray-400"></i>
+                            <span class="font-medium">Nenhum professor encontrado</span>
+                            <span class="text-sm">Tente ajustar sua busca ou filtros.</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            lucide.createIcons();
+        };
 
-        // --- FUNÇÕES DE AÇÃO ATUALIZADAS ---
+        const renderizarUsuarios = () => {
+            const busca = buscaInput.value.toLowerCase().trim();
+            const filtroStatus = filtroStatusSelect.value;
 
-    async function alterarStatusUsuario(id) {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            alert('Erro de autenticação. Faça login novamente.');
-            return;
-        }
-
-        try {
-            const response = await fetch(`https://back-end-mvp-tcc.vercel.app/api/professores/${id}/status`, {
-                method: 'PATCH', // Usando o método PATCH
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const usuariosFiltrados = listaDeUsuarios.filter(usuario => {
+                const correspondeBusca = usuario.nome.toLowerCase().includes(busca);
+                const correspondeFiltroStatus = filtroStatus === "Todos" || usuario.status === filtroStatus;
+                return correspondeBusca && correspondeFiltroStatus;
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.msg || 'Falha ao alterar o status.');
+            if (usuariosFiltrados.length === 0) {
+                mostrarEstadoVazio();
+                return;
             }
-
-            // ATUALIZAÇÃO LOCAL: Encontra o usuário na nossa lista e atualiza seu status
-            const usuarioIndex = listaDeUsuarios.findIndex(u => u.id === id);
-            if (usuarioIndex > -1) {
-                listaDeUsuarios[usuarioIndex].status = data.novoStatus;
-            }
-
-            // Re-renderiza a lista para mostrar a mudança instantaneamente
-            renderizarUsuarios();
-            alert(data.msg); // Feedback para o admin
-
-        } catch (error) {
-            console.error('Erro ao alterar status:', error);
-            alert(`Erro: ${error.message}`);
-        }
-    }
-
-    async function excluirUsuario(id) {
-        // Confirmação antes de uma ação destrutiva
-        if (!confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.")) {
-            return;
-        }
-
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            alert('Erro de autenticação. Faça login novamente.');
-            return;
-        }
-
-        try {
-            const response = await fetch(`https://back-end-mvp-tcc.vercel.app/api/professores/${id}`, {
-                method: 'DELETE', // Usando o método DELETE
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.msg || 'Falha ao excluir o usuário.');
-            }
-
-            // ATUALIZAÇÃO LOCAL: Remove o usuário da nossa lista
-            listaDeUsuarios = listaDeUsuarios.filter(u => u.id !== id);
             
-            // Re-renderiza a lista para remover o card do usuário excluído
-            renderizarUsuarios();
-            alert(data.msg); // Feedback para o admin
+            tbody.innerHTML = ""; // Limpa a tabela
+            usuariosFiltrados.forEach(usuario => {
+                const statusAtivo = usuario.status.toLowerCase() === 'ativo';
+                const statusBadge = statusAtivo
+                    ? `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Ativo</span>`
+                    : `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Bloqueado</span>`;
 
-        } catch (error) {
-            console.error('Erro ao excluir usuário:', error);
-            alert(`Erro: ${error.message}`);
+                const tr = document.createElement("tr");
+                tr.className = "bg-white border-b hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${usuario.nome}</td>
+                    <td class="px-6 py-4">${usuario.email}</td>
+                    <td class="px-6 py-4">${statusBadge}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                             <button onclick="window.alterarStatusUsuario(${usuario.id},'${usuario.nome}')" title="Alterar status" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="toggle-${statusAtivo ? 'left' : 'right'}" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="window.excluirUsuario(${usuario.id},'${usuario.nome}')" title="Excluir" class="text-gray-500 hover:text-red-600 p-2 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            lucide.createIcons();
         }
-    }
-    // Event Listeners para busca e filtro
-    buscaInput.addEventListener("input", renderizarUsuarios);
-    filtroStatusSelect.addEventListener("change", renderizarUsuarios);
 
-    // Renderização Inicial: chama a função para carregar os dados do backend quando a página carrega
-    document.addEventListener('DOMContentLoaded', carregarUsuarios);
+        async function carregarUsuarios() {
+            mostrarLoading();
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 p-4">Erro: Você não está autenticado.</td></tr>`;
+                return;
+            }
+
+            try {
+                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professores', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Falha ao carregar os dados.');
+                
+                const data = await response.json();
+                listaDeUsuarios = data.map(p => ({
+                    id: p.idprofessor,
+                    nome: p.nomeprofessor,
+                    email: p.emailprofessor,
+                    status: p.status
+                }));
+                renderizarUsuarios();
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 p-4">${error.message}</td></tr>`;
+            }
+        }
+
+        window.alterarStatusUsuario = async (id, nome) => {
+            const token = localStorage.getItem('authToken');
+            if (!token) return Swal.fire('Erro', 'Você não está autenticado.', 'error');
+            
+            const usuario = listaDeUsuarios.find(u => u.id === id);
+            const novoStatus = usuario.status === 'Ativo' ? 'Bloqueado' : 'Ativo';
+            
+            Swal.fire({
+                title: 'Confirmar Alteração',
+                text: `Deseja alterar o status de "${nome}" para ${novoStatus}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, alterar!',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`https://back-end-mvp-tcc.vercel.app/api/professores/${id}/status`, {
+                            method: 'PATCH',
+                            headers: { 
+                                'Authorization': `Bearer ${token}`,
+                                // CORREÇÃO 1: Adicionado o Content-Type
+                                'Content-Type': 'application/json' 
+                            },
+                            // CORREÇÃO 2: Adicionado o body com o novo status
+                            body: JSON.stringify({ status: novoStatus })
+                        });
+
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.msg || "Erro desconhecido");
+
+                        // CORREÇÃO 3: Atualiza o status local com a variável `novoStatus`
+                        usuario.status = novoStatus;
+                        renderizarUsuarios();
+                        Swal.fire('Sucesso!', data.msg, 'success');
+
+                    } catch (error) {
+                        Swal.fire('Erro!', error.message, 'error');
+                    }
+                }
+            });
+        };
+
+        window.excluirUsuario = (id, nome) => {
+             const token = localStorage.getItem('authToken');
+             if (!token) return Swal.fire('Erro', 'Você não está autenticado.', 'error');
+
+             Swal.fire({
+                title: 'Tem certeza?',
+                text: `Você está prestes a excluir permanentemente o professor "${nome}". Esta ação não pode ser desfeita.`,
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`https://back-end-mvp-tcc.vercel.app/api/professores/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.msg);
+
+                        listaDeUsuarios = listaDeUsuarios.filter(u => u.id !== id);
+                        renderizarUsuarios();
+                        Swal.fire('Excluído!', data.msg, 'success');
+                    } catch (error) {
+                        Swal.fire('Erro!', error.message, 'error');
+                    }
+                }
+            });
+        };
+
+        buscaInput.addEventListener("input", renderizarUsuarios);
+        filtroStatusSelect.addEventListener("change", renderizarUsuarios);
+
+        carregarUsuarios();
+    });
 </script>
 </body>
 </html>
