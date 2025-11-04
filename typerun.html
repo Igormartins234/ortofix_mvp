@@ -387,29 +387,43 @@
 
     // NOVA FUNÇÃO: Registra conclusão e ganha moedas
     async function registrarAtividadeConcluida(pontuacao, feedback) {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            console.error('Token de auth não encontrado.');
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        console.error('Token não encontrado. O usuário deve estar logado.');
+        return;
+    }
+
+    try {
+        const res = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ 
+                idAtividade: ID_ATIVIDADE,
+                pontuacao,
+                feedback 
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Erro ao registrar:", data);
             return;
         }
 
-        try {
-            const res = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ idAtividade: ID_ATIVIDADE, pontuacao, feedback })
-            });
-
-            if (!res.ok) throw new Error('Falha ao registrar atividade.');
-            const data = await res.json();
+        if (data.moedasGanhas > 0) {
             showRewardToast(data.moedasGanhas);
-        } catch (error) {
-            console.error('Erro ao registrar moedas:', error);
         }
+
+        console.log(`✅ Atividade registrada com sucesso! +${data.moedasGanhas} moedas.`);
+    } catch (error) {
+        console.error('❌ Falha ao registrar atividade:', error);
     }
+}
+
 
     // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
     function showScreen(screenName) {

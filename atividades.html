@@ -183,8 +183,6 @@
                     
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
-                    <!-- Dropdown de Notificações -->
-                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
 <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
     <!-- Cabeçalho do dropdown -->
     <div class="p-3 border-b" style="border-color: var(--color-border);">
@@ -219,7 +217,6 @@
 
                 <!-- Ícone de Perfil -->
 <a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
-    <!-- O script global-init.js vai inserir o avatar aqui -->
 </a>
             </div>
         </div>
@@ -309,10 +306,9 @@ function renderActivitiesList(activities) {
     grid.innerHTML = '';
 
     if (!Array.isArray(activities) || activities.length === 0) {
-        statusEl.textContent = 'Nenhuma atividade disponível no momento. Usando atividades padrão.';
+        statusEl.textContent = 'Nenhuma atividade nova disponível no momento. Usando atividades padrão.';
         const fallback = [
             { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
-            // --- ALTERAÇÃO FEITA AQUI ---
             { id: 'typerun', titulo: 'Caça-Erros', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'file-text', url: 'typerun.html', status: 'available' },
             { id: 'texto', titulo: 'Exercícios de Texto', descricao: 'Complete, corrija e interprete textos.', icon: 'keyboard', url: 'atividade_correcao.html', status: 'available' },
         ];
@@ -424,7 +420,7 @@ if (notificationsBtn && notificationsDropdown) {
             notificationsDropdown.classList.add("hidden");
         }
     });
-}// 🔹 Corrigindo bug do ID errado ("drop  down-menu")
+}
 const menuBtn = document.getElementById("menu-btn");
 const dropdownMenu = document.getElementById("dropdown-menu");
 if (menuBtn && dropdownMenu) {
