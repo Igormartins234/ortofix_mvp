@@ -283,17 +283,17 @@
                             method: 'PATCH',
                             headers: { 
                                 'Authorization': `Bearer ${token}`,
-                                // CORREÇÃO 1: Adicionado o Content-Type
+                                // CORREÇÃO 1: Adicionado o Content-Type para especificar que estamos enviando JSON.
                                 'Content-Type': 'application/json' 
                             },
-                            // CORREÇÃO 2: Adicionado o body com o novo status
+                            // CORREÇÃO 2: Adicionado o body com o novo status a ser enviado para a API.
                             body: JSON.stringify({ status: novoStatus })
                         });
 
                         const data = await response.json();
-                        if (!response.ok) throw new Error(data.msg || "Erro desconhecido");
+                        if (!response.ok) throw new Error(data.msg || "Erro desconhecido ao alterar status.");
 
-                        // CORREÇÃO 3: Atualiza o status local com a variável `novoStatus`
+                        // CORREÇÃO 3: Atualiza o status local com a variável `novoStatus` para refletir a mudança na tela.
                         usuario.status = novoStatus;
                         renderizarUsuarios();
                         Swal.fire('Sucesso!', data.msg, 'success');
