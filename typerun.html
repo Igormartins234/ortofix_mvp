@@ -317,6 +317,11 @@
         <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você selecionou:</p><p id="selecaoUsuario" class="font-semibold text-lg text-dynamic-dark"></p></div>
     </div>
     <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise do Gemini</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
+    <button id="btnConcluirAtividade"
+        class="btn-primary-theme w-full sm:w-auto flex items-center justify-center gap-2 font-bold py-2.5 px-6 rounded-lg shadow-lg transition-all duration-300">
+      <i data-lucide="check-circle" class="w-5 h-5"></i>
+      <span>Concluir Atividade</span>
+  </button>
 </div>
     </main>
 
@@ -534,6 +539,18 @@
         document.getElementById("stat-erros").textContent = erros.length;
         document.getElementById("stat-omissoes").textContent = omissoes.length;
         document.getElementById("stat-pontuacao").textContent = pontuacao;
+
+        document.getElementById('btnConcluirAtividade').addEventListener('click', async function() {
+    // Pegue a pontuação e feedback da tela (ou guarde em variáveis ao calcular o resultado)
+    const pontuacao = parseInt(document.getElementById('stat-pontuacao').textContent);
+    const feedback = document.getElementById('feedbackGemini').textContent;
+
+    await registrarAtividadeConcluida(pontuacao, feedback);
+
+    // Opcional: Mostra um alerta ou animação pós-registro
+    alert('Atividade registrada! Suas moedas foram creditadas.');
+    // Ou atualize a interface, etc.
+});
 
         document.getElementById("palavrasCorretas").textContent =
             (data.palavras_com_erro && data.palavras_com_erro.length)
