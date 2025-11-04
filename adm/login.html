@@ -1,47 +1,72 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Login</title>
-    <!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>OrtoFix - Acesso Restrito</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; color: #3c6a99; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .login-gradient {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+        }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-100">
 
-    <div class="max-w-md w-full bg-white shadow-xl rounded-xl p-8">
-        <div class="text-center mb-8">
-            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-20">
-            <h1 class="text-3xl font-bold text-[#3c6a99] mt-4">Acessar Painel</h1>
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="flex flex-col md:flex-row bg-white shadow-2xl rounded-2xl max-w-4xl w-full overflow-hidden">
+
+            <!-- Coluna da Imagem e Boas-Vindas (Esquerda) -->
+            <div class="hidden md:flex w-1/2 login-gradient text-white p-12 flex-col justify-between">
+                <div>
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-12 mb-4">
+                    <h1 class="text-4xl font-bold tracking-tight">Bem-vindo(a) ao Painel Administrativo</h1>
+                    <p class="mt-4 text-white/80">Gerencie professores, alunos e o conteúdo da plataforma de forma simples e eficiente.</p>
+                </div>
+                <div class="text-sm text-white/60">
+                    &copy; 2025 OrtoFix. Todos os direitos reservados.
+                </div>
+            </div>
+
+            <!-- Coluna do Formulário (Direita) -->
+            <div class="w-full md:w-1/2 p-8 md:p-12">
+                <div class="text-center mb-8 md:hidden">
+                    <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="mx-auto h-16">
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Acessar sua Conta</h2>
+                <p class="text-gray-500 mb-8">Utilize suas credenciais de administrador.</p>
+
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-600">E-mail</label>
+                        <input type="email" id="email" name="email" required value="admin@adm"
+                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-600">Senha</label>
+                        <input type="password" id="password" name="password" required value="adm"
+                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                    </div>
+                    <div>
+                        <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[#3c6a99] hover:bg-[#357ABD] transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3c6a99]">
+                            Entrar
+                        </button>
+                    </div>
+                </form>
+                <p id="error-message" class="mt-4 text-center font-medium text-red-600"></p>
+            </div>
         </div>
-
-        <form id="login-form" class="space-y-6">
-            <div>
-                <label for="email" class="block text-sm font-medium text-[#5689b9]">E-mail</label>
-                <input type="email" id="email" name="email" required value="admin@adm"
-                       class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5689b9]">
-            </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-[#5689b9]">Senha</label>
-                <input type="password" id="password" name="password" required value="adm"
-                       class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5689b9]">
-            </div>
-            <div>
-                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-[#3c6a99] hover:bg-[#5689b9] transition-colors">
-                    Entrar
-                </button>
-            </div>
-        </form>
-        <p id="error-message" class="mt-4 text-center font-medium text-red-600"></p>
     </div>
 
     <script>
+        // O seu script JavaScript permanece o mesmo
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -64,23 +89,20 @@
                     throw new Error(data.msg || 'Erro ao tentar fazer login.');
                 }
 
-                // SUCESSO! A MÁGICA ACONTECE AQUI:
                 localStorage.setItem('authToken', data.access_token);
                 localStorage.setItem('userRole', data.user_role);
                 localStorage.setItem('userName', data.user_name);
 
                 Swal.fire({
-                        icon: 'success',
-                        title: 'Sucesso!',
-                        text: 'Login bem sucedido! redirecionando...',
-                        confirmButtonColor: '#3c6a99'
-                        });
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: 'Login bem-sucedido! Redirecionando...',
+                    confirmButtonColor: '#3c6a99'
+                });
 
-                // Redireciona para a página de cadastro de professor para o teste
                 if (data.user_role === 'adm') {
                     window.location.href = 'cadastrar_professor.html';
                 } else {
-                    // Lógica para redirecionar aluno/professor para outros painéis
                     window.location.href = 'inicio.html';
                 }
 
