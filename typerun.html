@@ -407,22 +407,44 @@
             })
         });
 
-        const data = await res.json();
+        // Sempre lê o corpo (para debugging)
+        const data = await res.json().catch(() => ({}));
+        console.log('[API /atividades/completar] status=', res.status, 'body=', data);
 
         if (!res.ok) {
-            console.error("Erro ao registrar:", data);
+            // Mostra mensagem relevante ao usuário
+            const msg = data.msg || `Erro HTTP ${res.status}`;
+            alert("Erro ao salvar atividade: " + msg);
             return;
         }
 
-        if (data.moedasGanhas > 0) {
+        if (data.moedasGanhas && data.moedasGanhas > 0) {
             showRewardToast(data.moedasGanhas);
+        } else {
+            // Caso já tenha sido registrada
+            if (data.msg) {
+                // notifica que já foi registrada
+                console.info('Info:', data.msg);
+            }
         }
 
-        console.log(`✅ Atividade registrada com sucesso! +${data.moedasGanhas} moedas.`);
-    } catch (error) {
-        console.error('❌ Falha ao registrar atividade:', error);
+        // Atualiza o display local de moedas (opcional)
+        if (data.novoTotalMoedas !== undefined) {
+            // se você mantém moedas no localStorage / UI, atualize aqui
+            localStorage.setItem('userCoins', data.novoTotalMoedas);
+            // opcional: atualizar um contador visível
+            const coinsBadge = document.querySelector('#coins-badge');
+            if (coinsBadge) coinsBadge.textContent = data.novoTotalMoedas;
+        }
+
+        console.log(`✅ Atividade registrada: +${data.moedasGanhas || 0} moedas.`);
+
+    } catch (err) {
+        console.error('Falha ao registrar atividade:', err);
+        alert('Erro de rede ao salvar atividade. Verifique o console do navegador e os logs do servidor.');
     }
 }
+
 
 
     // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
