@@ -406,24 +406,19 @@
                 feedback 
             })
         });
-
         const data = await res.json();
-
         if (!res.ok) {
             console.error("Erro ao registrar:", data);
             return;
         }
-
         if (data.moedasGanhas > 0) {
             showRewardToast(data.moedasGanhas);
         }
-
         console.log(`✅ Atividade registrada com sucesso! +${data.moedasGanhas} moedas.`);
     } catch (error) {
         console.error('❌ Falha ao registrar atividade:', error);
     }
 }
-
 
     // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
     function showScreen(screenName) {
