@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrtoFix - Meu Perfil (Professor)</title>
+    <title>OrtoFix - Meu Perfil</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="icon" type="image/png" href="../static/img/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        /* --- PADRÃO VISUAL UNIFICADO --- */
         :root {
             --color-primary: #4A90E2;
             --color-primary-dark: #357ABD;
@@ -17,111 +21,220 @@
             --color-text-dark: #2c3e50;
             --color-text-light: #8492a6;
             --color-card-bg: #ffffff;
+            --color-border: #E2E8F0;
+            --color-navbar-bg: #3c6a99;
         }
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--color-background);
             color: var(--color-text-dark);
         }
+
+        .navbar-logo { width: 40px; height: auto; }
+
+        /* --- ESTILOS DE COMPONENTES DE TEMA --- */
+        .navbar-theme { background-color: var(--color-navbar-bg); }
+        .menu-theme { background-color: var(--color-card-bg); border: 1px solid var(--color-border); }
+        .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+        .menu-item-theme:hover { background-color: var(--color-border); }
+        .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
+
+        .notification-badge {
+            position: absolute; top: 0; right: 0;
+            width: 12px; height: 12px; background-color: #EF4444;
+            border-radius: 50%; border: 2px solid var(--color-navbar-bg);
+        }
+
+        /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA --- */
         .content-card {
             background-color: var(--color-card-bg);
             border-radius: 1rem;
-            border: 1px solid var(--color-border, #E2E8F0);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        .info-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; }
-        .nav-card {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s;
+
+        .action-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .nav-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        .action-link:hover {
+            color: var(--color-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 20px -5px rgba(44,62,80,0.08), 0 8px 8px -5px rgba(44,62,80,0.03);
+        }
+
+        .action-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .action-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Estilos para o formulário */
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: var(--color-text-dark);
+        }
+        .form-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+        }
     </style>
 </head>
+<body class="min-h-screen flex flex-col">
 
-<body class="min-h-screen flex flex-col bg-[#e3ebf2]">
-<header class="bg-[#3c6a99] text-white shadow-lg">
-    <nav class="container mx-auto flex justify-between items-center px-4 py-2">
-        <a href="./index.html"><img src="../static/img/ortofix.png" alt="Logo" class="w-10"></a>
-        <a href="perfil.html" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white">
-            <i data-lucide="user-circle" class="w-6 h-6"></i>
-        </a>
+<header class="header-nav sticky top-0 z-50">
+    <nav class="navbar-theme text-white shadow-lg">
+        <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
+            <div class="relative">
+                <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
+                    <a href="inicio.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
+                    </a>
+                    <a href="#" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i> Som
+                    </a>
+                    <a href="notificacoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                        <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
+                    </a>
+                    <a href="configuracoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
+                        <i data-lucide="settings" class="w-5 h-5"></i> Configurações
+                    </a>
+                    <hr class="my-1" style="border-color: var(--color-border);">
+                    <a href="./index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                    </a> 
+                </div>
+            </div>
+
+            <a href="./index.html" class="mx-auto md:mx-0">
+                <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
+            </a>
+
+            <div class="flex items-center gap-2">
+                <div class="relative">
+                    <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors">
+                        <i data-lucide="bell"></i>
+                        <span class="notification-badge" id="notification-indicator"></span>
+                    </button>
+                    <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <div class="p-3 border-b" style="border-color: var(--color-border);">
+                            <h3 class="text-sm font-semibold">Notificações Recentes</h3>
+                        </div>
+                        <div id="dropdown-notifications-list">
+                             <p class="text-center text-sm text-[var(--color-text-light)] p-4">Carregando...</p>
+                        </div>
+                        <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">
+                            Ver todas
+                        </a>
+                    </div>
+                </div>
+                <a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center ring-2 ring-white"></a>
+            </div>
+        </div>
     </nav>
 </header>
 
 <main class="container mx-auto px-4 sm:px-6 py-10 flex-grow">
     <div class="mb-8">
-        <a href="painel.html" class="inline-flex items-center text-sm text-gray-500 hover:text-blue-500">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Voltar ao Painel
+        <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+            Voltar ao Painel
         </a>
-        <h1 class="text-3xl font-bold mt-2">Meu Perfil</h1>
-        <p class="text-gray-500">Gerencie suas informações e perfil profissional.</p>
+        <h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)] mt-2">Meu Perfil</h1>
+        <p class="text-base text-[var(--color-text-light)] mt-1">Gerencie suas informações e perfil profissional.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- COLUNA ESQUERDA -->
         <aside class="lg:col-span-1 space-y-8">
             <div class="content-card text-center p-6">
                 <div class="relative w-40 h-40 mx-auto mb-4">
-                    <img id="profile-image-preview" src="../static/img/foto4.png"
-                         alt="Foto do Professor" class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg">
-                    <label for="profile-image-upload"
-                           class="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-2.5 rounded-full cursor-pointer shadow-md transition">
+                    <img id="profile-image-preview" src="../static/img/foto4.png" alt="Foto do Professor" class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg">
+                    <label for="profile-image-upload" class="absolute bottom-2 right-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white p-2.5 rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer">
                         <i data-lucide="camera" class="w-5 h-5"></i>
                     </label>
                     <input type="file" id="profile-image-upload" class="hidden" accept="image/*">
                 </div>
-                <h2 id="profile-name" class="text-2xl font-bold text-gray-800">Carregando...</h2>
-                <p id="profile-materia" class="text-md text-gray-500">-</p>
+                <h2 id="profile-name" class="text-2xl font-bold text-[var(--color-text-dark)]">Carregando...</h2>
+                <p id="profile-materia" class="text-md text-[var(--color-text-light)]">-</p>
             </div>
 
             <div class="content-card p-6">
-                <h3 class="text-lg font-semibold mb-4 border-b pb-3 text-gray-700">Ações Rápidas</h3>
-                <div class="space-y-3">
-                    <a href="turmas.html" class="nav-card flex items-center gap-3 p-3">
-                        <i data-lucide="users" class="w-5 h-5 text-blue-500"></i>
+                <h3 class="text-lg font-semibold text-[var(--color-text-dark)] mb-3 border-b pb-3" style="border-color: var(--color-border);">Ações Rápidas</h3>
+                <div class="space-y-2">
+                    <a href="./turma_alunos.html" class="action-link">
+                        <i data-lucide="users" class="w-5 h-5 text-[var(--color-primary)]"></i>
                         <span>Gerenciar Turmas</span>
                     </a>
-                    <a href="atividades.html" class="nav-card flex items-center gap-3 p-3">
-                        <i data-lucide="file-plus-2" class="w-5 h-5 text-blue-500"></i>
+                    <a href="./criar_atividade.html" class="action-link">
+                        <i data-lucide="file-plus-2" class="w-5 h-5 text-[var(--color-primary)]"></i>
                         <span>Criar Nova Atividade</span>
                     </a>
-                    <a href="duvidas.html" class="nav-card flex items-center gap-3 p-3">
-                        <i data-lucide="help-circle" class="w-5 h-5 text-blue-500"></i>
+                    <a href="./duvida.html" class="action-link">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-[var(--color-primary)]"></i>
                         <span>Ver Dúvidas dos Alunos</span>
                     </a>
                 </div>
             </div>
         </aside>
 
-        <!-- COLUNA DIREITA -->
         <div class="lg:col-span-2">
             <div class="content-card p-6 md:p-8">
-                <h3 class="text-xl font-semibold text-gray-700 mb-6 border-b pb-4">Minhas Informações</h3>
+                <h3 class="text-xl font-semibold text-[var(--color-text-dark)] mb-6 border-b pb-4" style="border-color: var(--color-border);">Minhas Informações</h3>
                 <form id="perfil-professor-form" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Nome Completo:</label>
-                        <input type="text" id="nome_completo" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                        <label for="nome_completo" class="form-label">Nome Completo:</label>
+                        <input type="text" id="nome_completo" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Email Institucional:</label>
-                        <input type="email" id="email" readonly
-                               class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
-                        <p class="text-xs text-gray-500 mt-1">O email não pode ser alterado.</p>
+                        <label for="email" class="form-label">Email Institucional:</label>
+                        <input type="email" id="email" readonly class="form-input bg-gray-100 text-gray-500 cursor-not-allowed">
+                        <p class="text-xs text-[var(--color-text-light)] mt-1">O email não pode ser alterado.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Matéria(s) Lecionada(s):</label>
-                        <input type="text" id="materias" placeholder="Ex: Português, Matemática"
-                               class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                        <label for="materias" class="form-label">Matéria(s) Lecionada(s):</label>
+                        <input type="text" id="materias" placeholder="Ex: Português, Redação" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Turmas Atribuídas:</label>
-                        <div id="lista_turmas" class="bg-gray-100 p-3 rounded-lg border min-h-[40px] text-gray-700">Carregando...</div>
+                        <label class="form-label">Turmas Atribuídas:</label>
+                        <div id="lista_turmas" class="bg-gray-100 p-3 rounded-lg border min-h-[40px] text-[var(--color-text-dark)]" style="border-color: var(--color-border);">Carregando...</div>
                     </div>
                     <div class="flex justify-end pt-4">
-                        <button type="submit"
-                                class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-semibold py-2.5 px-6 rounded-lg flex items-center gap-2 transition">
+                        <button type="submit" class="bg-[var(--color-navbar-bg)] hover:bg-[var(--color-primary)] text-white font-bold py-2.5 px-6 rounded-lg transition-all flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                             <i data-lucide="save" class="w-5 h-5"></i> Salvar Alterações
                         </button>
                     </div>
@@ -131,103 +244,164 @@
     </div>
 </main>
 
-<footer class="bg-[#3c6a99] text-white text-center py-2 mt-auto">
-    <p>&copy; 2025 OrtoFix</p>
+<footer class="navbar-theme text-[#e3ebf2] mt-auto">
+    <div class="container mx-auto py-2 px-4 text-center text-sm">
+        <div class="flex items-center justify-center gap-2">
+            <p>&copy; 2025 OrtoFix</p>
+            <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-6" style="filter: brightness(0) invert(1);">
+        </div>
+    </div>
 </footer>
+
+<audio id="click-sound" src="/static/audio/click.wav" preload="auto"></audio>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
     lucide.createIcons();
 
+    // --- LÓGICA DE INTERFACE (MENUS, SOM, ETC.) ---
+    const menuBtn = document.getElementById("menu-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const notificationsBtn = document.getElementById("notifications-btn");
+    const notificationsDropdown = document.getElementById("notifications-dropdown");
+
+    function setupDropdown(btn, menu) {
+        if (!btn || !menu) return;
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isHidden = menu.classList.contains("hidden");
+            document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+            if (isHidden) menu.classList.remove("hidden");
+        });
+    }
+    setupDropdown(menuBtn, dropdownMenu);
+    setupDropdown(notificationsBtn, notificationsDropdown);
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+    });
+    
+    let soundEnabled = true;
+    const soundBtn = document.getElementById("sound-btn");
+    const clickSound = document.getElementById("click-sound");
+    if(soundBtn) {
+        soundBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            soundEnabled = !soundEnabled;
+            const icon = soundBtn.querySelector("i");
+            icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+            lucide.createIcons();
+        });
+    }
+    document.querySelectorAll("a, button, label").forEach(el => {
+        el.addEventListener("click", () => {
+            if (soundEnabled && clickSound) {
+                clickSound.currentTime = 0;
+                clickSound.play().catch(()=>{});
+            }
+        });
+    });
+
+    // --- LÓGICA DE BACK-END (API E DADOS DO PROFESSOR) ---
     const API_URL = "https://back-end-mvp-tcc.vercel.app/api/professor/perfil";
     const token = localStorage.getItem("authToken");
+
     if (!token) {
         alert("Sessão expirada. Faça login novamente.");
-        window.location.href = "login.html";
+        window.location.href = "login_professor.html";
         return;
     }
 
-    // ELEMENTOS
     const elements = {
         name: document.getElementById("profile-name"),
         materia: document.getElementById("profile-materia"),
-        image: document.getElementById("profile-image-preview"),
-        upload: document.getElementById("profile-image-upload"),
+        imagePreview: document.getElementById("profile-image-preview"),
+        imageUpload: document.getElementById("profile-image-upload"),
         nomeInput: document.getElementById("nome_completo"),
         emailInput: document.getElementById("email"),
         materiasInput: document.getElementById("materias"),
         listaTurmas: document.getElementById("lista_turmas"),
-        form: document.getElementById("perfil-professor-form")
+        form: document.getElementById("perfil-professor-form"),
+        avatarNav: document.getElementById("user-avatar-container")
     };
 
     async function carregarPerfil() {
         try {
             const res = await fetch(API_URL, { headers: { "Authorization": `Bearer ${token}` } });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.msg || "Erro ao carregar perfil.");
+            }
             const data = await res.json();
-            if (!res.ok) throw new Error(data.msg || "Erro ao carregar perfil.");
-
+            
+            const profileImageUrl = data.urlfotoperfil || "../static/img/foto4.png";
+            
             elements.name.textContent = data.nomeprofessor || "Professor(a)";
-            elements.materia.textContent = data.materias || "-";
+            elements.materia.textContent = data.materias || "Matéria não definida";
+            elements.imagePreview.src = profileImageUrl;
+            if (elements.avatarNav) {
+                elements.avatarNav.innerHTML = `<img src="${profileImageUrl}" class="w-full h-full rounded-full object-cover">`;
+            }
             elements.nomeInput.value = data.nomeprofessor || "";
             elements.emailInput.value = data.emailprofessor || "";
             elements.materiasInput.value = data.materias || "";
-            elements.image.src = data.urlfotoperfil || "../static/img/foto4.png";
-            elements.listaTurmas.textContent = (data.turmas && data.turmas.length)
+            elements.listaTurmas.textContent = (data.turmas && data.turmas.length > 0)
                 ? data.turmas.join(", ") : "Nenhuma turma atribuída.";
         } catch (err) {
+            console.error(err);
             alert("Erro ao carregar perfil: " + err.message);
         }
     }
 
     elements.form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const body = {
+        const body = JSON.stringify({
             nome: elements.nomeInput.value,
             materias: elements.materiasInput.value
-        };
+        });
         try {
             const res = await fetch(API_URL, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-                body: JSON.stringify(body)
+                body: body
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.msg || "Erro ao atualizar perfil.");
             alert("Perfil atualizado com sucesso!");
-            carregarPerfil();
+            await carregarPerfil();
         } catch (err) {
             alert(err.message);
         }
     });
 
-    elements.upload.addEventListener("change", async (event) => {
+    elements.imageUpload.addEventListener("change", (event) => {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const base64 = e.target.result;
-            elements.image.src = base64;
+            const base64Image = e.target.result;
+            elements.imagePreview.src = base64Image;
             try {
                 const res = await fetch(`${API_URL}/foto`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ urlFoto: base64 })
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                    body: JSON.stringify({ urlFoto: base64Image })
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.msg || "Erro ao salvar imagem.");
                 alert("Foto de perfil atualizada com sucesso!");
+                await carregarPerfil();
             } catch (err) {
                 alert("Erro ao salvar foto: " + err.message);
+                await carregarPerfil();
             }
         };
         reader.readAsDataURL(file);
     });
 
-    carregarPerfil();
+    await carregarPerfil();
 });
 </script>
+
 </body>
 </html>
