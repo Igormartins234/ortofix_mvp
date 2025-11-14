@@ -10,86 +10,70 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
+        /* --- PADRÃO VISUAL UNIFICADO --- */
         :root {
-            --color-primary: #4A90E2;      /* Um azul mais vibrante e moderno */
+            --color-primary: #4A90E2;
             --color-primary-dark: #357ABD;
-            --color-accent: #50E3C2;       /* Um verde-água como cor de destaque */
-            --color-background: #F4F7FA;  /* Fundo mais claro e limpo */
-            --color-text-dark: #2c3e50;   /* Um "quase preto" mais suave */
-            --color-text-light: #8492a6;  /* Cinza para textos secundários */
+            --color-accent: #50E3C2;
+            --color-background: #F4F7FA;
+            --color-text-dark: #2c3e50;
+            --color-text-light: #8492a6;
             --color-card-bg: #ffffff;
+            --color-border: #E2E8F0;
+            --color-navbar-bg: #3c6a99;
         }
 
-         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         body {
             font-family: 'Poppins', sans-serif;
-            color: #3c6a99; 
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
         }
 
         .navbar-logo { width: 40px; height: auto; }
 
+        /* --- ESTILOS DE COMPONENTES DE TEMA --- */
+        .navbar-theme { background-color: var(--color-navbar-bg); }
+        .menu-theme { background-color: var(--color-card-bg); border: 1px solid var(--color-border); }
+        .menu-item-theme { color: var(--color-text-dark); transition: background-color 0.2s ease, color 0.2s ease; }
+        .menu-item-theme:hover { background-color: var(--color-border); }
+        .menu-item-active { color: var(--color-primary); background-color: var(--color-border); font-weight: 600; }
+
         .notification-badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 12px;
-            height: 12px;
-            background-color: #EF4444;
-            border-radius: 50%;
-            border: 2px solid var(--color-primary-dark);
-            animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-        }
-        
-        /* Animações de entrada para os elementos da página */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+            position: absolute; top: 0; right: 0;
+            width: 12px; height: 12px; background-color: #EF4444;
+            border-radius: 50%; border: 2px solid var(--color-navbar-bg);
         }
 
+        /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA --- */
         .content-card {
             background-color: var(--color-card-bg);
             border-radius: 1rem;
             border: 1px solid var(--color-border);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .content-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
         }
 
-        .info-row {
+        .action-link {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem 0;
-        }
-                /* Estilizando os cards de navegação */
-        .nav-card {
-            background-color: var(--color-card-bg);
-            border-radius: 1rem; /* bordas mais arredondadas */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
             position: relative;
             overflow: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .nav-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 20px -5px rgba(44,62,80,0.08), 0 8px 8px -5px rgba(44,62,80,0.03);
-}
+        .action-link:hover {
+            color: var(--color-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 20px -5px rgba(44,62,80,0.08), 0 8px 8px -5px rgba(44,62,80,0.03);
+        }
 
-        
-        /* Efeito de borda gradiente no hover */
-        .nav-card::after {
+        .action-link::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -102,92 +86,84 @@
             transition: transform 0.4s ease-in-out;
         }
 
-        .nav-card:hover::after {
+        .action-link:hover::after {
             transform: scaleX(1);
         }
-        
+
+        /* Estilos para o formulário */
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: var(--color-text-dark);
+        }
+        .form-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+        }
     </style>
 </head>
-<body class="bg-[#e3ebf2] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
+
 <header class="header-nav sticky top-0 z-50">
-    <nav class="bg-[#3c6a99] text-white shadow-lg sticky top-0 z-50">
+    <nav class="navbar-theme text-white shadow-lg">
         <div class="container mx-auto px-4 sm:px-6 py-2 flex justify-between items-center">
-        <!-- Menu Principal -->
             <div class="relative">
-                <button id="menu-btn" type="button" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown-menu" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
+                <button id="menu-btn" type="button" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors">
                     <i data-lucide="menu"></i>
                 </button>
-                <div id="dropdown-menu" class="absolute left-0 mt-3 bg-white rounded-lg shadow-xl py-2 w-56 hidden z-[60]" role="menu">
-                    <!-- Itens do menu -->
-                    <a href="inicio.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-primary)] bg-blue-50">
+                <div id="dropdown-menu" class="menu-theme absolute left-0 mt-3 rounded-lg shadow-xl py-2 w-56 hidden z-[60]">
+                    <a href="inicio.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
                         <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Painel Principal
                     </a>
-                    <a href="#" role="menuitem" id="sound-btn" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                    <a href="#" id="sound-btn" class="menu-item-theme flex items-center gap-3 px-4 py-2">
                         <i data-lucide="volume-2" class="w-5 h-5"></i> Som
                     </a>
-                    <a href="notificacoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                    <a href="notificacoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
                         <i data-lucide="bell-ring" class="w-5 h-5"></i> Ver Notificações
                     </a>
-                    <a href="configuracoes.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-[var(--color-text-dark)] hover:bg-gray-100 transition-colors duration-200">
+                    <a href="configuracoes.html" class="menu-item-theme flex items-center gap-3 px-4 py-2">
                         <i data-lucide="settings" class="w-5 h-5"></i> Configurações
                     </a>
-                    <hr class="my-1 border-gray-200">
-                    <a href="./index.html" role="menuitem" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                    <hr class="my-1" style="border-color: var(--color-border);">
+                    <a href="./index.html" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50">
                         <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                    </a>
+                    </a> 
                 </div>
             </div>
 
-            <!-- Logo -->
-            <a href="./index.html" class="mx-auto md:mx-0"> 
+            <a href="./index.html" class="mx-auto md:mx-0">
                 <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="navbar-logo">
             </a>
 
-            <!-- Ícones da Direita: Notificações e Perfil -->
             <div class="flex items-center gap-2">
-                <!-- Ícone de Notificações -->
-                <div class="relative rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200">
-                    <button id="notifications-btn" class="p-2 focus:outline-none focus:bg-[#5689b9] rounded-md ">
-                        <i data-lucide="bell" class="text-[#e3ebf2]"></i>
-                    
+                <div class="relative">
+                    <button id="notifications-btn" class="p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors">
+                        <i data-lucide="bell"></i>
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
-                    <!-- Dropdown de Notificações -->
-                    <div id="notifications-dropdown" class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl hidden z-[60] overflow-hidden">
-                        <div class="p-3 border-b border-gray-200">
-                            <h3 class="text-sm font-semibold text-[#3c6a99]">Notificações Recentes</h3>
+                    <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
+                        <div class="p-3 border-b" style="border-color: var(--color-border);">
+                            <h3 class="text-sm font-semibold">Notificações Recentes</h3>
                         </div>
-                        <div class="max-h-80 overflow-y-auto">
-                            <!-- Notificação Exemplo 1 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Nova atividade disponível!</p>
-                                <p class="text-xs text-gray-500">Jogo de Acentuação - Nível Médio</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 15 minutos</p>
-                            </a>
-                            <!-- Notificação Exemplo 2 -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] transition-colors">
-                                <p class="text-sm text-[#3c6a99] font-medium">Você ganhou 50 moedas!</p>
-                                <p class="text-xs text-gray-500">Por completar "Caça-Palavras Avançado".</p>
-                                <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
-                            </a>
-                            <!-- Notificação Exemplo 3 (Lida) -->
-                            <a href="#" class="block px-4 py-3 hover:bg-[#e3ebf2] bg-gray-50 transition-colors">
-                                <p class="text-sm text-gray-500">Feedback do Professor</p>
-                                <p class="text-xs text-gray-400">Na atividade "Ditado Interativo".</p>
-                                <p class="text-xs text-gray-400 mt-1">Ontem</p>
-                            </a>
-                            <!-- Mais notificações aqui -->
+                        <div id="dropdown-notifications-list">
+                             <p class="text-center text-sm text-[var(--color-text-light)] p-4">Carregando...</p>
                         </div>
-                        <a href="notificacoes.html" class="block py-2 text-center text-sm text-[#5689b9] hover:text-[#3c6a99] hover:bg-gray-100 border-t border-gray-200">
-                            Ver todas as notificações
+                        <a href="notificacoes.html" class="menu-item-theme block py-2 text-center text-sm border-t" style="border-color: var(--color-border);">
+                            Ver todas
                         </a>
                     </div>
                 </div>
-
-                <!-- Ícone de Perfil -->
-                <a href="perfil.html" class="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200"    >
-                    <i data-lucide="user-circle" class="text-[#e3ebf2]"></i>
-                </a>
+                <a href="perfil.html" id="user-avatar-container" class="w-10 h-10 bg-white/30 rounded-full flex items-center justify-center ring-2 ring-white"></a>
             </div>
         </div>
     </nav>
@@ -196,81 +172,70 @@
 <main class="container mx-auto px-4 sm:px-6 py-10 flex-grow">
     <div class="mb-8">
         <a href="painel.html" class="inline-flex items-center text-sm font-medium text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors group">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
-                Voltar ao Painel
-            </a>
-        <h1 class="text-3xl font-bold text-gray-800">Meu Perfil</h1>
-        <p class="text-base text-gray-500 mt-1">Gerencie suas informações e acesse rapidamente suas ferramentas.</p>
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"></i>
+            Voltar ao Painel
+        </a>
+        <h1 class="text-3xl md:text-4xl font-bold text-[var(--color-text-dark)] mt-2">Meu Perfil</h1>
+        <p class="text-base text-[var(--color-text-light)] mt-1">Gerencie suas informações e perfil profissional.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Coluna da Esquerda: Foto e Ações -->
         <aside class="lg:col-span-1 space-y-8">
             <div class="content-card text-center p-6">
                 <div class="relative w-40 h-40 mx-auto mb-4">
                     <img id="profile-image-preview" src="../static/img/foto4.png" alt="Foto do Professor" class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg">
-                    <label for="profile-image-upload" class="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-2.5 rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer">
+                    <label for="profile-image-upload" class="absolute bottom-2 right-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white p-2.5 rounded-full shadow-md transition-transform hover:scale-110 cursor-pointer">
                         <i data-lucide="camera" class="w-5 h-5"></i>
                     </label>
                     <input type="file" id="profile-image-upload" class="hidden" accept="image/*">
                 </div>
-                <h2 id="profile-name" class="text-2xl font-bold text-gray-800">Prof. Marieli Andrade</h2>
-                <p class="text-md text-gray-500">Língua Portuguesa</p>
+                <h2 id="profile-name" class="text-2xl font-bold text-[var(--color-text-dark)]">Carregando...</h2>
+                <p id="profile-materia" class="text-md text-[var(--color-text-light)]">-</p>
             </div>
 
-             <!-- Card de Ações Rápidas -->
-                <div class="content-card p-6">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b border-[var(--color-border)] pb-3">Ações Rápidas</h3>
-                    <div class="space-y-3">
-                        <a href="notas.html" class=" nav-card flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors w-full text-left">
-                            <i data-lucide="users" class="w-5 h-5 text-[var(--color-primary)]"></i>
-                            <span class="font-medium text-gray-700">Gerenciar Turmas</span>
-                        </a>
-                        <a href="atividades.html" class="nav-card flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors w-full text-left">
-                            <i data-lucide="file-plus-2" class="w-5 h-5 text-[var(--color-primary)]"></i>
-                            <span class="font-medium text-gray-700">Criar Novas Atividade</span>
-                        </a>
-                        <a href="configuracoes.html" class="nav-card flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors w-full text-left">
-                            <i data-lucide="help-circle" class="w-5 h-5 text-[var(--color-primary)]"></i>
-                            <span class="font-medium text-gray-700">Ver Dúvidas dos Alunos</span>
-                        </a>
-                    </div>
+            <div class="content-card p-6">
+                <h3 class="text-lg font-semibold text-[var(--color-text-dark)] mb-3 border-b pb-3" style="border-color: var(--color-border);">Ações Rápidas</h3>
+                <div class="space-y-2">
+                    <a href="./turma_alunos.html" class="action-link">
+                        <i data-lucide="users" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        <span>Gerenciar Turmas</span>
+                    </a>
+                    <a href="./criar_atividade.html" class="action-link">
+                        <i data-lucide="file-plus-2" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        <span>Criar Nova Atividade</span>
+                    </a>
+                    <a href="./duvida.html" class="action-link">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-[var(--color-primary)]"></i>
+                        <span>Ver Dúvidas dos Alunos</span>
+                    </a>
                 </div>
+            </div>
         </aside>
 
-        <!-- Coluna da Direita: Detalhes e Formulário -->
         <div class="lg:col-span-2">
             <div class="content-card p-6 md:p-8">
-                <h3 class="text-xl font-semibold text-gray-700 mb-6 border-b border-gray-200 pb-4">Minhas Informações</h3>
-                
-                <form id="perfil-professor-form" action="#" method="POST" class="space-y-6">
+                <h3 class="text-xl font-semibold text-[var(--color-text-dark)] mb-6 border-b pb-4" style="border-color: var(--color-border);">Minhas Informações</h3>
+                <form id="perfil-professor-form" class="space-y-6">
                     <div>
-                        <label for="nome_completo" class="block text-sm font-medium text-gray-600 mb-1">Nome Completo:</label>
-                        <input type="text" id="nome_completo" name="nome_completo" value="Prof. Marieli Andrade" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 text-gray-800 outline-none transition">
+                        <label for="nome_completo" class="form-label">Nome Completo:</label>
+                        <input type="text" id="nome_completo" class="form-input">
                     </div>
-
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-600 mb-1">Email Institucional:</label>
-                        <input type="email" id="email" name="email" value="marieli.andrade@escola.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-500 outline-none bg-gray-100 cursor-not-allowed" readonly>
-                        <p class="text-xs text-gray-500 mt-1">O email não pode ser alterado.</p>
+                        <label for="email" class="form-label">Email Institucional:</label>
+                        <input type="email" id="email" readonly class="form-input bg-gray-100 text-gray-500 cursor-not-allowed">
+                        <p class="text-xs text-[var(--color-text-light)] mt-1">O email não pode ser alterado.</p>
                     </div>
-                
                     <div>
-                        <label for="materias" class="block text-sm font-medium text-gray-600 mb-1">Matéria(s) Lecionada(s):</label>
-                        <input type="text" id="materias" name="materias" value="Português, Redação" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 text-gray-800 outline-none transition" placeholder="Ex: Português, Matemática">
+                        <label for="materias" class="form-label">Matéria(s) Lecionada(s):</label>
+                        <input type="text" id="materias" placeholder="Ex: Português, Redação" class="form-input">
                     </div>
-
                     <div>
-                        <label for="turmas" class="block text-sm font-medium text-gray-600 mb-1">Turmas Atribuídas:</label>
-                        <div id="lista_turmas" class="text-gray-700 bg-gray-100 p-3 rounded-lg min-h-[40px] border border-gray-200">
-                            1º A EM, 1º B EM, 2º A EM
-                        </div>
+                        <label class="form-label">Turmas Atribuídas:</label>
+                        <div id="lista_turmas" class="bg-gray-100 p-3 rounded-lg border min-h-[40px] text-[var(--color-text-dark)]" style="border-color: var(--color-border);">Carregando...</div>
                     </div>
-
                     <div class="flex justify-end pt-4">
-                        <button type="submit" class="bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-2.5 px-6 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                            <i data-lucide="save" class="w-5 h-5"></i>
-                            Salvar Alterações
+                        <button type="submit" class="bg-[var(--color-navbar-bg)] hover:bg-[var(--color-primary)] text-white font-bold py-2.5 px-6 rounded-lg transition-all flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                            <i data-lucide="save" class="w-5 h-5"></i> Salvar Alterações
                         </button>
                     </div>
                 </form>
@@ -279,7 +244,7 @@
     </div>
 </main>
 
-<footer class="bg-[#3c6a99] text-white border-t border-gray-200 mt-auto">
+<footer class="navbar-theme text-[#e3ebf2] mt-auto">
     <div class="container mx-auto py-2 px-4 text-center text-sm">
         <div class="flex items-center justify-center gap-2">
             <p>&copy; 2025 OrtoFix</p>
@@ -288,10 +253,13 @@
     </div>
 </footer>
 
+<audio id="click-sound" src="/static/audio/click.wav" preload="auto"></audio>
+
 <script>
+document.addEventListener("DOMContentLoaded", async () => {
     lucide.createIcons();
 
-    // --- LÓGICA DO MENU DROPDOWN E NOTIFICAÇÕES ---
+    // --- LÓGICA DE INTERFACE (MENUS, SOM, ETC.) ---
     const menuBtn = document.getElementById("menu-btn");
     const dropdownMenu = document.getElementById("dropdown-menu");
     const notificationsBtn = document.getElementById("notifications-btn");
@@ -302,119 +270,137 @@
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const isHidden = menu.classList.contains("hidden");
-            // Fecha todos os menus primeiro
             document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
-            // Abre o menu clicado, se estava fechado
             if (isHidden) menu.classList.remove("hidden");
         });
     }
-
     setupDropdown(menuBtn, dropdownMenu);
     setupDropdown(notificationsBtn, notificationsDropdown);
 
     document.addEventListener("click", () => {
-        if(dropdownMenu) dropdownMenu.classList.add("hidden");
-        if(notificationsDropdown) notificationsDropdown.classList.add("hidden");
+        document.querySelectorAll('.absolute.z-\\[60\\]').forEach(m => m.classList.add('hidden'));
+    });
+    
+    let soundEnabled = true;
+    const soundBtn = document.getElementById("sound-btn");
+    const clickSound = document.getElementById("click-sound");
+    if(soundBtn) {
+        soundBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            soundEnabled = !soundEnabled;
+            const icon = soundBtn.querySelector("i");
+            icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+            lucide.createIcons();
+        });
+    }
+    document.querySelectorAll("a, button, label").forEach(el => {
+        el.addEventListener("click", () => {
+            if (soundEnabled && clickSound) {
+                clickSound.currentTime = 0;
+                clickSound.play().catch(()=>{});
+            }
+        });
     });
 
-    // --- LÓGICA DA PÁGINA DE PERFIL ---
-    document.addEventListener('DOMContentLoaded', function() {
-        const token = localStorage.getItem('authToken');
+    // --- LÓGICA DE BACK-END (API E DADOS DO PROFESSOR) ---
+    const API_URL = "https://back-end-mvp-tcc.vercel.app/api/professor/perfil";
+    const token = localStorage.getItem("authToken");
 
-        // Elementos da UI
-        const profileImagePreview = document.getElementById('profile-image-preview');
-        const profileName = document.getElementById('profile-name');
-        const nomeCompletoInput = document.getElementById('nome_completo');
-        const emailInput = document.getElementById('email');
-        const listaTurmasDiv = document.getElementById('lista_turmas');
-        const form = document.getElementById('perfil-professor-form');
-        const imageUpload = document.getElementById('profile-image-upload');
+    if (!token) {
+        alert("Sessão expirada. Faça login novamente.");
+        window.location.href = "login_professor.html";
+        return;
+    }
 
-        async function carregarPerfil() {
-            if (!token) {
-                alert("Sessão inválida. Faça login novamente.");
-                window.location.href = 'login.html'; // Ajuste para a página de login do professor
-                return;
+    const elements = {
+        name: document.getElementById("profile-name"),
+        materia: document.getElementById("profile-materia"),
+        imagePreview: document.getElementById("profile-image-preview"),
+        imageUpload: document.getElementById("profile-image-upload"),
+        nomeInput: document.getElementById("nome_completo"),
+        emailInput: document.getElementById("email"),
+        materiasInput: document.getElementById("materias"),
+        listaTurmas: document.getElementById("lista_turmas"),
+        form: document.getElementById("perfil-professor-form"),
+        avatarNav: document.getElementById("user-avatar-container")
+    };
+
+    async function carregarPerfil() {
+        try {
+            const res = await fetch(API_URL, { headers: { "Authorization": `Bearer ${token}` } });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.msg || "Erro ao carregar perfil.");
             }
+            const data = await res.json();
             
-            try {
-                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/perfil', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.msg || "Erro ao carregar perfil.");
-
-                // Preenche os dados na página
-                profileName.textContent = data.nomeprofessor;
-                nomeCompletoInput.value = data.nomeprofessor;
-                emailInput.value = data.emailprofessor;
-                
-                if (data.urlfotoperfil) {
-                    profileImagePreview.src = data.urlfotoperfil;
-                }
-                
-                if (data.turmas && data.turmas.length > 0) {
-                    listaTurmasDiv.textContent = data.turmas.join(', ');
-                } else {
-                    listaTurmasDiv.textContent = "Nenhuma turma atribuída.";
-                }
-
-            } catch (error) {
-                console.error("Erro ao carregar perfil:", error);
-                alert(error.message);
+            const profileImageUrl = data.urlfotoperfil || "../static/img/foto4.png";
+            
+            elements.name.textContent = data.nomeprofessor || "Professor(a)";
+            elements.materia.textContent = data.materias || "Matéria não definida";
+            elements.imagePreview.src = profileImageUrl;
+            if (elements.avatarNav) {
+                elements.avatarNav.innerHTML = `<img src="${profileImageUrl}" class="w-full h-full rounded-full object-cover">`;
             }
+            elements.nomeInput.value = data.nomeprofessor || "";
+            elements.emailInput.value = data.emailprofessor || "";
+            elements.materiasInput.value = data.materias || "";
+            elements.listaTurmas.textContent = (data.turmas && data.turmas.length > 0)
+                ? data.turmas.join(", ") : "Nenhuma turma atribuída.";
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao carregar perfil: " + err.message);
         }
-        
-        // --- LÓGICA PARA ATUALIZAR PERFIL ---
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const novoNome = nomeCompletoInput.value;
+    }
 
-            try {
-                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/perfil', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ nome: novoNome })
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.msg || "Erro ao salvar.");
-                
-                // Atualiza o nome na UI e no localStorage
-                profileName.textContent = data.novoNome;
-                localStorage.setItem('userName', data.novoNome); // Mantém o nome atualizado entre páginas
-                alert(data.msg);
-
-            } catch (error) {
-                alert(error.message);
-            }
+    elements.form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const body = JSON.stringify({
+            nome: elements.nomeInput.value,
+            materias: elements.materiasInput.value
         });
-
-        // --- LÓGICA PARA UPLOAD DE FOTO (Simplificado) ---
-        // NOTA: Esta é uma implementação SIMPLIFICADA. Em produção, você usaria um serviço
-        // de armazenamento como AWS S3, Google Cloud Storage ou Cloudinary.
-        imageUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileImagePreview.src = e.target.result;
-                    // Aqui você faria a chamada à API para enviar a imagem.
-                    alert("A pré-visualização da imagem foi atualizada. A funcionalidade de upload permanente requer um serviço de armazenamento externo.");
-                    // Exemplo de como a chamada seria:
-                    // uploadFoto(file);
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Carrega os dados do perfil quando a página abre
-        carregarPerfil();
+        try {
+            const res = await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: body
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.msg || "Erro ao atualizar perfil.");
+            alert("Perfil atualizado com sucesso!");
+            await carregarPerfil();
+        } catch (err) {
+            alert(err.message);
+        }
     });
+
+    elements.imageUpload.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64Image = e.target.result;
+            elements.imagePreview.src = base64Image;
+            try {
+                const res = await fetch(`${API_URL}/foto`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                    body: JSON.stringify({ urlFoto: base64Image })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.msg || "Erro ao salvar imagem.");
+                alert("Foto de perfil atualizada com sucesso!");
+                await carregarPerfil();
+            } catch (err) {
+                alert("Erro ao salvar foto: " + err.message);
+                await carregarPerfil();
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    await carregarPerfil();
+});
 </script>
 
 </body>

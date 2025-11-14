@@ -284,7 +284,6 @@
 <audio id="submit-sound" src="/static/audio/confirm.wav" preload="auto"></audio>
 <audio id="success-sound" src="/static/audio/success.wav" preload="auto"></audio>
 
-<!-- 🔹 SCRIPT UNIFICADO -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     lucide.createIcons();
@@ -297,6 +296,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let soundEnabled = true;
 
     const setupDropdown = (btn, menu) => {
+        if (!btn || !menu) return;
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const isHidden = menu.classList.contains("hidden");
@@ -312,9 +312,11 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         soundEnabled = !soundEnabled;
         const icon = soundBtn.querySelector("i");
-        icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
-        icon.classList.toggle("text-red-500", !soundEnabled);
-        lucide.createIcons();
+        if (icon) {
+            icon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+            icon.classList.toggle("text-red-500", !soundEnabled);
+            lucide.createIcons();
+        }
     });
 
     function playSound(sound) {
@@ -324,83 +326,106 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     document.querySelectorAll('a, button').forEach(el => el.addEventListener("click", () => playSound(clickSound)));
-    
+
     // --- LÓGICA DO JOGO DE CORREÇÃO ---
     const API_URL = "https://api-tcc-alpha.vercel.app";
+    const ID_ATIVIDADE = 3; // ID fixo para Desafio de Correção
     const btnIniciar = document.getElementById('btnIniciar');
     const btnGerarExercicio = document.getElementById('btnGerarExercicio');
     const btnVerificar = document.getElementById('btnVerificar');
-    const btnJogarNovamente = document.getElementById('btnJogarNovamente');
     
     const startArea = document.getElementById('startArea');
     const gameArea = document.getElementById('gameArea');
     const areaExercicioDiv = document.getElementById('areaExercicio');
     const areaResultadoDiv = document.getElementById('areaResultado');
-    const feedbackContainer = document.getElementById('feedbackContainer');
 
     const textoComErrosDiv = document.getElementById('textoComErros');
     const textoUsuarioTextarea = document.getElementById('textoUsuario');
     const loadingP = document.getElementById('loading');
     const errorP = document.getElementById('error');
-    
+
     let textoOriginalGlobal = "", textoCorrigidoIdealGlobal = "";
 
     function showRewardToast(coins) {
-    // Cria o elemento do toast
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
-    toast.style.transform = 'translateX(120%)';
-    toast.style.transition = 'transform 0.5s ease-in-out';
-    
-    toast.innerHTML = `
-        <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
-        <div>
-            <p class="font-bold text-lg">Recompensa Recebida!</p>
-            <p class="text-base">Você ganhou +${coins} moedas!</p>
-        </div>
-    `;
-    document.body.appendChild(toast);
-    lucide.createIcons();
-    
-    // Animação de entrada
-    setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
-
-    // Animação de saída
-    setTimeout(() => {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
         toast.style.transform = 'translateX(120%)';
-        setTimeout(() => toast.remove(), 500);
-    }, 4000); // O toast some após 4 segundos
-}
+        toast.style.transition = 'transform 0.5s ease-in-out';
+
+        toast.innerHTML = `
+            <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
+            <div>
+                <p class="font-bold text-lg">Recompensa Recebida!</p>
+                <p class="text-base">Você ganhou +${coins} moedas!</p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        lucide.createIcons();
+
+        setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
+        setTimeout(() => {
+            toast.style.transform = 'translateX(120%)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    async function registrarAtividadeConcluida(pontuacao, feedback) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            console.error('Token de auth não encontrado.');
+            return;
+        }
+
+        try {
+            const res = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ idAtividade: ID_ATIVIDADE, pontuacao, feedback })
+            });
+
+            if (!res.ok) throw new Error('Falha ao registrar atividade.');
+            const data = await res.json();
+            showRewardToast(data.moedasGanhas);
+        } catch (error) {
+            console.error('Erro ao registrar moedas:', error);
+        }
+    }
 
     function showLoading(isLoading, message = "Carregando...") {
-        loadingP.textContent = message;
-        loadingP.style.display = isLoading ? 'block' : 'none';
-        areaExercicioDiv.style.display = isLoading ? 'none' : 'block';
-        if (isLoading) errorP.classList.add('hidden');
+        if (loadingP) {
+            loadingP.textContent = message;
+            loadingP.style.display = isLoading ? 'block' : 'none';
+        }
+        if (areaExercicioDiv) areaExercicioDiv.style.display = isLoading ? 'none' : 'block';
+        if (isLoading && errorP) errorP.classList.add('hidden');
     }
-    
+
     function showError(message) {
+        if (!errorP) return;
         errorP.textContent = "Erro: " + message;
         errorP.classList.remove('hidden');
-        loadingP.style.display = 'none';
+        if (loadingP) loadingP.style.display = 'none';
     }
 
     async function gerarExercicio() {
         hideMascote();
         changeBubbleText("Boa sorte! Leia o texto com atenção.");
-        gameArea.classList.remove('hidden');
-        areaResultadoDiv.classList.add('hidden');
-        areaExercicioDiv.classList.add('fade-in-up');
+        if (gameArea) gameArea.classList.remove('hidden');
+        if (areaResultadoDiv) areaResultadoDiv.classList.add('hidden');
+        if (areaExercicioDiv) areaExercicioDiv.classList.add('fade-in-up');
         showLoading(true, "Gerando novo exercício...");
-        textoUsuarioTextarea.value = "";
+        if (textoUsuarioTextarea) textoUsuarioTextarea.value = "";
 
         try {
             const response = await fetch(`${API_URL}/api/gerar_exercicio`, { method: 'POST' });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            textoOriginalGlobal = data.texto_com_erros;
-            textoCorrigidoIdealGlobal = data.texto_corrigido_ideal;
-            textoComErrosDiv.textContent = textoOriginalGlobal;
+            textoOriginalGlobal = data.texto_com_erros || "";
+            textoCorrigidoIdealGlobal = data.texto_corrigido_ideal || "";
+            if (textoComErrosDiv) textoComErrosDiv.textContent = textoOriginalGlobal;
         } catch (err) {
             showError(err.message);
         } finally {
@@ -410,7 +435,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     async function verificarExercicio() {
-        const textoCorrigidoPeloUsuario = textoUsuarioTextarea.value.trim();
+        const textoCorrigidoPeloUsuario = (textoUsuarioTextarea && textoUsuarioTextarea.value.trim()) || "";
         if (!textoCorrigidoPeloUsuario) {
             alert("Por favor, digite sua correção antes de verificar.");
             return;
@@ -419,10 +444,9 @@ document.addEventListener("DOMContentLoaded", function() {
         hideMascote();
         changeBubbleText("Vamos ver como você se saiu...");
 
-        gameArea.classList.add('hidden');
-        areaResultadoDiv.classList.remove('hidden');
-        // Limpa a área de resultado antes de carregar
-        areaResultadoDiv.innerHTML = '<p class="text-center text-dynamic-light p-8">Avaliando sua resposta...</p>';
+        if (gameArea) gameArea.classList.add('hidden');
+        if (areaResultadoDiv) areaResultadoDiv.classList.remove('hidden');
+        if (areaResultadoDiv) areaResultadoDiv.innerHTML = '<p class="text-center text-dynamic-light p-8">Avaliando sua resposta...</p>';
 
         try {
             const response = await fetch(`${API_URL}/api/avaliar_correcao`, {
@@ -436,127 +460,234 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+            // Garante campos mesmo que a API não retorne
+            data.correcao_ideal = data.correcao_ideal || textoCorrigidoIdealGlobal || "";
+            data.sua_tentativa = data.sua_tentativa || textoCorrigidoPeloUsuario || "";
+            data.feedback_do_gemini = data.feedback_do_gemini || "";
+
             renderFeedback(data);
+
+            const pontuacaoFinal = parseInt(document.getElementById('stat-pontuacao')?.textContent || '0');
+            await registrarAtividadeConcluida(pontuacaoFinal, data.feedback_do_gemini || 'Atividade concluída');
+
         } catch (err) {
-            // Se der erro na API, mostra o erro e volta para a tela de jogo
-             showError(err.message);
-             gameArea.classList.remove('hidden');
-             areaResultadoDiv.classList.add('hidden');
+            showError(err.message);
+            if (gameArea) gameArea.classList.remove('hidden');
+            if (areaResultadoDiv) areaResultadoDiv.classList.add('hidden');
         }
+    }
+
+    function convertMarkdownToHtml(markdownText) {
+        if (!markdownText) return '';
+        let htmlText = String(markdownText)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+        htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        htmlText = htmlText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        htmlText = htmlText.replace(/\n/g, '<br>');
+
+        return htmlText;
     }
     
     /**
- * NOVA FUNÇÃO AUXILIAR
- * Compara duas strings de texto e retorna um Set com as palavras que são diferentes.
- * @param {string} textoOriginal - O texto base para comparação.
- * @param {string} textoModificado - O texto que foi alterado.
- * @returns {Set<string>} Um conjunto de palavras originais que foram modificadas.
- */
-function calcularDiferencas(textoOriginal, textoModificado) {
-    const palavrasOriginais = textoOriginal.trim().split(/\s+/);
-    const palavrasModificadas = textoModificado.trim().split(/\s+/);
-    const diferencas = new Set();
+     * NOVA FUNÇÃO CORRIGIDA
+     * Renderiza o feedback e calcula a pontuação com base em uma comparação precisa de palavras.
+     */
+    function renderFeedback(data) {
+        if (!areaResultadoDiv) return;
 
-    // Itera pela menor quantidade de palavras para evitar erros de índice
-    const tamanhoMinimo = Math.min(palavrasOriginais.length, palavrasModificadas.length);
+        // Recria a estrutura HTML da área de resultado
+        areaResultadoDiv.innerHTML = `
+            <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
+            <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+                <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
+                <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
+                <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
+                <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><div id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></div></div>
+                <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><div id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></div></div>
+            </div>
+            <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise Detalhada</h3></div><div id="feedbackGemini" class="text-dynamic-dark leading-relaxed"></div></div>
+            <div class="text-center mt-8">
+                <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
+                </button>
+            </div>
+        `;
 
-    for (let i = 0; i < tamanhoMinimo; i++) {
-        // Remove pontuação final para uma comparação mais justa
-        const palavraOriginalLimpa = palavrasOriginais[i].replace(/[.,!?;:]$/, '');
-        const palavraModificadaLimpa = palavrasModificadas[i].replace(/[.,!?;:]$/, '');
+        // Reanexa o listener de evento ao novo botão
+        const btnRe = document.getElementById('btnJogarNovamente');
+        if (btnRe) btnRe.addEventListener('click', gerarExercicio);
 
-        if (palavraOriginalLimpa !== palavraModificadaLimpa) {
-            // Adiciona a palavra original que estava errada/foi modificada
-            diferencas.add(palavraOriginalLimpa);
+        // Garante que os dados essenciais existam
+        const correcaoIdeal = data.correcao_ideal || textoCorrigidoIdealGlobal || "";
+        const tentativaUsuario = data.sua_tentativa || (textoUsuarioTextarea ? textoUsuarioTextarea.value : "") || "";
+
+        // 1. LÓGICA DE COMPARAÇÃO PRECISA
+        const tokenize = (text) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").match(/[\w'-]+/g) || [];
+
+        const idealTokens = tokenize(correcaoIdeal);
+        const userTokens = tokenize(tentativaUsuario);
+
+        const idealFreq = idealTokens.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+        const userFreq = userTokens.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+        
+        let acertosCount = 0;
+        let acertosPalavras = [];
+        Object.keys(idealFreq).forEach(word => {
+            const matched = Math.min(idealFreq[word], userFreq[word] || 0);
+            if (matched > 0) {
+                acertosCount += matched;
+                for (let i = 0; i < matched; i++) {
+                    acertosPalavras.push(word);
+                }
+            }
+        });
+        
+        const omissoesCount = Math.max(0, idealTokens.length - acertosCount);
+        const errosCount = Math.max(0, userTokens.length - acertosCount);
+        const pontuacao = Math.max(0, (acertosCount * 10) - (errosCount * 5) - (omissoesCount * 3));
+
+        // 2. GERA LISTA DE PALAVRAS PARA FEEDBACK DETALHADO
+        const errosPalavras = [];
+        const tempUserFreq = {...userFreq};
+        acertosPalavras.forEach(word => {
+            if(tempUserFreq[word]) tempUserFreq[word]--;
+        });
+        Object.keys(tempUserFreq).forEach(word => {
+            for (let i = 0; i < tempUserFreq[word]; i++) {
+                errosPalavras.push(word);
+            }
+        });
+
+        const omissoesPalavras = [];
+        const tempIdealFreq = {...idealFreq};
+        acertosPalavras.forEach(word => {
+            if(tempIdealFreq[word]) tempIdealFreq[word]--;
+        });
+        Object.keys(tempIdealFreq).forEach(word => {
+            for (let i = 0; i < tempIdealFreq[word]; i++) {
+                omissoesPalavras.push(word);
+            }
+        });
+        
+        // 3. ATUALIZA A INTERFACE
+        document.getElementById('stat-acertos').textContent = String(acertosCount);
+        document.getElementById('stat-erros').textContent = String(errosCount);
+        document.getElementById('stat-omissoes').textContent = String(omissoesCount);
+        document.getElementById('stat-pontuacao').textContent = String(pontuacao);
+
+        document.getElementById('palavrasCorretas').innerHTML = convertMarkdownToHtml(correcaoIdeal || "Gabarito indisponível.");
+        document.getElementById('selecaoUsuario').innerHTML = convertMarkdownToHtml(tentativaUsuario || "Nenhuma resposta enviada.");
+
+        // Gera o feedback com a nova lógica
+        const feedbackCustomizado = gerarFeedbackCustomizado(
+            acertosPalavras,
+            errosPalavras,
+            omissoesPalavras,
+            idealTokens.length,
+            data.feedback_do_gemini
+        );
+        
+        document.getElementById('feedbackGemini').innerHTML = feedbackCustomizado;
+
+        lucide.createIcons();
+
+        const isPerfect = (errosCount === 0 && omissoesCount === 0 && idealTokens.length > 0);
+
+        if (isPerfect) {
+            playSound(successSound);
+            launchConfetti();
+            changeBubbleText("Incrível! Correção perfeita. Parabéns!");
+            changeMascoteImage("/static/img/success.webp");
+        } else {
+            changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
+            changeMascoteImage("/static/img/ortofix.png");
         }
+        showMascote();
     }
-    return diferencas;
-}
 
-
-/**
- * FUNÇÃO ATUALIZADA
- * Renderiza o feedback e agora CALCULA a pontuação antes de exibir.
- * @param {object} data - Os dados recebidos da API.
- */
-function renderFeedback(data) {
-    // Recria a estrutura HTML da área de resultados
-    areaResultadoDiv.innerHTML = `
-        <h2 class="text-3xl font-bold text-dynamic-dark mb-6 text-center">Resultado da Avaliação</h2>
-        <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-8 p-6 rounded-2xl" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
-            <div><p class="text-3xl font-bold text-green-600" id="stat-acertos">0</p><p class="text-sm font-medium text-dynamic-light">Acertos</p></div>
-            <div><p class="text-3xl font-bold text-red-600" id="stat-erros">0</p><p class="text-sm font-medium text-dynamic-light">Erros</p></div>
-            <div><p class="text-3xl font-bold text-amber-600" id="stat-omissoes">0</p><p class="text-sm font-medium text-dynamic-light">Omissões</p></div>
-            <div><p class="text-3xl font-bold text-indigo-600" id="stat-pontuacao">0</p><p class="text-sm font-medium text-dynamic-light">Pontuação</p></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Gabarito</h3></div><p class="text-sm text-dynamic-light mb-2">Correção ideal:</p><p id="palavrasCorretas" class="font-semibold text-base text-dynamic-dark"></p></div>
-            <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você escreveu:</p><p id="selecaoUsuario" class="font-semibold text-base text-dynamic-dark"></p></div>
-        </div>
-        <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise da IA</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
-        <div class="text-center mt-8">
-            <button id="btnJogarNovamente" class="btn-primary-theme flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                <i data-lucide="refresh-cw" class="w-5 h-5"></i><span class="font-semibold">Tentar Outro Texto</span>
-            </button>
-        </div>
-    `;
+    /**
+     * NOVA FUNÇÃO CORRIGIDA
+     * Gera feedback personalizado baseado no desempenho do usuário
+     */
+    function gerarFeedbackCustomizado(acertos, erros, omissoes, totalPalavrasCorretas, feedbackOriginal) {
+        const taxaAcerto = totalPalavrasCorretas > 0 ? (acertos.length / totalPalavrasCorretas) * 100 : 100;
+        
+        let feedbackHTML = '<div class="space-y-4">';
+        
+        // Cabeçalho com avaliação geral
+        if (erros.length === 0 && omissoes.length === 0 && totalPalavrasCorretas > 0) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-green-50 border border-green-200"><div class="flex items-center gap-2"><i data-lucide="trophy" class="w-5 h-5 text-green-600"></i><span class="font-semibold text-green-800">Excelente! Perfeito!</span></div><p class="text-green-700 mt-1">Você corrigiu o texto com 100% de precisão. Parabéns!</p></div>';
+        } else if (taxaAcerto >= 70) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-blue-50 border border-blue-200"><div class="flex items-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5 text-blue-600"></i><span class="font-semibold text-blue-800">Bom trabalho!</span></div><p class="text-blue-700 mt-1">Você acertou a maior parte, mas ainda há alguns pontos para melhorar.</p></div>';
+        } else if (taxaAcerto >= 50) {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-amber-50 border border-amber-200"><div class="flex items-center gap-2"><i data-lucide="lightbulb" class="w-5 h-5 text-amber-600"></i><span class="font-semibold text-amber-800">Continue praticando!</span></div><p class="text-amber-700 mt-1">Você identificou alguns erros, mas precisa de mais atenção aos detalhes.</p></div>';
+        } else {
+            feedbackHTML += '<div class="p-3 rounded-lg bg-red-50 border border-red-200"><div class="flex items-center gap-2"><i data-lucide="alert-circle" class="w-5 h-5 text-red-600"></i><span class="font-semibold text-red-800">Precisa de mais atenção</span></div><p class="text-red-700 mt-1">Parece que muitos erros passaram. Revise as regras gramaticais e tente novamente.</p></div>';
+        }
     
-    document.getElementById('btnJogarNovamente').addEventListener('click', gerarExercicio);
+        // Seção de erros (palavras incorretas ou desnecessárias na resposta)
+        if (erros.length > 0) {
+            feedbackHTML += `<div class="p-3 rounded-lg bg-red-50 border border-red-200">
+                <div class="flex items-center gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i><span class="font-semibold text-red-800">Palavras incorretas em sua resposta:</span></div>
+                <p class="text-red-700 text-sm mt-1">Estas palavras não pertencem ao texto corrigido:</p>
+                <div class="flex flex-wrap gap-2 mt-2">`;
+            erros.forEach(erro => {
+                feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm border border-red-200">
+                    <i data-lucide="x" class="w-3 h-3"></i>${erro}
+                </span>`;
+            });
+            feedbackHTML += '</div></div>';
+        }
 
-    // --- LÓGICA DE CÁLCULO DA PONTUAÇÃO ---
-    // 1. Identifica quais palavras a API diz que estavam erradas (comparando original com ideal)
-    const gabaritoErros = calcularDiferencas(textoOriginalGlobal, data.correcao_ideal);
-    
-    // 2. Identifica quais palavras o usuário realmente mudou (comparando original com a resposta do usuário)
-    const usuarioCorrecoes = calcularDiferencas(textoOriginalGlobal, data.sua_tentativa);
+        // Seção de omissões (palavras que faltaram na sua resposta)
+        if (omissoes.length > 0) {
+            feedbackHTML += `<div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div class="flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i><span class="font-semibold text-amber-800">Palavras que faltaram:</span></div>
+                <p class="text-amber-700 text-sm mt-1">Você esqueceu de incluir estas palavras do gabarito:</p>
+                <div class="flex flex-wrap gap-2 mt-2">`;
+            omissoes.forEach(omissao => {
+                feedbackHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-sm border border-amber-200">
+                    <i data-lucide="eye-off" class="w-3 h-3"></i>${omissao}
+                </span>`;
+            });
+            feedbackHTML += '</div></div>';
+        }
 
-    // 3. Calcula as métricas
-    const acertos = [...usuarioCorrecoes].filter(palavra => gabaritoErros.has(palavra));
-    const erros = [...usuarioCorrecoes].filter(palavra => !gabaritoErros.has(palavra));
-    const omissoes = [...gabaritoErros].filter(palavra => !usuarioCorrecoes.has(palavra));
-    const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+        // Feedback original da IA
+        if (feedbackOriginal && feedbackOriginal.trim() !== '' && feedbackOriginal.trim().length > 10) {
+            feedbackHTML += `<div class="p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+                <div class="flex items-center gap-2"><i data-lucide="brain" class="w-4 h-4 text-indigo-600"></i><span class="font-semibold text-indigo-800">Análise da IA:</span></div>
+                <div class="text-indigo-700 mt-2">${convertMarkdownToHtml(feedbackOriginal)}</div>
+            </div>`;
+        }
+        
+        feedbackHTML += '</div>';
 
-    // 4. Popula o placar com os valores CALCULADOS
-    document.getElementById('stat-acertos').textContent = acertos.length;
-    document.getElementById('stat-erros').textContent = erros.length;
-    document.getElementById('stat-omissoes').textContent = omissoes.length;
-    document.getElementById('stat-pontuacao').textContent = pontuacao < 0 ? 0 : pontuacao; // Evita pontuação negativa
-
-    // Popula o restante das informações
-    document.getElementById('palavrasCorretas').textContent = data.correcao_ideal || "Gabarito indisponível.";
-    document.getElementById('selecaoUsuario').textContent = data.sua_tentativa || "Nenhuma resposta enviada.";
-    const feedbackLimpo = (data.feedback_do_gemini || "Feedback indisponível.").replace(/\*\*/g, '');
-    document.getElementById('feedbackGemini').textContent = feedbackLimpo;
-    
-    lucide.createIcons();
-
-    const isPerfect = (acertos.length === gabaritoErros.size && erros.length === 0 && omissoes.length === 0);
-
-    if (isPerfect) {
-        playSound(successSound);
-        launchConfetti();
-        changeBubbleText("Incrível! Correção perfeita. Parabéns!");
-        changeMascoteImage("/static/img/success.webp");
-    } else {
-        changeBubbleText("Ótima tentativa! O feedback vai te ajudar a melhorar.");
-        changeMascoteImage("/static/img/ortofix.png");
+        return feedbackHTML;
     }
-    showMascote();
-}
 
-    btnIniciar.addEventListener('click', () => {
-        startArea.classList.add('hidden');
+
+    btnIniciar && btnIniciar.addEventListener('click', () => {
+        startArea && startArea.classList.add('hidden');
         gerarExercicio();
     });
-    btnGerarExercicio.addEventListener('click', gerarExercicio);
-    btnJogarNovamente.addEventListener('click', gerarExercicio);
-    btnVerificar.addEventListener('click', verificarExercicio);
+    btnGerarExercicio && btnGerarExercicio.addEventListener('click', gerarExercicio);
+    btnVerificar && btnVerificar.addEventListener('click', verificarExercicio);
 
     // --- LÓGICA DO MASCOTE ---
     const mascoteAssistente = document.getElementById('mascote-assistente'), chatBubble = document.getElementById('chat-bubble');
-    const showMascote = () => mascoteAssistente.classList.add('visible');
-    const hideMascote = () => mascoteAssistente.classList.remove('visible');
+    const showMascote = () => mascoteAssistente && mascoteAssistente.classList.add('visible');
+    const hideMascote = () => mascoteAssistente && mascoteAssistente.classList.remove('visible');
     const changeBubbleText = (text) => {
+        if (!chatBubble) return;
         chatBubble.classList.remove('show');
         setTimeout(() => {
             chatBubble.textContent = text;
@@ -574,7 +705,9 @@ function renderFeedback(data) {
 
     // --- LÓGICA DOS CONFETES ---
     function launchConfetti() {
-        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] });
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#4A90E2', '#50E3C2', '#FFFFFF', '#357ABD'] });
+        }
     }
 });
 </script>

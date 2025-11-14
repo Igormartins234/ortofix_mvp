@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,15 +15,14 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc; 
         }
-        .form-input:focus {
+        /* Aplica o anel de foco no container do input para um visual mais limpo */
+        .form-input-container:focus-within {
             border-color: #3c6a99;
             box-shadow: 0 0 0 2px rgba(60, 106, 153, 0.2);
-            outline: none;
         }
     </style>
 </head>
 <body class="text-slate-700 flex flex-col min-h-screen">
-
     
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -46,12 +44,10 @@
         <section class="py-20 md:py-24 px-6">
             <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl">
                 
-                
                 <div class="hidden md:flex flex-col items-center text-center" data-aos="fade-right">
                     <h2 class="text-3xl font-bold text-[#3c6a99] mt-8">Potencialize o ensino da ortografia.</h2>
                     <p class="text-slate-500 mt-4">Acesse seu painel, gerencie suas turmas e acompanhe de perto a evolução de cada aluno.</p>
                 </div>
-
                
                 <div class="bg-white shadow-xl rounded-xl p-8 md:p-10 w-full" data-aos="fade-left">
                     <div class="text-center mb-6">
@@ -59,20 +55,35 @@
                         <p class="text-slate-500 mt-2">Bem-vindo(a) de volta!</p>
                     </div>
                     
-                    
                     <form id="login-form">
                         <div class="mb-4">
                             <label for="email" class="block text-slate-600 text-sm font-semibold mb-2">Email Institucional:</label>
-                            <input type="email" id="email" name="email" required
-                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
-                                   placeholder="professor@instituicao.com">
+                            <div class="relative flex items-center form-input-container border border-slate-300 rounded-lg transition">
+                                <span class="absolute left-4 text-slate-400" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                                </span>
+                                <input type="email" id="email" name="email" required
+                                       class="w-full pl-12 pr-4 py-3 bg-transparent rounded-lg outline-none"
+                                       placeholder="professor@instituicao.com">
+                            </div>
                         </div>
+
                         <div class="mb-4">
                             <label for="senha" class="block text-slate-600 text-sm font-semibold mb-2">Senha:</label>
-                            <input type="password" id="senha" name="senha" required
-                                   class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg transition"
-                                   placeholder="********">
+                            <div class="relative flex items-center form-input-container border border-slate-300 rounded-lg transition">
+                                <span class="absolute left-4 text-slate-400" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
+                                </span>
+                                <input type="password" id="senha" name="senha" required
+                                       class="w-full pl-12 pr-12 py-3 bg-transparent rounded-lg outline-none"
+                                       placeholder="********">
+                                <button type="button" id="toggle-password" class="absolute right-4 text-slate-500 hover:text-[#3c6a99]" aria-label="Mostrar ou ocultar senha">
+                                    <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                                    <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" /><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.303 3.707A9.963 9.963 0 00.458 10c1.274 4.057 5.022 7 9.542 7 1.126 0 2.207-.245 3.232-.697z" /></svg>
+                                </button>
+                            </div>
                         </div>
+
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center">
                                 <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-[#3c6a99] focus:ring-[#5689b9] border-slate-300 rounded">
@@ -83,13 +94,12 @@
                             </div>
                         </div>
 
-                       
-                        <p id="message-area" class="text-red-500 text-center text-sm mb-4 h-5 font-semibold"></p>
-                        
+                        <p id="message-area" class="text-red-500 text-center text-sm mb-4 h-5 font-semibold" aria-live="polite"></p>
                         
                         <button type="submit" id="submit-btn"
-                                class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed">
-                            Acessar Painel
+                                class="w-full bg-[#3c6a99] hover:bg-[#5689b9] text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg disabled:bg-slate-400 disabled:cursor-wait flex justify-center items-center">
+                            <span class="btn-text">Acessar Painel</span>
+                            <svg class="animate-spin h-5 w-5 text-white ml-3 hidden btn-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
                     </form>
                     <p class="text-center text-slate-500 mt-8 text-sm">
@@ -103,8 +113,7 @@
         </section>
     </main>
     
-
-    <footer class="bg-[#3c6a99] text-white">
+    <footer class="bg-[#3c6a99] text-white mt-auto">
         <div class="container mx-auto py-10 px-6 text-center">
              <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-12 mx-auto mb-4" style="filter: brightness(0) invert(1);">
             <p class="mb-4">Transformando o aprendizado da ortografia, uma palavra de cada vez.</p>
@@ -117,65 +126,84 @@
         </div>
     </footer>
 
-
-    <script>
-        const form = document.getElementById('login-form');
-        const messageArea = document.getElementById('message-area');
-        const submitBtn = document.getElementById('submit-btn');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Impede o envio padrão do formulário
-
-            // Mostra feedback de carregamento
-            messageArea.textContent = '';
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Entrando...';
-
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-
-            try {
-                const response = await fetch('https://back-end-mvp-tcc.vercel.app/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.msg || 'Erro ao tentar fazer login.');
-                }
-                
-                // Verifica se o usuário é um professor
-                if (data.user_role !== 'professor') {
-                     throw new Error('Acesso permitido apenas para professores.');
-                }
-
-                // Login bem-sucedido! Salva o token e o nome do usuário
-                localStorage.setItem('authToken', data.access_token);
-                localStorage.setItem('userName', data.user_name);
-                
-                // Redireciona para o painel do professor
-                window.location.href = 'painel.html';
-
-            } catch (error) {
-                messageArea.textContent = error.message;
-            } finally {
-                // Reabilita o botão
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Acessar Painel';
-            }
-        });
-    </script>
-
-    <!-- Script para animações -->
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
       AOS.init({
         duration: 800,
         once: true,
       });
+
+      // --- Constantes e Elementos do DOM ---
+      const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+      const loginForm = document.getElementById('login-form');
+      const messageArea = document.getElementById('message-area');
+      const submitBtn = document.getElementById('submit-btn');
+      const btnText = submitBtn.querySelector('.btn-text');
+      const btnSpinner = submitBtn.querySelector('.btn-spinner');
+      const togglePasswordBtn = document.getElementById('toggle-password');
+      const passwordInput = document.getElementById('senha');
+      const eyeOpenIcon = document.getElementById('eye-open');
+      const eyeClosedIcon = document.getElementById('eye-closed');
+
+      // --- Funções Auxiliares ---
+      function setSubmitButtonState(isSubmitting) {
+          submitBtn.disabled = isSubmitting;
+          if (isSubmitting) {
+              btnText.classList.add('hidden');
+              btnSpinner.classList.remove('hidden');
+          } else {
+              btnText.classList.remove('hidden');
+              btnSpinner.add('hidden');
+          }
+      }
+
+      // --- Event Listeners ---
+      if(togglePasswordBtn) {
+          togglePasswordBtn.addEventListener('click', () => {
+              const isPassword = passwordInput.type === 'password';
+              passwordInput.type = isPassword ? 'text' : 'password';
+              eyeOpenIcon.classList.toggle('hidden', isPassword);
+              eyeClosedIcon.classList.toggle('hidden', !isPassword);
+          });
+      }
+      
+      if(loginForm) {
+          loginForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              messageArea.textContent = '';
+              setSubmitButtonState(true);
+
+              const email = document.getElementById('email').value;
+              const senha = document.getElementById('senha').value;
+
+              try {
+                  const response = await fetch(`${API_BASE}/api/login`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email, senha })
+                  });
+
+                  const data = await response.json();
+
+                  if (!response.ok) {
+                      throw new Error(data.msg || 'Erro ao tentar fazer login.');
+                  }
+                  
+                  if (data.user_role !== 'professor') {
+                       throw new Error('Acesso permitido apenas para professores.');
+                  }
+
+                  localStorage.setItem('authToken', data.access_token);
+                  localStorage.setItem('userName', data.user_name);
+                  
+                  window.location.href = 'painel.html';
+
+              } catch (error) {
+                  messageArea.textContent = error.message;
+                  setSubmitButtonState(false); // Reabilita o botão apenas em caso de erro
+              }
+          });
+      }
     </script>
 </body>
 </html>

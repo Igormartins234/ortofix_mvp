@@ -246,7 +246,7 @@
 
     <!-- Formulário de Criação -->
     <div class="bg-white shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-3xl mx-auto fade-in" style="animation-delay: 300ms;">
-        <form action="#" method="POST">
+        <form id="create-activity-form" action="#" method="POST">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <!-- Título da Atividade -->
                 <div class="md:col-span-2">
@@ -330,19 +330,18 @@
                             Conteúdo da Atividade
                         </span>
                     </label>
-                    <button type="button" id="gerar-ia" class="flex items-center gap-2 text-sm bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        Gerar com IA
-                    </button>
-                </div>
-                
-                <div id="campos-especificos-atividade" class="p-5 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[150px] transition-all duration-300">
-                    <div class="text-center text-gray-500 py-8">
-                        <i data-lucide="file-question" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                        <p class="font-medium">Selecione um tipo de atividade para começar</p>
-                        <p class="text-sm mt-1">Ou use o botão "Gerar com IA" para criar automaticamente</p>
-                    </div>
-                </div>
+                    <div class="flex gap-2">
+        <!-- BOTÃO MODELO BÁSICO QUE ESTAVA FALTANDO -->
+        <button type="button" id="gerar-modelo" class="flex items-center gap-2 text-sm bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Modelo Básico
+        </button>
+        <!-- BOTÃO GERAR COM IA QUE JÁ EXISTE -->
+        <button type="button" id="gerar-ia" class="flex items-center gap-2 text-sm bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            Gerar com IA
+        </button>
+    </div>
             </div>
 
             <!-- Turmas Destino -->
@@ -448,85 +447,508 @@
     });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
-  const tituloEl = document.getElementById('titulo_atividade');
-  const tipoEl = document.getElementById('tipo_atividade');
-  const descricaoEl = document.getElementById('descricao_atividade');
-  const camposEspecificos = document.getElementById('campos-especificos-atividade');
+const API_BASE = 'https://back-end-mvp-tcc.vercel.app';
+const API_IA = 'https://api-tcc-alpha.vercel.app';
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const instrucoes = descricaoEl.value || (tituloEl.value ? `Crie atividade: ${tituloEl.value}` : '');
-    const tipo_preferido = tipoEl.value || '';
-
-    if (!instrucoes) {
-      alert('Insira as instruções da atividade.');
-      return;
+class CriarAtividadeManager {
+    constructor() {
+        this.form = document.querySelector('form');
+        this.tituloEl = document.getElementById('titulo_atividade');
+        this.tipoEl = document.getElementById('tipo_atividade');
+        this.descricaoEl = document.getElementById('descricao_atividade');
+        this.camposEspecificos = document.getElementById('campos-especificos-atividade');
+        this.gerarIaBtn = document.getElementById('gerar-ia');
+        this.previewContainer = document.getElementById('preview-container');
+        this.previewContent = document.getElementById('preview-content');
+        
+        this.init();
     }
 
-    // 1) Chama IA para gerar conteúdo
-    try {
-      const aiResp = await fetch('https://api-tcc-alpha.vercel.app//api/gerar_atividade_professor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instrucoes, tipo_preferido })
-      });
-      if (!aiResp.ok) {
-        const err = await aiResp.json();
-        console.error('Erro IA:', err);
-        alert('Falha ao gerar atividade pela IA.');
+    criarAtividadeManual() {
+    const tipo = this.tipoEl.value;
+    if (!tipo) {
+        alert('Selecione um tipo de atividade primeiro.');
         return;
-      }
-      const atividadeGerada = await aiResp.json();
+    }
 
-      // mostra preview simples dentro do formulário
-      camposEspecificos.innerHTML = `<pre class="text-sm bg-gray-50 p-3 rounded">${JSON.stringify(atividadeGerada, null, 2)}</pre>`;
+    const atividadeManual = {
+        titulo: this.tituloEl.value || 'Atividade Personalizada',
+        tipo: tipo,
+        descricao: this.descricaoEl.value || 'Complete a atividade seguindo as instruções.',
+        conteudo_especifico: this.getConteudoManualPorTipo(tipo),
+        icon: 'file-text',
+        turmas: this.obterTurmasSelecionadas()
+    };
 
-      // Pergunta para professor confirmar envio
-      if (!confirm('Geramos a atividade. Deseja salvar e publicar para os alunos?')) return;
+    this.mostrarPreview(atividadeManual);
+}
 
-      // 2) Envia para o backend principal para salvar (usa token JWT do storage)
-      const token = localStorage.getItem('authToken');
-      if (!token) {
+getConteudoManualPorTipo(tipo) {
+    const conteudos = {
+        'multipla_escolha': {
+            pergunta: "Qual é a alternativa correta?",
+            alternativas: ["Alternativa A", "Alternativa B", "Alternativa C", "Alternativa D"],
+            correta_index: 0
+        },
+        'escolha_erro': {
+            texto_com_erros: "Escreva aqui um texto contendo erros ortográficos para os alunos identificarem."
+        },
+        'caca_palavras': {
+            palavras: ["palavra1", "palavra2", "palavra3"],
+            tamanho: "medio"
+        },
+        'completar_frases': {
+            frases: ["Complete a frase com a palavra correta: O gato ___ no telhado.", "A menina ___ para a escola."],
+            respostas: ["pulou", "foi"]
+        },
+        'ditado': {
+            frases: ["Escreva a primeira frase para ditado.", "Escreva a segunda frase para ditado."]
+        }
+    };
+    
+    return conteudos[tipo] || {};
+}
+
+    init() {
+        this.setupEventListeners();
+        this.carregarTurmasDisponiveis();
+    }
+
+    setupEventListeners() {
+    // Botão Gerar com IA
+    this.gerarIaBtn?.addEventListener('click', () => this.gerarAtividadeComIA());
+    
+    // Botão Modelo Básico (o que você já tem)
+    document.getElementById('gerar-modelo')?.addEventListener('click', () => {
+        const tipo = this.tipoEl.value;
+        if (!tipo) {
+            alert('Selecione um tipo de atividade primeiro.');
+            return;
+        }
+        const conteudo = this.getConteudoManualPorTipo(tipo);
+        this.atualizarCamposEspecificos(conteudo);
+        this.mostrarPreview({
+            titulo: this.tituloEl.value || 'Atividade com Modelo Básico',
+            tipo: tipo,
+            descricao: this.descricaoEl.value || 'Complete a atividade seguindo as instruções.',
+            conteudo_especifico: conteudo
+        });
+    });
+    
+    // Mudança no tipo de atividade - ESSENCIAL
+    this.tipoEl?.addEventListener('change', () => this.atualizarCamposEspecificos());
+    
+    // Submit do formulário - ESSENCIAL
+    this.form?.addEventListener('submit', (e) => this.salvarAtividade(e));
+    
+    // Fechar preview - ESSENCIAL
+    document.getElementById('fechar-preview')?.addEventListener('click', () => {
+        this.previewContainer.classList.add('hidden');
+    });
+}
+
+    async carregarTurmasDisponiveis() {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            const response = await fetch(`${API_BASE}/api/professor/perfil`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const perfil = await response.json();
+                this.preencherTurmas(perfil.turmas || []);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar turmas:', error);
+        }
+    }
+
+    preencherTurmas(turmas) {
+        const turmasSelect = document.getElementById('turmas_destino');
+        if (!turmasSelect) return;
+
+        // Limpa opções existentes (exceto a primeira)
+        while (turmasSelect.options.length > 1) {
+            turmasSelect.remove(1);
+        }
+
+        // Adiciona as turmas do professor
+        turmas.forEach(turma => {
+            if (turma && turma.trim() !== '') {
+                const option = document.createElement('option');
+                option.value = turma;
+                option.textContent = `${turma} - Turma do Professor`;
+                turmasSelect.appendChild(option);
+            }
+        });
+    }
+
+    async gerarAtividadeComIA() {
+    const instrucoes = this.descricaoEl.value.trim();
+    const tipoPreferido = this.tipoEl.value;
+
+    if (!instrucoes) {
+        alert('Por favor, descreva a atividade que deseja criar nas instruções.');
+        return;
+    }
+
+    this.gerarIaBtn.disabled = true;
+    this.gerarIaBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Gerando...';
+
+    try {
+        console.log('Enviando solicitação para IA...');
+        const response = await fetch(`${API_IA}/api/gerar_atividade_professor`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                instrucoes: instrucoes,
+                tipo_preferido: tipoPreferido
+            })
+        });
+
+        console.log('Resposta recebida:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
+        }
+
+        const atividadeGerada = await response.json();
+        console.log('Atividade gerada:', atividadeGerada);
+        
+        this.preencherFormularioComIA(atividadeGerada);
+        this.mostrarPreview(atividadeGerada);
+
+    } catch (error) {
+        console.error('Erro detalhado ao gerar atividade com IA:', error);
+        
+        let mensagemErro = 'Erro ao gerar atividade com IA. ';
+        
+        if (error.message.includes('JSON')) {
+            mensagemErro += 'A IA retornou uma resposta inválida. ';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            mensagemErro += 'Problema de conexão. Verifique sua internet.';
+        } else {
+            mensagemErro += error.message;
+        }
+        
+        mensagemErro += '\n\nDica: Tente reformular suas instruções para serem mais específicas.';
+        
+        alert(mensagemErro);
+    } finally {
+        this.gerarIaBtn.disabled = false;
+        this.gerarIaBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar com IA';
+        lucide.createIcons();
+    }
+}
+
+    preencherFormularioComIA(atividade) {
+        if (atividade.titulo) {
+            this.tituloEl.value = atividade.titulo;
+        }
+        
+        if (atividade.tipo && this.tipoEl.querySelector(`option[value="${atividade.tipo}"]`)) {
+            this.tipoEl.value = atividade.tipo;
+        }
+        
+        if (atividade.descricao) {
+            this.descricaoEl.value = atividade.descricao;
+        }
+
+        if (atividade.icon) {
+            // Pode ser usado para mostrar o ícone selecionado
+            console.log('Ícone sugerido:', atividade.icon);
+        }
+
+        // Atualiza os campos específicos
+        this.atualizarCamposEspecificos(atividade.conteudo_especifico);
+        
+        // Seleciona turmas se fornecidas
+        if (atividade.turmas && Array.isArray(atividade.turmas)) {
+            const turmasSelect = document.getElementById('turmas_destino');
+            Array.from(turmasSelect.options).forEach(option => {
+                option.selected = atividade.turmas.includes(option.value);
+            });
+        }
+    }
+
+    atualizarCamposEspecificos(conteudoEspecifico = null) {
+        const tipo = this.tipoEl.value;
+        
+        if (conteudoEspecifico) {
+            // Mostra o conteúdo gerado pela IA
+            this.camposEspecificos.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        Conteúdo gerado com IA
+                    </h4>
+                    <pre class="text-sm text-green-700 whitespace-pre-wrap">${JSON.stringify(conteudoEspecifico, null, 2)}</pre>
+                </div>
+            `;
+        } else if (tipo) {
+            // Mostra campos baseados no tipo selecionado
+            const campos = this.getCamposPorTipo(tipo);
+            this.camposEspecificos.innerHTML = campos;
+        } else {
+            this.camposEspecificos.innerHTML = `
+                <div class="text-center text-gray-500 py-8">
+                    <i data-lucide="file-question" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p class="font-medium">Selecione um tipo de atividade para começar</p>
+                    <p class="text-sm mt-1">Ou use o botão "Gerar com IA" para criar automaticamente</p>
+                </div>
+            `;
+        }
+        
+        lucide.createIcons();
+    }
+
+    getCamposPorTipo(tipo) {
+        const campos = {
+            'multipla_escolha': `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pergunta</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Digite a pergunta..." rows="3"></textarea>
+                    </div>
+                    <div class="grid gap-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alternativas</label>
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Alternativa A">
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Alternativa B">
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Alternativa C">
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Alternativa D">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Resposta Correta</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="0">A</option>
+                            <option value="1">B</option>
+                            <option value="2">C</option>
+                            <option value="3">D</option>
+                        </select>
+                    </div>
+                </div>
+            `,
+            'escolha_erro': `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Texto com Erros</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Digite o texto contendo erros..." rows="4"></textarea>
+                    </div>
+                </div>
+            `,
+            'caca_palavras': `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Palavras para Encontrar</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Digite as palavras separadas por vírgula..." rows="3"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tamanho do Caça-Palavras</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="pequeno">Pequeno (8x8)</option>
+                            <option value="medio">Médio (12x12)</option>
+                            <option value="grande">Grande (16x16)</option>
+                        </select>
+                    </div>
+                </div>
+            `,
+            'completar_frases': `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Frases para Completar</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Digite as frases com lacunas (use ___ para as lacunas)..." rows="4"></textarea>
+                    </div>
+                </div>
+            `,
+            'ditado': `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Texto para Ditado</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Digite o texto para o ditado..." rows="4"></textarea>
+                    </div>
+                </div>
+            `
+        };
+
+        return campos[tipo] || `
+            <div class="text-center text-gray-500 py-4">
+                <p>Preencha manualmente o conteúdo para este tipo de atividade.</p>
+            </div>
+        `;
+    }
+
+    mostrarPreview(atividade) {
+        this.previewContent.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <strong>Título:</strong> ${atividade.titulo || 'Não definido'}
+                </div>
+                <div>
+                    <strong>Tipo:</strong> ${atividade.tipo || 'Não definido'}
+                </div>
+                <div>
+                    <strong>Descrição:</strong> ${atividade.descricao || 'Não definida'}
+                </div>
+                <div>
+                    <strong>Conteúdo:</strong>
+                    <pre class="mt-2 p-3 bg-gray-100 rounded text-sm">${JSON.stringify(atividade.conteudo_especifico, null, 2)}</pre>
+                </div>
+            </div>
+        `;
+        this.previewContainer.classList.remove('hidden');
+    }
+
+    capturarDadosCamposDinamicos() {
+    const tipo = this.tipoEl.value;
+    const conteudo = {};
+    
+    // Tenta capturar dados dos campos dinâmicos se existirem
+    const textareas = this.camposEspecificos.querySelectorAll('textarea');
+    const inputs = this.camposEspecificos.querySelectorAll('input[type="text"]');
+    const selects = this.camposEspecificos.querySelectorAll('select');
+    
+    switch(tipo) {
+        case 'multipla_escolha':
+            if (textareas[0]) conteudo.pergunta = textareas[0].value;
+            if (inputs.length >= 4) {
+                conteudo.alternativas = Array.from(inputs).map(input => input.value).filter(val => val);
+            }
+            if (selects[0]) conteudo.correta_index = parseInt(selects[0].value);
+            break;
+            
+        case 'escolha_erro':
+            if (textareas[0]) conteudo.texto_com_erros = textareas[0].value;
+            break;
+            
+        case 'caca_palavras':
+            if (textareas[0]) {
+                conteudo.palavras = textareas[0].value.split(',').map(p => p.trim()).filter(p => p);
+            }
+            if (selects[0]) conteudo.tamanho = selects[0].value;
+            break;
+            
+        case 'completar_frases':
+            if (textareas[0]) {
+                conteudo.frases = textareas[0].value.split('\n').filter(f => f.trim());
+            }
+            break;
+            
+        case 'ditado':
+            if (textareas[0]) {
+                conteudo.frases = textareas[0].value.split('\n').filter(f => f.trim());
+            }
+            break;
+    }
+    
+    return conteudo;
+}
+
+    async salvarAtividade(e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem('authToken');
+    if (!token) {
         alert('Sessão expirada. Faça login novamente.');
         window.location.href = 'login.html';
         return;
-      }
-
-      const salvarResp = await fetch('https://back-end-mvp-tcc.vercel.app/api/professor/atividades', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          titulo: atividadeGerada.titulo || tituloEl.value || 'Atividade gerada',
-          tipo: atividadeGerada.tipo || tipo_preferido || 'multipla_escolha',
-          descricao: atividadeGerada.descricao || descricaoEl.value || '',
-          conteudo_especifico: atividadeGerada.conteudo_especifico || {},
-          icon: atividadeGerada.icon || 'file-text',
-          turmas: atividadeGerada.turmas || []
-        })
-      });
-
-      if (!salvarResp.ok) {
-        const err = await salvarResp.json();
-        console.error('Erro salvar atividade:', err);
-        alert('Falha ao salvar atividade no backend.');
-        return;
-      }
-
-      const result = await salvarResp.json();
-      alert('Atividade criada com sucesso! ID: ' + (result.idAtividade || result.idAtividade));
-      window.location.href = 'painel.html';
-    } catch (err) {
-      console.error('Erro geral criar atividade:', err);
-      alert('Ocorreu um erro ao criar atividade.');
     }
 
-  });
+    // Coleta dados do formulário
+    const formData = {
+        titulo: this.tituloEl.value,
+        tipo: this.tipoEl.value,
+        descricao: this.descricaoEl.value,
+        conteudo_especifico: this.obterConteudoEspecifico(),
+        icon: 'file-text',
+        turmas: this.obterTurmasSelecionadas()
+    };
+
+    console.log('Dados a serem enviados:', formData); // Para debug
+
+    // Validação básica
+    if (!formData.titulo || !formData.tipo || !formData.descricao) {
+        alert('Preencha todos os campos obrigatórios: título, tipo e descrição.');
+        return;
+    }
+
+    // Validação do conteúdo específico - MAIS FLEXÍVEL
+    if (!formData.conteudo_especifico || Object.keys(formData.conteudo_especifico).length === 0) {
+        console.log('Conteúdo específico vazio, usando padrão');
+        // Usa conteúdo padrão baseado no tipo
+        formData.conteudo_especifico = this.getConteudoManualPorTipo(formData.tipo);
+    }
+
+    try {
+        console.log('Enviando para API:', formData);
+        const response = await fetch(`${API_BASE}/api/professor/atividades`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        console.log('Resposta da API:', result);
+
+        if (response.ok) {
+            alert('Atividade criada com sucesso!');
+            window.location.href = 'painel.html';
+        } else {
+            alert(`Erro ao criar atividade: ${result.msg}`);
+        }
+
+    } catch (error) {
+        console.error('Erro ao salvar atividade:', error);
+        alert('Erro de conexão ao salvar atividade. Verifique sua internet.');
+    }
+}
+
+    obterConteudoEspecifico() {
+    const tipo = this.tipoEl.value;
+    if (!tipo) return {};
+
+    // Primeiro tenta capturar dados dos campos dinâmicos
+    const dadosCampos = this.capturarDadosCamposDinamicos();
+    if (Object.keys(dadosCampos).length > 0) {
+        return dadosCampos;
+    }
+
+    // Depois tenta extrair do preview da IA
+    try {
+        const previewText = this.previewContent.textContent;
+        if (previewText) {
+            const jsonMatch = previewText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const parsed = JSON.parse(jsonMatch[0]);
+                if (parsed.conteudo_especifico) {
+                    return parsed.conteudo_especifico;
+                }
+            }
+        }
+    } catch (e) {
+        console.log('Não foi possível extrair conteúdo do preview');
+    }
+
+    // Finalmente, usa conteúdo padrão
+    return this.getConteudoManualPorTipo(tipo);
+}
+
+    obterTurmasSelecionadas() {
+        const turmasSelect = document.getElementById('turmas_destino');
+        if (!turmasSelect) return [];
+        
+        return Array.from(turmasSelect.selectedOptions).map(option => option.value);
+    }
+}
+
+// Inicializar quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    new CriarAtividadeManager();
 });
 </script>
 
