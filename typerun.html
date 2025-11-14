@@ -462,13 +462,17 @@
                 const span = document.createElement("span");
                 span.textContent = palavra;
                 span.classList.add("word");
-                span.addEventListener("click", () => {
-                    const cleanWord = palavra.replace(/[.,!?;:]$/, '');
-                    span.classList.toggle("selected");
-                    if (span.classList.contains("selected")) {
-                        palavrasSelecionadas.add(cleanWord);
+                // Armazena a versão limpa como um atributo de dado (data-clean-word)
+                const cleanWord = palavra.replace(/[.,!?;:]$/, ''); 
+                span.setAttribute('data-clean-word', cleanWord); 
+                
+                span.addEventListener("click", (e) => {
+                    const wordToToggle = e.target.getAttribute('data-clean-word');
+                    e.target.classList.toggle("selected");
+                    if (e.target.classList.contains("selected")) {
+                        palavrasSelecionadas.add(wordToToggle);
                     } else {
-                        palavrasSelecionadas.delete(cleanWord);
+                        palavrasSelecionadas.delete(wordToToggle);
                     }
                 });
                 textoComErrosDiv.appendChild(span);
