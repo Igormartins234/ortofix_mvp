@@ -191,3 +191,29 @@ const allItems = [
 
     initializeSite();
 });
+
+// Configurações de fonte
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- LÓGICA GLOBAL DE PREFERÊNCIAS DO USUÁRIO ---
+
+
+    function applySavedFontSize() {
+        const savedSize = localStorage.getItem('preferredFontSize');
+        if (!savedSize) return; 
+
+        const root = document.documentElement; 
+
+        if (savedSize === 'pequena') {
+            root.style.fontSize = '14px';
+        } else if (savedSize === 'grande') {
+            root.style.fontSize = '18px';
+        } else { 
+            root.style.fontSize = '16px';
+        }
+    }
+
+    // Chama a função assim que o conteúdo da página estiver pronto.
+    applySavedFontSize();
+});
