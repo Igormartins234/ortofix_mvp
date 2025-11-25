@@ -212,6 +212,8 @@
                     
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
+                    <!-- Dropdown de Notificações -->
+                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
 <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
     <!-- Cabeçalho do dropdown -->
     <div class="p-3 border-b" style="border-color: var(--color-border);">
@@ -273,6 +275,9 @@
     </button>
 </div>
 
+            <!-- SUBSTITUA AS TELAS DE JOGO E RESULTADOS POR ESTE BLOCO INTEIRO -->
+
+<!-- TELA 2: ÁREA DO JOGO (CORRIGIDA) -->
 <div id="game-area" class="hidden p-6 sm:p-8 rounded-2xl shadow-sm" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
     <!-- Barra de Controles -->
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -317,11 +322,6 @@
         <div class="p-5 rounded-lg" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="pencil" class="w-6 h-6 text-amber-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Sua Resposta</h3></div><p class="text-sm text-dynamic-light mb-2">Você selecionou:</p><p id="selecaoUsuario" class="font-semibold text-lg text-dynamic-dark"></p></div>
     </div>
     <div class="p-5 rounded-lg mt-6" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);"><div class="flex items-center gap-3 mb-3"><i data-lucide="sparkles" class="w-6 h-6 text-indigo-600"></i><h3 class="text-lg font-semibold text-dynamic-dark">Análise do Gemini</h3></div><div id="feedbackGemini" class="text-dynamic-dark whitespace-pre-wrap leading-relaxed"></div></div>
-    <button id="btnConcluirAtividade"
-        class="btn-primary-theme w-full sm:w-auto flex items-center justify-center gap-2 font-bold py-2.5 px-6 rounded-lg shadow-lg transition-all duration-300">
-      <i data-lucide="check-circle" class="w-5 h-5"></i>
-      <span>Concluir Atividade</span>
-  </button>
 </div>
     </main>
 
@@ -344,267 +344,246 @@
 
     <!-- 🔹 SCRIPT COMPLETO E CORRIGIDO DO JOGO -->
     <script>
-    lucide.createIcons();
-    
-    // --- 1. ELEMENTOS DO DOM ---
-    const mainMenu = document.getElementById('main-menu');
-    const gameArea = document.getElementById('game-area');
-    const resultsArea = document.getElementById('results-area');
-    const startGameBtn = document.getElementById('start-game-btn');
-    const btnGerarTexto = document.getElementById('btnGerarTexto');
-    const btnConcluir = document.getElementById('btnConcluir');
-    const textoComErrosDiv = document.getElementById('textoComErros');
-    const loadingDiv = document.getElementById('loading');
-    const loadingText = document.getElementById('loading-text');
-    const errorDiv = document.getElementById('error');
-    const errorText = document.getElementById('error-text');
-
-    let textoOriginalGlobal = "";
-    let palavrasSelecionadas = new Set();
-    const ID_ATIVIDADE = 2; // ID fixo para Caça-Erros
-
-    function showRewardToast(coins) {
-        // Cria o elemento do toast
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
-        toast.style.transform = 'translateX(120%)';
-        toast.style.transition = 'transform 0.5s ease-in-out';
-        
-        toast.innerHTML = `
-            <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
-            <div>
-                <p class="font-bold text-lg">Recompensa Recebida!</p>
-                <p class="text-base">Você ganhou +${coins} moedas!</p>
-            </div>
-        `;
-        document.body.appendChild(toast);
         lucide.createIcons();
         
-        // Animação de entrada
-        setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
+        // --- 1. ELEMENTOS DO DOM ---
+        const mainMenu = document.getElementById('main-menu');
+        const gameArea = document.getElementById('game-area');
+        const resultsArea = document.getElementById('results-area');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const btnGerarTexto = document.getElementById('btnGerarTexto');
+        const btnConcluir = document.getElementById('btnConcluir');
+        const textoComErrosDiv = document.getElementById('textoComErros');
+        const loadingDiv = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
+        const errorDiv = document.getElementById('error');
+        const errorText = document.getElementById('error-text');
 
-        // Animação de saída
-        setTimeout(() => {
-            toast.style.transform = 'translateX(120%)';
-            setTimeout(() => toast.remove(), 500);
-        }, 4000); // O toast some após 4 segundos
-    }
+        let textoOriginalGlobal = "";
+        let palavrasSelecionadas = new Set();
 
-    // NOVA FUNÇÃO: Registra conclusão e ganha moedas
-    async function registrarAtividadeConcluida(pontuacao, feedback) {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-        console.error('Token não encontrado. O usuário deve estar logado.');
-        return;
-    }
+        function showRewardToast(coins) {
+    // Cria o elemento do toast 
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-5 right-5 bg-yellow-400 text-gray-800 p-4 rounded-lg shadow-2xl flex items-center gap-4 z-[100] border-4 border-yellow-300';
+    toast.style.transform = 'translateX(120%)';
+    toast.style.transition = 'transform 0.5s ease-in-out';
+    
+    toast.innerHTML = `
+        <i data-lucide="party-popper" class="w-10 h-10 text-yellow-600"></i>
+        <div>
+            <p class="font-bold text-lg">Recompensa Recebida!</p>
+            <p class="text-base">Você ganhou +${coins} moedas!</p>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    lucide.createIcons();
+    
+    // Animação de entrada
+    setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 100);
 
-    try {
-        const res = await fetch('https://back-end-mvp-tcc.vercel.app/api/atividades/completar', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ 
-                idAtividade: ID_ATIVIDADE,
-                pontuacao,
-                feedback 
-            })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            console.error("Erro ao registrar:", data);
-            return;
-        }
-        if (data.moedasGanhas > 0) {
-            showRewardToast(data.moedasGanhas);
-        }
-        console.log(`✅ Atividade registrada com sucesso! +${data.moedasGanhas} moedas.`);
-    } catch (error) {
-        console.error('❌ Falha ao registrar atividade:', error);
-    }
+    // Animação de saída
+    setTimeout(() => {
+        toast.style.transform = 'translateX(120%)';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000); // O toast some após 4 segundos
 }
 
-    // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
-    function showScreen(screenName) {
-        mainMenu.classList.add('hidden');
-        gameArea.classList.add('hidden');
-        resultsArea.classList.add('hidden');
-        document.getElementById(screenName).classList.remove('hidden');
-    }
-
-    function showLoading(isLoading, message = "Carregando...") {
-        loadingText.textContent = message;
-        loadingDiv.style.display = isLoading ? 'flex' : 'none';
-        startGameBtn.disabled = isLoading;
-        btnGerarTexto.disabled = isLoading;
-        btnConcluir.disabled = isLoading;
-        if (isLoading) {
-            errorDiv.classList.add('hidden');
+        // --- 2. FUNÇÕES DE CONTROLE DE TELA E UI ---
+        function showScreen(screenName) {
+            mainMenu.classList.add('hidden');
+            gameArea.classList.add('hidden');
+            resultsArea.classList.add('hidden');
+            document.getElementById(screenName).classList.remove('hidden');
         }
-    }
 
-    function showError(message) {
-        errorText.textContent = message;
-        errorDiv.classList.remove('hidden');
-        showLoading(false);
-    }
-
-    function renderTexto(texto) {
-        try {
-            const palavras = texto.split(/(\s+)/);
-            textoComErrosDiv.innerHTML = "";
-            palavras.forEach((palavra) => {
-                if (palavra.trim() === '') {
-                    textoComErrosDiv.appendChild(document.createTextNode(palavra));
-                    return;
-                }
-                const span = document.createElement("span");
-                span.textContent = palavra;
-                span.classList.add("word");
-                span.addEventListener("click", () => {
-                    const cleanWord = palavra.replace(/[.,!?;:]$/, '');
-                    span.classList.toggle("selected");
-                    if (span.classList.contains("selected")) {
-                        palavrasSelecionadas.add(cleanWord);
-                    } else {
-                        palavrasSelecionadas.delete(cleanWord);
-                    }
-                });
-                textoComErrosDiv.appendChild(span);
-            });
-        } catch (error) {
-            console.error("Erro ao renderizar o texto:", error);
-        }
-    }
-
-    // --- 3. FUNÇÕES PRINCIPAIS DO JOGO ---
-    async function generateNewText() {
-        showScreen('game-area');
-        showLoading(true, "Gerando texto...");
-        hideMascote();
-        
-        try {
-            // CORREÇÃO: A URL correta não tem "/typerun" nesta chamada
-            const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_exercicio', { method: 'POST' });
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
-                throw new Error(errData.error || 'Erro desconhecido na API.');
+        function showLoading(isLoading, message = "Carregando...") {
+            loadingText.textContent = message;
+            loadingDiv.style.display = isLoading ? 'flex' : 'none';
+            startGameBtn.disabled = isLoading;
+            btnGerarTexto.disabled = isLoading;
+            btnConcluir.disabled = isLoading;
+            if (isLoading) {
+                errorDiv.classList.add('hidden');
             }
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
+            showLoading(false);
+        }
+
+        function renderTexto(texto) {
+            try {
+                const palavras = texto.split(/(\s+)/);
+                textoComErrosDiv.innerHTML = "";
+                palavras.forEach((palavra) => {
+                    if (palavra.trim() === '') {
+                        textoComErrosDiv.appendChild(document.createTextNode(palavra));
+                        return;
+                    }
+                    const span = document.createElement("span");
+                    span.textContent = palavra;
+                    span.classList.add("word");
+                    span.addEventListener("click", () => {
+                        const cleanWord = palavra.replace(/[.,!?;:]$/, '');
+                        span.classList.toggle("selected");
+                        if (span.classList.contains("selected")) {
+                            palavrasSelecionadas.add(cleanWord);
+                        } else {
+                            palavrasSelecionadas.delete(cleanWord);
+                        }
+                    });
+                    textoComErrosDiv.appendChild(span);
+                });
+            } catch (error) {
+                console.error("Erro ao renderizar o texto:", error);
+            }
+        }
+
+        // --- 3. FUNÇÕES PRINCIPAIS DO JOGO ---
+        async function generateNewText() {
+            showScreen('game-area');
+            showLoading(true, "Gerando texto...");
+            hideMascote();
+            
+            try {
+                // CORREÇÃO: A URL correta não tem "/typerun" nesta chamada
+                const response = await fetch('https://api-tcc-alpha.vercel.app/api/gerar_exercicio', { method: 'POST' });
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
+                    throw new Error(errData.error || 'Erro desconhecido na API.');
+                }
+                const data = await response.json();
+                textoOriginalGlobal = data.texto_com_erros;
+                palavrasSelecionadas.clear();
+                renderTexto(textoOriginalGlobal);
+            } catch (err) {
+                console.error('Erro ao gerar texto:', err);
+                showError(err.message);
+                showScreen('main-menu'); // Volta ao menu em caso de erro
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function concluirSelecao() {
+            if (palavrasSelecionadas.size === 0) {
+                showError("Por favor, selecione ao menos uma palavra que você acha estar errada.");
+                setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+                return;
+            }
+
+            showLoading(true, "Avaliando sua seleção...");
+            
+            try {
+                const response = await fetch('https://api-tcc-alpha.vercel.app/api/typerun/verificar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        texto_original: textoOriginalGlobal,
+                        selecao_usuario: Array.from(palavrasSelecionadas)
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ error: `Erro HTTP ${response.status}` }));
+                    throw new Error(errData.error);
+                }
+
+                const data = await response.json();
+                
+                const gabaritoSet = new Set(data.palavras_com_erro);
+                const acertos = [...palavrasSelecionadas].filter(p => gabaritoSet.has(p));
+                const erros = [...palavrasSelecionadas].filter(p => !gabaritoSet.has(p));
+                const omissoes = [...gabaritoSet].filter(p => !palavrasSelecionadas.has(p));
+                const pontuacao = (acertos.length * 10) - (erros.length * 5) - (omissoes.length * 3);
+
+                document.getElementById('stat-acertos').textContent = acertos.length;
+                document.getElementById('stat-erros').textContent = erros.length;
+                document.getElementById('stat-omissoes').textContent = omissoes.length;
+                document.getElementById('stat-pontuacao').textContent = pontuacao;
+                document.getElementById('palavrasCorretas').textContent = data.palavras_com_erro.join(", ") || "Nenhuma";
+                document.getElementById('selecaoUsuario').textContent = Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
+                const feedbackLimpo = (data.feedback || "Feedback indisponível.").replace(/\*\*/g, '');
+                document.getElementById('feedbackGemini').textContent = feedbackLimpo;
+
+                showScreen('results-area');
+                
+                if (pontuacao >= (data.palavras_com_erro.length * 7)) {
+                    changeBubbleText("Excelente trabalho! Você tem um ótimo olho para detalhes.");
+                } else if (pontuacao > 0) {
+                    changeBubbleText("Mandou bem! Continue praticando para não deixar nenhum erro passar.");
+                } else {
+                    changeBubbleText("Não desanime! A revisão é a parte mais importante do aprendizado.");
+                }
+                showMascote();
+
+            } catch (err) {
+                console.error('Erro ao avaliar seleção:', err);
+                showError(err.message);
+                showScreen('game-area');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+          // --- LÓGICA DE EVENTOS ---
+    btnConcluir.addEventListener('click', async () => {
+        if (palavrasSelecionadas.size === 0) {
+            showError("Selecione ao menos uma palavra."); return;
+        }
+        showLoading(true, "Avaliando sua seleção...");
+
+        try {
+            const response = await fetch(`${API_URL_GEMINI}/api/typerun/verificar`, { /* ... */ });
+            if (!response.ok) throw new Error((await response.json()).error);
+            
             const data = await response.json();
-            textoOriginalGlobal = data.texto_com_erros;
-            palavrasSelecionadas.clear();
-            renderTexto(textoOriginalGlobal);
+            // ... (código que mostra o feedback) ...
+
+            // CALCULA PONTUAÇÃO E CHAMA A RECOMPENSA
+            const totalErros = data.palavras_com_erro.length;
+            const acertos = data.palavras_com_erro.filter(p => data.selecao_usuario.includes(p)).length;
+            const errosExtras = data.selecao_usuario.filter(p => !data.palavras_com_erro.includes(p)).length;
+            
+            let pontuacao = 100;
+            if (totalErros > 0) { pontuacao = (acertos / totalErros) * 100; }
+            pontuacao -= errosExtras * 20;
+            pontuacao = Math.max(0, pontuacao); // Garante que não seja negativa
+
+            await registrarAtividadeConcluida(Math.round(pontuacao), data.feedback);
+        
         } catch (err) {
-            console.error('Erro ao gerar texto:', err);
             showError(err.message);
-            showScreen('main-menu'); // Volta ao menu em caso de erro
         } finally {
             showLoading(false);
         }
-    }
+    })
 
-    async function concluirSelecao() {
-    if (palavrasSelecionadas.size === 0) {
-        showError("Por favor, selecione ao menos uma palavra com erro.");
-        setTimeout(() => errorDiv.classList.add('hidden'), 3000);
-        return;
-    }
+        // --- 4. EVENT LISTENERS ---
+        startGameBtn.addEventListener('click', generateNewText);
+        btnGerarTexto.addEventListener('click', generateNewText);
+        btnConcluir.addEventListener('click', concluirSelecao);
 
-    showLoading(true, "Avaliando sua seleção...");
-
-    try {
-        const response = await fetch("https://api-tcc-alpha.vercel.app/api/typerun/verificar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                texto_original: textoOriginalGlobal,
-                selecao_usuario: Array.from(palavrasSelecionadas)
-            })
-        });
-
-        const data = await response.json();
-        console.log("📊 Resposta do servidor:", data);
-
-        // Lê diretamente os dados enviados pelo backend
-        const acertos = data.acertos ?? data.corretas ?? [];
-        const erros = data.erros ?? data.incorretas ?? [];
-        const omissoes = data.nao_selecionadas ?? [];
-
-
-        const pontuacaoRaw = (acertos.length * 15) - (erros.length * 5) - (omissoes.length * 3);
-        const pontuacao = Math.max(0, pontuacaoRaw);
-
-        document.getElementById("stat-acertos").textContent = acertos.length;
-        document.getElementById("stat-erros").textContent = erros.length;
-        document.getElementById("stat-omissoes").textContent = omissoes.length;
-        document.getElementById("stat-pontuacao").textContent = pontuacao;
-
-        document.getElementById('btnConcluirAtividade').addEventListener('click', async function() {
-    // Pegue a pontuação e feedback da tela (ou guarde em variáveis ao calcular o resultado)
-    const pontuacao = parseInt(document.getElementById('stat-pontuacao').textContent);
-    const feedback = document.getElementById('feedbackGemini').textContent;
-
-    await registrarAtividadeConcluida(pontuacao, feedback);
-
-    // Opcional: Mostra um alerta ou animação pós-registro
-    alert('Atividade registrada! Suas moedas foram creditadas.');
-    // Ou atualize a interface, etc.
-});
-
-        document.getElementById("palavrasCorretas").textContent =
-            (data.palavras_com_erro && data.palavras_com_erro.length)
-                ? data.palavras_com_erro.join(", ")
-                : "Nenhuma";
-
-        document.getElementById("selecaoUsuario").textContent =
-            Array.from(palavrasSelecionadas).join(", ") || "Nenhuma";
-
-        const feedback = data.feedback || "Feedback indisponível.";
-        document.getElementById("feedbackGemini").textContent = feedback;
-
-        await registrarAtividadeConcluida(pontuacao, feedback);
-
-        showScreen("results-area");
-        showMascote();
-
-        if (pontuacao >= (data.palavras_com_erro?.length || 0) * 10)
-            changeBubbleText("Excelente! Você encontrou quase todos os erros!");
-        else if (pontuacao > 0)
-            changeBubbleText("Bom trabalho! Continue praticando!");
-        else
-            changeBubbleText("Não desanime! Tente novamente!");
-    } catch (err) {
-        console.error("Erro:", err);
-        showError("Falha ao avaliar: " + err.message);
-    } finally {
-        showLoading(false);
-    }
-}
-
-
-    // --- 4. EVENT LISTENERS ---
-    startGameBtn.addEventListener('click', generateNewText);
-    btnGerarTexto.addEventListener('click', generateNewText);
-    btnConcluir.addEventListener('click', concluirSelecao);
-
-    // --- 5. LÓGICA DO MASCOTE ---
-    const mascoteAssistente = document.getElementById('mascote-assistente');
-    const chatBubble = document.getElementById('chat-bubble');
-    const showMascote = () => mascoteAssistente.classList.add('visible');
-    const hideMascote = () => mascoteAssistente.classList.remove('visible');
-    const changeBubbleText = (text) => {
-        chatBubble.classList.remove('show');
+        // --- 5. LÓGICA DO MASCOTE ---
+        const mascoteAssistente = document.getElementById('mascote-assistente');
+        const chatBubble = document.getElementById('chat-bubble');
+        const showMascote = () => mascoteAssistente.classList.add('visible');
+        const hideMascote = () => mascoteAssistente.classList.remove('visible');
+        const changeBubbleText = (text) => {
+            chatBubble.classList.remove('show');
+            setTimeout(() => {
+                chatBubble.textContent = text;
+                chatBubble.classList.add('show');
+            }, 300);
+        };
         setTimeout(() => {
-            chatBubble.textContent = text;
-            chatBubble.classList.add('show');
-        }, 300);
-    };
-    setTimeout(() => {
-        showMascote();
-        changeBubbleText("Pronto para o desafio? Clique em 'Começar'.");
-    }, 1500);
-</script>
+            showMascote();
+            changeBubbleText("Pronto para o desafio? Clique em 'Começar'.");
+        }, 1500);
+    </script>
 
 <script src="global-init.js"></script>
 </body>

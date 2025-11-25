@@ -248,6 +248,50 @@
         </div>
     </div>
 </footer>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+const clickSound = document.getElementById("click-sound");
+clickSound.volume = 0.5;
+
+let soundEnabled = true;
+
+const soundBtn = document.getElementById("sound-btn");
+if (soundBtn) {
+    soundBtn.addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+
+        const icon = soundBtn.querySelector("i");
+
+        if (soundEnabled) {
+            // Som ligado
+            icon.setAttribute("data-lucide", "volume-2");
+            icon.classList.remove("text-red-500");
+            icon.classList.add("text-[#e3ebf2]");
+        } else {
+            // Som mutado, ícone com barra vermelha
+            icon.setAttribute("data-lucide", "volume-x");
+            icon.classList.remove("text-[#e3ebf2]");
+            icon.classList.add("text-red-500");
+x}
+
+        lucide.createIcons();
+    });
+}
+
+const clickableElements = document.querySelectorAll("a, button, .nav-card");
+clickableElements.forEach(el => {
+    el.addEventListener("click", () => {
+        if (soundEnabled) {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => {});
+        }
+    });
+});
+});
+
+</script>
+<audio id="click-sound" src="/static/audio/click.wav"></audio>
+
 
 <script>
 const API_BASE = 'https://back-end-mvp-tcc.vercel.app';

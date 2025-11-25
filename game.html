@@ -620,14 +620,23 @@ function renderInputsNormal(palavras) {
             const isCorrect = c.resultado && c.resultado.includes('Correto');
             const cardClass = isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50';
             const icon = isCorrect ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-green-600"></i>' : '<i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>';
+            
+            let feedbackMessage = '';
+            if (isCorrect) {
+                // Mensagem limpa de sucesso
+                feedbackMessage = '<p class="text-sm text-gray-600 mt-2 font-semibold text-green-600">Resposta Perfeita! Continue assim.</p>';
+            } else {
+                // Mensagem de comparação e erro (apenas se estiver errado)
+                feedbackMessage = `<p class="text-sm text-gray-600 mt-2">Você respondeu <span class="font-semibold">${c.resposta}</span>, mas o correto era <span class="font-semibold">${c.correta}</span>.</p>`;
+            }
+
             const cardHTML = `
                 <div class="border-l-4 ${cardClass} rounded-r-lg p-5 shadow-sm fade-in-up bg-white">
                     <div class="flex items-start gap-4">
                         <div>${icon}</div>
                         <div class="flex-grow">
-                            <p class="text-xl font-bold text-[var(--color-text-dark)]">${c.palavra}</p>
-                            <p class="text-sm text-gray-600 mt-2">Você respondeu <span class="font-semibold">${c.resposta}</span>, mas o correto era <span class="font-semibold">${c.correta}</span>.</p>
-                            <p class="font-semibold mt-1 ${isCorrect ? 'text-green-700' : 'text-red-700'}">${c.resultado}</p>
+                            <p class="text-xl font-bold text-black">${c.palavra}</p>
+                            ${feedbackMessage} <p class="font-semibold mt-1 ${isCorrect ? 'text-green-700' : 'text-red-700'}">${c.resultado}</p>
                             <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-gray-200"><strong>Explicação:</strong> ${c.explicacao}</p>
                         </div>
                     </div>
