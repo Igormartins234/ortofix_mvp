@@ -306,7 +306,6 @@ function renderActivitiesList(activities) {
     grid.innerHTML = '';
 
     if (!Array.isArray(activities) || activities.length === 0) {
-        statusEl.textContent = 'Nenhuma atividade nova disponível no momento. Usando atividades padrão.';
         const fallback = [
             { id: 'ortofix', titulo: 'OrtoFix Game', descricao: 'Identifique as palavras com erros ortográficos.', icon: 'puzzle', url: 'game.html', status: 'available' },
             { id: 'typerun', titulo: 'Caça-Erros', descricao: 'Teste sua velocidade e precisão na digitação.', icon: 'file-text', url: 'typerun.html', status: 'available' },
