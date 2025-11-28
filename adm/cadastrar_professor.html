@@ -36,8 +36,6 @@
     </style>
 </head>
 <body class="flex min-h-screen">
-
-    <!-- Sidebar (Menu Lateral Retrátil) -->
     <aside id="sidebar" class="sidebar w-64 text-white flex-shrink-0 flex flex-col">
         <div class="h-20 flex items-center justify-center border-b border-gray-700 px-4 overflow-hidden">
              <img src="../static/img/ortofix.png" alt="OrtoFix Logo" class="h-10 flex-shrink-0">
@@ -149,15 +147,13 @@
             // --- SCRIPT DO FORMULÁRIO DE CADASTRO ---
             const form = document.getElementById('cadastro-professor-form');
             const messageArea = document.getElementById('message-area');
-            // CORREÇÃO 1: A variável submitBtn não estava declarada.
+
             const submitBtn = document.getElementById('submit-btn');
 
-            // CORREÇÃO 2: A função getAuthToken não estava definida.
             function getAuthToken() {
                 return localStorage.getItem('authToken');
             }
 
-            // CORREÇÃO 3: A função validarCPF não estava definida.
             function validarCPF(cpf) {
                 // Validação simples que verifica se existem 11 dígitos numéricos.
                 return /^\d{11}$/.test(cpf);
