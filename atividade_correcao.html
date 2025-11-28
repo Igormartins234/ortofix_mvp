@@ -152,7 +152,7 @@
                         <span class="notification-badge" id="notification-indicator"></span>
                     </button>
                     <!-- Dropdown de Notificações -->
-                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICAÇÕES -->
+                    <!-- CÓDIGO NOVO E CORRIGIDO PARA O DROPDOWN DE NOTIFICACOES -->
 <div id="notifications-dropdown" class="menu-theme absolute right-0 mt-2 w-72 sm:w-80 rounded-lg shadow-xl hidden z-[60] overflow-hidden">
     <!-- Cabeçalho do dropdown -->
     <div class="p-3 border-b" style="border-color: var(--color-border);">
@@ -212,7 +212,10 @@
     <div userselect="none" noselect="true" -webkit-user-select="none" -moz-user-select="none" -ms-user-select="none" id="gameArea" class="p-6 sm:p-8 rounded-2xl shadow-lg max-w-4xl mx-auto hidden" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
         <div id="areaExercicio" class="hidden">
             <h2 class="text-xl font-semibold mb-3 text-center text-dynamic-dark">Texto para Corrigir:</h2>
-            <div userselect="none" noselect="true" -webkit-user-select="none" -moz-user-select="none" -ms-user-select="none" id="textoComErros" class="p-4 rounded-lg mb-6 shadow-inner no-copy" style="background-color: var(--color-border); color: var(--color-text-dark); border-left: 4px solid var(--color-primary);"  spellcheck="false"></div>
+            <div userselect="none" noselect="true" -webkit-user-select="none" -moz-user-select="none" -ms-user-select="none" id="textoComErros"
+    class="p-4 rounded-lg mb-6 shadow-inner no-copy"
+    style="background-color: var(--color-border); color: var(--color-text-dark); border-left: 4px solid var(--color-primary); min-height: 180px; font-size: 1.25rem; width: 100%; max-width: 900px; margin: 0 auto;">
+</div>
             <textarea id="textoUsuario" rows="5" placeholder="Digite o texto corrigido aqui..." class="w-full p-4 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition resize-none mb-4" style="background-color: var(--color-background); color: var(--color-text-dark); border-color: var(--color-border);" spellcheck="false"></textarea>
             <div class="flex flex-col sm:flex-row gap-4 mt-6">
                 <button id="btnVerificar" class="btn-primary-theme flex items-center justify-center gap-2 px-6 py-3 rounded-lg w-full font-semibold shadow-md transition-transform transform hover:scale-105">
