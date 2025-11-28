@@ -401,7 +401,7 @@ async function loadPageData() {
 
     } catch (err) {
         console.error('Erro de rede ao carregar atividades:', err);
-        statusEl.textContent = 'Problema de conexão. Mostrando opções padrão.';
+        statusEl.textContent = '';
         renderActivitiesList([]);
     }
 }
