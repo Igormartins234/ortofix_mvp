@@ -59,7 +59,7 @@ Como este é um projeto front-end, você não precisa de um ambiente complexo pa
 <!-- Adicione aqui screenshots das principais telas da sua aplicação! -->
 | Painel Principal                               | Caça-Erros (Modo Clássico)             | Resultado com Feedback da IA           |
 | ---------------------------------------------- | -------------------------------------- | -------------------------------------- |
-| <img src="#" alt="Painel do Aluno">            | <img src="#" alt="Jogo Caça-Erros">      | <img src="#" alt="Tela de Resultados">  |
+| <img src="./static/img/painel.png" alt="Painel do Aluno">            | <img src="./static//img//Captura de tela 2025-12-02 200615.png" alt="Jogo Caça-Erros">      | <img src="./static//img//Captura de tela 2025-12-02 200654.png" alt="Tela de Resultados">  |
 
 ## 👤 Autores:
 
